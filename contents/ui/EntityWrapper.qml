@@ -34,13 +34,24 @@ MouseArea {
 
                 Rectangle {
                     readonly property bool levelFrame: root.look.levelBorder && (model.level ?? 0) > 0
+                    // with own tile backgrounds "active" is drawn here, matching the tile radius
+                    readonly property bool activeFrame: root.tileBackgrounds && !!model.active
                     anchors.fill: parent
                     radius: root.look.tileRadius
                     color: root.tileFillColor
-                    border.width: levelFrame ? 1.5 : (root.look.tileBorder && root.tileBackgrounds ? 1 : 0)
-                    border.color: levelFrame
-                        ? Levels.color(model.level)
+                    border.width: levelFrame || activeFrame ? 1.5 : (root.look.tileBorder && root.tileBackgrounds ? 1 : 0)
+                    border.color: levelFrame ? Levels.color(model.level)
+                        : activeFrame ? Kirigami.Theme.highlightColor
                         : Qt.rgba(Kirigami.Theme.textColor.r, Kirigami.Theme.textColor.g, Kirigami.Theme.textColor.b, 0.08)
+                }
+
+                // Hover for own tile backgrounds; the Plasma button frames below have their own,
+                // smaller corner radius and would stick out of rounded tiles
+                Rectangle {
+                    anchors.fill: parent
+                    radius: root.look.tileRadius
+                    visible: root.tileBackgrounds && control.hoverEnabled && control.containsMouse
+                    color: Qt.rgba(Kirigami.Theme.textColor.r, Kirigami.Theme.textColor.g, Kirigami.Theme.textColor.b, 0.06)
                 }
 
                 KSvg.FrameSvgItem {
@@ -55,6 +66,7 @@ MouseArea {
                     anchors.fill: parent
                     imagePath: "widgets/button"
                     prefix: ["toolbutton-pressed", "pressed"]
+                    visible: !root.tileBackgrounds
                     opacity: model.active ? 0.5 : 0
                     Behavior on opacity {
                         enabled: Kirigami.Units.shortDuration > 0
@@ -66,7 +78,7 @@ MouseArea {
                     anchors.fill: parent
                     imagePath: "widgets/button"
                     prefix: ["toolbutton-hover", "normal"]
-                    visible: control.hoverEnabled && control.containsMouse
+                    visible: !root.tileBackgrounds && control.hoverEnabled && control.containsMouse
                 }
             }
         }
@@ -139,7 +151,8 @@ MouseArea {
                     }
                     Rectangle {
                         visible: control.showBackground
-                        radius: 3
+                        // follows the tile's corner radius so the bar stays inside rounded tiles
+                        radius: root.tileBackgrounds ? Math.max(0, root.look.tileRadius - 1) : 3
                         x: 1
                         y: 1
                         height: parent.height - 2 * y

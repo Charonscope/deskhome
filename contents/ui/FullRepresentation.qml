@@ -57,25 +57,25 @@ PlasmaExtras.Representation {
             contentHeight: tileGrid.implicitHeight
             ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
 
-            GridLayout {
+            // Tiles are positioned by hand instead of with a GridLayout: GridLayout refuses
+            // tiles that arrive at runtime on an occupied cell and then sometimes never lays
+            // them out (tiles went missing), and it distributes mixed spans unevenly.
+            Item {
                 id: tileGrid
                 readonly property int minTileWidth: Kirigami.Units.gridUnit * 9 * root.tileScale * (1 + (root.labelGrow - 1) * 0.5)
                 readonly property int tileHeight: Kirigami.Units.gridUnit * 4 * root.tileScale * (1 + (root.labelGrow - 1) * 0.6)
                 readonly property int compactTileHeight: Kirigami.Units.gridUnit * 2.5 * root.tileScale * root.labelGrow
+                readonly property int spacing: root.look.tileSpacing
                 width: scroll.availableWidth
-                // Every normal tile takes two grid columns so half tiles are possible
-                readonly property int tileColumns: Math.max(1, Math.floor((width + columnSpacing) / (minTileWidth + columnSpacing)))
-                columns: tileColumns * 2
-                // Compute widths ourselves: with fillWidth GridLayout distributes mixed spans unevenly
-                readonly property real cellWidth: (width - (columns - 1) * columnSpacing) / columns
+                implicitHeight: contentHeight
+                // Every normal tile takes two columns so half tiles are possible
+                readonly property int tileColumns: Math.max(1, Math.floor((width + spacing) / (minTileWidth + spacing)))
+                readonly property int columns: tileColumns * 2
+                readonly property real cellWidth: (width - (columns - 1) * spacing) / columns
                 function spanWidth(span) {
                     const s = Math.min(span, columns)
-                    return s * cellWidth + (s - 1) * columnSpacing
+                    return s * cellWidth + (s - 1) * spacing
                 }
-                columnSpacing: root.look.tileSpacing
-                rowSpacing: root.look.tileSpacing
-                // widths are set exactly per tile (spanWidth); uniformCellWidths would stretch columns
-                uniformCellWidths: false
 
                 // How many "only when abnormal" tiles are currently ok (and therefore hidden)
                 property int hiddenOkCount: 0
@@ -87,46 +87,65 @@ PlasmaExtras.Representation {
                     }
                     hiddenOkCount = n
                 }
-                Connections {
-                    target: store.itemModel
-                    function onDataChanged() { tileGrid.recountHidden() }
-                    function onCountChanged() { tileGrid.recountHidden() }
+
+                // Geometry of every visible tile ({x, y, width, height}) plus the summary tile
+                property var positions: []
+                property var okPosition: ({ x: 0, y: 0, width: 0, height: 0 })
+                property real contentHeight: 0
+
+                function entryOf(row) {
+                    return store.itemModel.get(visibleTiles.mapToSource(visibleTiles.index(row, 0)).row) || {}
                 }
+
+                function place() {
+                    const result = []
+                    let column = 0, y = 0, rowHeight = 0
+                    const put = (span, height) => {
+                        if (column + span > columns) {
+                            y += rowHeight + spacing
+                            column = 0
+                            rowHeight = 0
+                        }
+                        const p = { x: column * (cellWidth + spacing), y: y, width: spanWidth(span), height: height }
+                        column += span
+                        rowHeight = Math.max(rowHeight, height)
+                        return p
+                    }
+                    for (let i = 0; i < visibleTiles.count; i++) {
+                        const e = entryOf(i)
+                        const span = Math.min(Math.round((e.colspan || 1) * 2), columns)
+                        // only sensors with a graph need the full height
+                        const height = e.kind === "sensor" && e.history_hours > 0 ? tileHeight : compactTileHeight
+                        result.push(put(span, height))
+                    }
+                    if (hiddenOkCount > 0) okPosition = put(Math.min(2, columns), compactTileHeight)
+                    positions = result
+                    contentHeight = column === 0 && rowHeight === 0 ? 0 : y + rowHeight
+                }
+
+                function schedulePlace() { Qt.callLater(place) }
+                onWidthChanged: schedulePlace()
+                onTileHeightChanged: schedulePlace()
+                onCompactTileHeightChanged: schedulePlace()
+                onSpacingChanged: schedulePlace()
+                onHiddenOkCountChanged: schedulePlace()
                 Component.onCompleted: {
                     recountHidden()
                     place()
                 }
 
-                // Assign positions ourselves: GridLayout misplaces tiles with different
-                // spans when they are added at runtime (tiles overlap)
-                property var positions: []
-                property var okPosition: ({ row: 0, column: 0 })
-                function spanOf(row) {
-                    const source = visibleTiles.mapToSource(visibleTiles.index(row, 0)).row
-                    const colspan = store.itemModel.get(source)?.colspan || 1
-                    return Math.min(Math.round(colspan * 2), columns)
+                Connections {
+                    target: store.itemModel
+                    function onDataChanged() { tileGrid.recountHidden() }
+                    function onCountChanged() { tileGrid.recountHidden() }
                 }
-                function place() {
-                    const result = []
-                    let r = 0, c = 0
-                    const put = span => {
-                        if (c + span > columns) { r++; c = 0 }
-                        const p = { row: r, column: c }
-                        c += span
-                        return p
-                    }
-                    for (let i = 0; i < visibleTiles.count; i++) result.push(put(spanOf(i)))
-                    okPosition = put(Math.min(2, columns))
-                    positions = result
-                }
-                onColumnsChanged: Qt.callLater(place)
                 Connections {
                     target: visibleTiles
-                    function onRowsInserted() { Qt.callLater(tileGrid.place) }
-                    function onRowsRemoved() { Qt.callLater(tileGrid.place) }
-                    function onModelReset() { Qt.callLater(tileGrid.place) }
-                    function onLayoutChanged() { Qt.callLater(tileGrid.place) }
-                    function onDataChanged() { Qt.callLater(tileGrid.place) }
+                    function onRowsInserted() { tileGrid.schedulePlace() }
+                    function onRowsRemoved() { tileGrid.schedulePlace() }
+                    function onModelReset() { tileGrid.schedulePlace() }
+                    function onLayoutChanged() { tileGrid.schedulePlace() }
+                    function onDataChanged() { tileGrid.schedulePlace() }
                 }
 
                 Repeater {
@@ -137,19 +156,16 @@ PlasmaExtras.Representation {
                     }
                     delegate: EntityWrapper {
                         id: wrapper
+                        readonly property var geometry: tileGrid.positions[index]
+                        visible: !!geometry
+                        x: geometry?.x ?? 0
+                        y: geometry?.y ?? 0
+                        width: geometry?.width ?? 0
+                        height: geometry?.height ?? 0
                         flat: plasmoid.configuration.flat
                         showBackground: true
                         // full name as a tooltip in case it is shortened in the tile
                         tooltipTitle: model.name
-                        readonly property int span: Math.min(Math.round((model.colspan || 1) * 2), tileGrid.columns)
-                        Layout.preferredWidth: tileGrid.spanWidth(span)
-                        Layout.minimumWidth: tileGrid.spanWidth(span)
-                        Layout.maximumWidth: tileGrid.spanWidth(span)
-                        // only sensors with a graph need the full height
-                        Layout.preferredHeight: model.kind === "sensor" && model.history_hours > 0 ? tileGrid.tileHeight : tileGrid.compactTileHeight
-                        Layout.columnSpan: span
-                        Layout.row: tileGrid.positions[index]?.row ?? 0
-                        Layout.column: tileGrid.positions[index]?.column ?? 0
 
                         Loader {
                             anchors.fill: parent
@@ -167,17 +183,14 @@ PlasmaExtras.Representation {
 
                 Rectangle {
                     visible: tileGrid.hiddenOkCount > 0
+                    x: tileGrid.okPosition.x
+                    y: tileGrid.okPosition.y
+                    width: tileGrid.okPosition.width
+                    height: tileGrid.okPosition.height
                     radius: root.look.tileRadius
                     color: root.tileBackgrounds
                         ? root.tileFillColor
                         : Qt.rgba(Kirigami.Theme.positiveTextColor.r, Kirigami.Theme.positiveTextColor.g, Kirigami.Theme.positiveTextColor.b, 0.12)
-                    Layout.preferredWidth: tileGrid.spanWidth(2)
-                    Layout.minimumWidth: tileGrid.spanWidth(2)
-                    Layout.maximumWidth: tileGrid.spanWidth(2)
-                    Layout.preferredHeight: tileGrid.compactTileHeight
-                    Layout.columnSpan: Math.min(2, tileGrid.columns)
-                    Layout.row: tileGrid.okPosition.row
-                    Layout.column: tileGrid.okPosition.column
                     RowLayout {
                         anchors.fill: parent
                         anchors.margins: Kirigami.Units.smallSpacing

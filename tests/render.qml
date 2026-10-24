@@ -73,9 +73,24 @@ ApplicationWindow {
                 add({ entity_id: "light.desk", name: "Desk lamp", kind: "switch", value: "on", num: NaN, state: "on", level: 0, icon: "mdi:lightbulb", colspan: 0.5, history_hours: 0, domain: "light", active: true, brightness_pct: 60, light_color: "#ffcc66" })
                 add({ entity_id: "light.kitchen", name: "Kitchen", kind: "switch", value: "off", num: NaN, state: "off", level: 0, icon: "mdi:lightbulb-outline", colspan: 0.5, history_hours: 0, domain: "light", active: false })
                 add({ entity_id: "binary_sensor.hall", name: "Hallway motion", kind: "status", value: "unavailable", num: NaN, state: "unavailable", level: 2, icon: "mdi:motion-sensor", colspan: 1, history_hours: 0, domain: "binary_sensor", active: false })
+                // hidden while ok -> must show up in the "1 more check OK" summary tile
+                add({ entity_id: "sensor.battery_ok", name: "Bedroom battery", kind: "status", value: "100%", num: 100, state: "100", level: 0, icon: "mdi:battery", colspan: 1, history_hours: 0, domain: "sensor", active: false, hide_when_ok: true })
             }
         }
     }
+
+    // Tiles arriving while the view already exists (as with a live connection) went missing
+    // in a GridLayout-based version; add one late to cover that case.
+    Timer {
+        interval: 500
+        running: true
+        onTriggered: store.itemModel.append(Object.assign({}, store.itemModel.get(0), {
+            entity_id: "sensor.late", name: "Late tile", kind: "status", value: "44%", num: 44, state: "44",
+            level: 1, icon: "mdi:battery", colspan: 1, history_hours: 0
+        }))
+    }
+
+    readonly property var expectedTexts: ["Outside", "Outside humidity", "Desk lamp", "Kitchen", "Hallway motion", "Late tile", "1 more check OK"]
 
     FullRepresentation {
         id: view
@@ -88,8 +103,29 @@ ApplicationWindow {
         running: true
         onTriggered: {
             if (window.args[2] === "dump") window.dump(view, 0)
-            view.grabToImage(r => { r.saveToFile(window.args[0]); console.log("saved " + window.args[0]); Qt.quit() })
+            const problems = window.verify()
+            for (const p of problems) console.log("FAIL " + p)
+            view.grabToImage(r => { r.saveToFile(window.args[0]); console.log("saved " + window.args[0]); Qt.exit(problems.length ? 1 : 0) })
         }
+    }
+
+    // Every expected tile text must be visible and lie fully inside the view
+    function verify() {
+        const found = {}
+        const walk = item => {
+            if (item.text !== undefined && item.visible && item.opacity > 0 && window.expectedTexts.includes(item.text)) {
+                const p = item.mapToItem(view, 0, 0)
+                found[item.text] = p.x >= 0 && p.y >= 0 && p.x + item.width <= view.width + 1 && item.width > 0
+            }
+            for (let i = 0; i < item.children.length; i++) walk(item.children[i])
+        }
+        walk(view)
+        const problems = []
+        for (const t of window.expectedTexts) {
+            if (!(t in found)) problems.push("tile text not shown: " + t)
+            else if (!found[t]) problems.push("tile outside the view: " + t)
+        }
+        return problems
     }
 
     // Debug aid: lists every item that has a text, with its geometry
