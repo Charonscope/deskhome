@@ -19,6 +19,12 @@ BaseObject {
     // und mehrere Auslöser kurz hintereinander ergeben nur ein Abonnement
     onItemsChanged: Qt.callLater(fetchDataAndSubscribe)
     onLanguageChanged: Qt.callLater(fetchDataAndSubscribe)
+    // Die HA-Verbindung wird zwischen Widgets geteilt und lebt weiter: beim Entfernen abmelden,
+    // sonst ruft sie für jede Wertänderung noch den gelöschten Store auf
+    Component.onDestruction: {
+        if (_.client) _.client.readyChanged.disconnect(fetchDataAndSubscribe)
+        _.unsubscribe()
+    }
 
     function setClient(client) {
         if (_.client) {
