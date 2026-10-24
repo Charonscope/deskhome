@@ -14,6 +14,24 @@ KCM.SimpleKCM {
     // Vorschau: Texte dieser Seite folgen sofort der Auswahl
     function tr(key, ...args) { return I18n.tr(cfg_language, key, ...args) }
 
+    property bool urlInvalid: false
+
+    // Eingefügte Adressen haben oft einen Pfad, Schrägstrich oder Leerzeichen am Ende;
+    // ein Validator im Feld würde solche Einfügungen kommentarlos verwerfen
+    function normalizeUrl(text) {
+        // aus der Browser-Adresszeile kopiert: Pfad wie /lovelace/0 abschneiden
+        const m = text.trim().match(/^(https?:\/\/[\w.-]+(?::\d{2,5})?)(?:\/\S*)?$/)
+        return m ? m[1] : ""
+    }
+
+    function acceptUrl(text) {
+        const u = normalizeUrl(text)
+        urlInvalid = !u && !!text.trim()
+        if (!u) return
+        cfg_url = u
+        url.editText = u
+    }
+
     signal configurationChanged
 
     onCfg_urlChanged: secrets.restore(cfg_url)
@@ -61,12 +79,16 @@ KCM.SimpleKCM {
             onModelChanged: currentIndex = indexOfValue(cfg_url)
             onActiveFocusChanged: !activeFocus && accepted()
             onActivated: cfg_url = editText = currentValue
-            onAccepted: cfg_url = editText
-            validator: RegularExpressionValidator {
-                regularExpression: /^https?:\/\/\w+[\w.-]+\w+(?::\d{2,5})?$/
-            }
+            onAccepted: acceptUrl(editText)
             Kirigami.FormData.label: tr("general.url")
             Layout.fillWidth: true
+        }
+
+        Kirigami.InlineMessage {
+            Layout.fillWidth: true
+            type: Kirigami.MessageType.Error
+            text: tr("general.urlInvalid")
+            visible: urlInvalid
         }
 
         Label {
@@ -79,9 +101,6 @@ KCM.SimpleKCM {
             id: token
             text: secrets.token
             onTextEdited: configurationChanged()
-            validator: RegularExpressionValidator {
-                regularExpression: /^[\w-]+\.[\w-]+\.[\w-]+$/
-            }
             Kirigami.FormData.label: tr("general.token")
         }
 
@@ -110,7 +129,9 @@ KCM.SimpleKCM {
     }
 
     function saveConfig() {
-        if (!token.acceptableInput) return
-        secrets.set(cfg_url, token.text)
+        acceptUrl(url.editText)
+        const t = token.text.trim()
+        if (!/^[\w-]+\.[\w-]+\.[\w-]+$/.test(t)) return
+        secrets.set(cfg_url, t)
     }
 }

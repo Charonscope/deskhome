@@ -12,6 +12,7 @@ const STRINGS = Object.freeze({
     "general.api": ["Verbindung", "Connection"],
     "general.url": ["Home-Assistant-Adresse:", "Home Assistant URL:"],
     "general.urlHint": ["Adresse mit Protokoll und Port angeben, zum Beispiel:%1", "Make sure the URL includes the protocol and port. For example:%1"],
+    "general.urlInvalid": ["Das ist keine gültige Adresse. Bitte mit http:// oder https:// und ohne Pfad angeben.", "This is not a valid URL. Please include http:// or https:// and no path."],
     "general.token": ["Token:", "Token:"],
     "general.tokenHint": ["Token im Home-Assistant-Profil unter „Sicherheit“ erstellen:", "Create a token on your Home Assistant profile page under “Security”:"],
     "general.tokenHelpTitle": ["So legst du einen Token an", "How to create a token"],

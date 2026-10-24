@@ -15,7 +15,7 @@
     "Id": "io.github.deskhome",
     "License": "GPLv3",
     "Name": "DeskHome",
-    "Version": "1.0.1",
+    "Version": "1.0.2",
     "Website": "https://github.com/Charonscope/deskhome",
     "Description[de]": "Dein Home Assistant auf dem Plasma-Desktop: Kacheln mit Verlaufsgraph, Lichter & Schalter, Status-Übersicht"
   },
