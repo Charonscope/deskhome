@@ -136,18 +136,32 @@ MouseArea {
                     readonly property real attributeBasedPosition: mapper.normalize(attributes[mapper.attribute])
                     property real position
 
+                    // While scrolling only the bar moves; the value is sent once the wheel rests,
+                    // and HA's intermediate states (light transitions) are ignored for a moment
+                    // so the bar does not jump back and forth.
                     Binding on position {
-                        when: !pending
+                        when: !pending && !holdTimer.running
                         value: attributeBasedPosition
                     }
                     WheelHandler {
                         acceptedDevices: PointerDevice.TouchPad | PointerDevice.Mouse
                         orientation: Qt.Vertical
                         onWheel: e => {
-                            const p = position + e.angleDelta.y / 3600
+                            // one wheel notch (120) = 5 %; touchpads send smaller deltas
+                            const p = position + e.angleDelta.y / 120 * 0.05
                             position = p > 1 ? 1 : p < 0 ? 0 : p
+                            sendTimer.restart()
+                            holdTimer.restart()
                         }
-                        onActiveChanged: !active && callService(scroll_action, { [scroll_action.data_field]: mapper.denormalize(position) })
+                    }
+                    Timer {
+                        id: sendTimer
+                        interval: 250
+                        onTriggered: callService(scroll_action, { [scroll_action.data_field]: Math.round(mapper.denormalize(position)) })
+                    }
+                    Timer {
+                        id: holdTimer
+                        interval: 2000
                     }
                     Rectangle {
                         visible: control.showBackground
@@ -159,6 +173,9 @@ MouseArea {
                         width: position * (parent.width - 2 * x)
                         color: Kirigami.Theme.highlightColor
                         opacity: 0.6
+                        Behavior on width {
+                            NumberAnimation { duration: Kirigami.Units.shortDuration }
+                        }
                     }
                 }
             }
