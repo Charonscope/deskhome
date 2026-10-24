@@ -15,8 +15,10 @@ BaseObject {
     // Wird bei jeder Verlaufsänderung hochgezählt, damit Kacheln neu zeichnen
     property int historyRevision: 0
 
-    onItemsChanged: fetchDataAndSubscribe()
-    onLanguageChanged: fetchDataAndSubscribe()
+    // callLater: erst nachdem abhängige Bindings (z. B. historyHoursByEntityId) neu berechnet sind,
+    // und mehrere Auslöser kurz hintereinander ergeben nur ein Abonnement
+    onItemsChanged: Qt.callLater(fetchDataAndSubscribe)
+    onLanguageChanged: Qt.callLater(fetchDataAndSubscribe)
 
     function setClient(client) {
         if (_.client) {
@@ -24,7 +26,7 @@ BaseObject {
             _.client.readyChanged.disconnect(fetchDataAndSubscribe)
         }
         _.client = client
-        fetchDataAndSubscribe()
+        Qt.callLater(fetchDataAndSubscribe)
         _.client.readyChanged.connect(fetchDataAndSubscribe)
     }
 

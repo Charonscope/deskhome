@@ -68,10 +68,46 @@ PlasmaExtras.Representation {
                     function onDataChanged() { tileGrid.recountHidden() }
                     function onCountChanged() { tileGrid.recountHidden() }
                 }
-                Component.onCompleted: recountHidden()
+                Component.onCompleted: {
+                    recountHidden()
+                    place()
+                }
+
+                // Positionen selbst vergeben: GridLayout sortiert Kacheln mit unterschiedlicher
+                // Spannweite falsch ein, wenn sie zur Laufzeit dazukommen (Kacheln überlagern sich)
+                property var positions: []
+                property var okPosition: ({ row: 0, column: 0 })
+                function spanOf(row) {
+                    const source = visibleTiles.mapToSource(visibleTiles.index(row, 0)).row
+                    const colspan = store.itemModel.get(source)?.colspan || 1
+                    return Math.min(Math.round(colspan * 2), columns)
+                }
+                function place() {
+                    const result = []
+                    let r = 0, c = 0
+                    const put = span => {
+                        if (c + span > columns) { r++; c = 0 }
+                        const p = { row: r, column: c }
+                        c += span
+                        return p
+                    }
+                    for (let i = 0; i < visibleTiles.count; i++) result.push(put(spanOf(i)))
+                    okPosition = put(Math.min(2, columns))
+                    positions = result
+                }
+                onColumnsChanged: Qt.callLater(place)
+                Connections {
+                    target: visibleTiles
+                    function onRowsInserted() { Qt.callLater(tileGrid.place) }
+                    function onRowsRemoved() { Qt.callLater(tileGrid.place) }
+                    function onModelReset() { Qt.callLater(tileGrid.place) }
+                    function onLayoutChanged() { Qt.callLater(tileGrid.place) }
+                    function onDataChanged() { Qt.callLater(tileGrid.place) }
+                }
 
                 Repeater {
                     model: DisplayFilterModel {
+                        id: visibleTiles
                         sourceModel: store.itemModel
                         filterItems: DisplayFilterModel.Full
                     }
@@ -86,6 +122,8 @@ PlasmaExtras.Representation {
                         // nur Sensoren mit Graph brauchen die volle Höhe
                         Layout.preferredHeight: model.kind === "sensor" && model.history_hours > 0 ? tileGrid.tileHeight : tileGrid.compactTileHeight
                         Layout.columnSpan: span
+                        Layout.row: tileGrid.positions[index]?.row ?? 0
+                        Layout.column: tileGrid.positions[index]?.column ?? 0
 
                         Loader {
                             anchors.fill: parent
@@ -112,6 +150,8 @@ PlasmaExtras.Representation {
                     Layout.maximumWidth: tileGrid.spanWidth(2)
                     Layout.preferredHeight: tileGrid.compactTileHeight
                     Layout.columnSpan: Math.min(2, tileGrid.columns)
+                    Layout.row: tileGrid.okPosition.row
+                    Layout.column: tileGrid.okPosition.column
                     RowLayout {
                         anchors.fill: parent
                         anchors.margins: Kirigami.Units.smallSpacing
