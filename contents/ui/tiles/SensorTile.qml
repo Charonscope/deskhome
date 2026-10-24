@@ -8,14 +8,14 @@ import ".."
 import "."
 import "../../code/formatter.mjs" as Formatter
 
-// Messwert gross, darunter Verlauf mit Min/Max und Trendpfeil
+// Large value, below it the history with min/max and trend arrow
 Item {
     id: tile
     readonly property real windowMs: model.history_hours * 3600000
     readonly property bool showHistory: model.history_hours > 0
     readonly property var points: { store.historyRevision; return store.history(model.entity_id) }
     readonly property color levelColor: Levels.color(model.level)
-    // revision als Argument, weil points immer dasselbe (wachsende) Array ist
+    // revision as an argument because points is always the same (growing) array
     readonly property var stats: computeStats(points, model.num, store.historyRevision)
 
     function computeStats(points, current, revision) {
@@ -33,7 +33,7 @@ Item {
             min = Math.min(min, current)
             max = Math.max(max, current)
         }
-        // gleiche Mindestspanne wie im Graphen, damit Rauschen keinen Trendpfeil auslöst
+        // same minimum span as the graph, so noise does not trigger a trend arrow
         const range = Math.max(max - min, Math.abs(current) * 0.05)
         let trend = ""
         if (!isNaN(hourAgo) && !isNaN(current) && range > 0) {
@@ -51,7 +51,7 @@ Item {
     }
 
     Sparkline {
-        // Abstand zum Kachelrand (Rahmen ist bis zu 1,5 px breit)
+        // Distance to the tile edge (the border is up to 1.5 px wide)
         readonly property real inset: 2
         visible: showHistory
         anchors {
@@ -114,7 +114,7 @@ Item {
             font.weight: Font.Bold
             elide: Text.ElideRight
             Layout.fillWidth: true
-            // bündig mit der sichtbaren linken Kante des Icons (das SVG hat innen Rand)
+            // aligned with the visible left edge of the icon (the SVG has an inner margin)
             Layout.leftMargin: headerIcon.item?.size ? (headerIcon.width - headerIcon.item.size.width) / 2 : 0
         }
 

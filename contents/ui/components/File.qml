@@ -41,7 +41,7 @@ BaseObject {
             connectSource(`${cmdSave} ${quote(content)} > ${quote(url)}`)
         }
 
-        // Shell-sicher in einfache Anführungszeichen packen (Apostrophe in Namen, Leerzeichen in Pfaden)
+        // Shell-safe single quoting (apostrophes in names, spaces in paths)
         function quote(text) {
             return "'" + String(text).replace(/'/g, "'\\''") + "'"
         }

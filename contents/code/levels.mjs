@@ -1,9 +1,9 @@
-// Ampel-Stufen einer Entity: 0 = ok, 1 = Warnung, 2 = kritisch
+// Status level of an entity: 0 = ok, 1 = warning, 2 = critical
 export const OK = 0
 export const WARN = 1
 export const CRIT = 2
 
-// binary_sensor-Klassen, bei denen "on" ein Problem bedeutet
+// binary_sensor device classes where "on" means a problem
 const PROBLEM_CLASSES = Object.freeze([
     "battery", "carbon_monoxide", "cold", "gas", "heat", "moisture",
     "problem", "safety", "smoke", "tamper", "update"

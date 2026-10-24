@@ -11,15 +11,15 @@ KCM.SimpleKCM {
     property string cfg_url
     property string cfg_language
 
-    // Vorschau: Texte dieser Seite folgen sofort der Auswahl
+    // Preview: texts on this page follow the selection immediately
     function tr(key, ...args) { return I18n.tr(cfg_language, key, ...args) }
 
     property bool urlInvalid: false
 
-    // Eingefügte Adressen haben oft einen Pfad, Schrägstrich oder Leerzeichen am Ende;
-    // ein Validator im Feld würde solche Einfügungen kommentarlos verwerfen
+    // Pasted URLs often have a path, slash or spaces at the end;
+    // a validator on the field would silently reject such pastes
     function normalizeUrl(text) {
-        // aus der Browser-Adresszeile kopiert: Pfad wie /lovelace/0 abschneiden
+        // copied from the browser address bar: cut off a path like /lovelace/0
         const m = text.trim().match(/^(https?:\/\/[\w.-]+(?::\d{2,5})?)(?:\/\S*)?$/)
         return m ? m[1] : ""
     }
@@ -95,8 +95,8 @@ KCM.SimpleKCM {
             text: tr("general.urlHint", "\nhttp://homeassistant.local:8123\nhttps://example.duckdns.org")
         }
 
-        // Passwortfeld mit Augen-Symbol: der Token ist so mächtig wie das HA-Passwort
-        // und soll nicht auf Screenshots der Einstellungen landen
+        // Password field with an eye icon: the token is as powerful as the HA password
+        // and must not end up on screenshots of the settings
         Kirigami.PasswordField {
             id: token
             text: secrets.token

@@ -24,7 +24,7 @@ KCM.ScrollViewKCM {
     property string infoMessage
     property bool infoIsError: false
 
-    // Alles, was zum Aussehen gehört und in ein Komplett-Backup gehört
+    // Everything that belongs to the appearance and into a full backup
     readonly property var lookKeys: [
         "flat", "compactEntity", "compactScaleIconsToFit", "compactIconSpacing", "itemDisplayDefault",
         "tileOpacity", "tileCustomColor", "tileColor", "tileRadius", "tileBorder", "levelBorder",
@@ -48,7 +48,7 @@ KCM.ScrollViewKCM {
         }, null, 2)
     }
 
-    // Nimmt alte .hapi-Dateien (nur Kachel-Liste) und Komplett-Backups
+    // Accepts old .hapi files (tile list only) and full backups
     function restoreBackup(data) {
         const parsed = JSON.parse(data)
         if (Array.isArray(parsed)) {
@@ -57,7 +57,7 @@ KCM.ScrollViewKCM {
             infoMessage = tr("items.importedOld", parsed.length)
             return
         }
-        // "ha-kacheln" = Backups aus der Zeit vor der Umbenennung
+        // "ha-kacheln" = backups from before the rename
         if (!["deskhome", "ha-kacheln"].includes(parsed?.format) || !Array.isArray(parsed.items)) {
             throw new Error(tr("items.unknownFormat"))
         }
@@ -217,6 +217,8 @@ KCM.ScrollViewKCM {
         setItems(cfg_items)
         ha = ClientFactory.getClient(this, plasmoid.configuration.url)
         ha.readyChanged.connect(fetchData)
+        // the connection is shared and usually already up when the page opens
+        if (ha.ready) fetchData()
     }
 
     function setItems(data) {

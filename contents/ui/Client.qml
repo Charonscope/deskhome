@@ -4,178 +4,204 @@ import QtWebSockets
 import "components"
 import "../code/services.mjs" as Services
 
+// Connection to the Home Assistant WebSocket API. One instance per URL is shared by all
+// DeskHome widgets (see ClientFactory). It reconnects on its own with growing pauses and
+// reports its state, so the widget can show when the values are stale.
 BaseObject {
+    id: client
+
     property string baseUrl
     property string token
-    property var subscribeEntities: ws.subscribeEntities
-    property var callService: ws.callService
-    property var getServices: ws.getServices
-    property var getStates: ws.getStates
-    property var getTranslations: ws.getTranslations
-    property var getHistory: ws.getHistory
+
+    readonly property bool configured: !!baseUrl && !!token
+    readonly property bool ready: _.authenticated
+    // HA rejected the token: retrying is pointless until the token changes
+    readonly property bool authFailed: _.authFailed
     property string errorString: ""
-    readonly property alias ready: ws.ready
-    readonly property bool configured: ws.url && token
+    // when the current connection was established / since when there is none (null = connected)
+    property var connectedSince: null
+    property var disconnectedSince: new Date()
 
-    onBaseUrlChanged: ws.url = baseUrl.replace('http', 'ws') + "/api/websocket"
-    onConfiguredChanged: ws.active = configured
+    onConfiguredChanged: _.connect()
+    onBaseUrlChanged: _.restart()
+    onTokenChanged: _.restart()
 
-    Connections {
-        target: ws
-        function onError(msg) { errorString = msg }
-        function onReadyChanged() { ws.ready && (errorString = "") }
+    function subscribeEntities(entityIds, callback) {
+        if (!entityIds || !_.authenticated) return
+        const id = command({ type: "subscribe_entities", entity_ids: entityIds })
+        _.subscriptions.set(id, callback)
+        return () => unsubscribe(id)
     }
 
-    Timer {
-        id: pingPongTimer
-        interval: 30000
-        running: ws.status
-        repeat: true
-        property bool waiting
-        onTriggered: {
-            if (waiting || !ws.open) {
-                ws.reconnect()
-            } else {
-                ws.ping()
-            }
-            waiting = !waiting
+    function unsubscribe(id) {
+        if (!_.subscriptions.has(id)) return Promise.resolve()
+        _.subscriptions.delete(id)
+        return commandAsync({ type: "unsubscribe_events", subscription: id }).catch(() => {})
+    }
+
+    function callService({ domain, service, target } = {}, data) {
+        return commandAsync({ type: "call_service", domain, service, service_data: data, target })
+    }
+
+    function getStates(entities) {
+        return commandAsync({ type: "get_states" })
+            .then(s => entities ? s.filter(e => entities.includes(e.entity_id)) : s)
+    }
+
+    function getServices() {
+        return commandAsync({ type: "get_services" }).then(Services.fromObject)
+    }
+
+    function getTranslations(language, category, integration) {
+        return commandAsync({ type: "frontend/get_translations", category, language, integration })
+    }
+
+    function getHistory(entityIds, startTime) {
+        return commandAsync({
+            type: "history/history_during_period",
+            start_time: startTime.toISOString(),
+            entity_ids: entityIds,
+            minimal_response: true,
+            no_attributes: true,
+            significant_changes_only: false
+        })
+    }
+
+    function command(message) {
+        const id = _.nextId++
+        _.send(Object.assign({ id }, message))
+        return id
+    }
+
+    function commandAsync(message) {
+        if (!_.authenticated) {
+            return Promise.reject({ code: "not-connected", message: "Not connected to Home Assistant" })
         }
-        function reset() {
-            waiting = false
-            restart()
-        }
+        return new Promise((resolve, reject) => {
+            const id = _.nextId++
+            _.pending.set(id, { resolve, reject })
+            _.send(Object.assign({ id }, message))
+        })
     }
 
     WebSocket {
-        id: ws
-        property bool ready: false
-        property int messageCounter: 0
-        property var subscriptions: new Map()
-        property var promises: new Map()
-        readonly property bool open: status === WebSocket.Open
-        signal error(string msg)
+        id: socket
+        active: false
+        url: client.baseUrl ? client.baseUrl.replace(/^http/, "ws") + "/api/websocket" : ""
+        onStatusChanged: _.socketStatusChanged(socket.status)
+        onTextMessageReceived: message => _.received(JSON.parse(message))
+    }
 
-        onOpenChanged: ready = false
-
-        onTextMessageReceived: message => {
-            pingPongTimer.reset()
-            const msg = JSON.parse(message)
-            switch (msg.type) {
-                case 'auth_required': auth(token); break;
-                case 'auth_ok': ready = true; break;
-                case 'auth_invalid': error(msg.message); break;
-                case 'event': notifyStateUpdate(msg); break;
-                case 'result': handleResult(msg); break;
+    // Reconnect with growing pauses so an offline HA is not hammered
+    Timer {
+        id: reconnectTimer
+        onTriggered: {
+            if (!_.authenticated && socket.status !== WebSocket.Connecting && socket.status !== WebSocket.Open) {
+                _.connect()
             }
         }
+    }
 
-        onErrorStringChanged: () => errorString && error(errorString)
-
-        function reconnect() {
-            rejectPromises({ code: 'connection-lost', message: 'Connection lost' })
-            active = false
-            active = true
-        }
-
-        function rejectPromises(reason) {
-            promises.forEach(p => p.reject(reason))
-            promises.clear()
-        }
-
-        function handleResult(msg) {
-            const p = promises.get(msg.id)
-            if (!p) return
-            if (msg.success) {
-                p.resolve(msg.result)
-            } else {
-                p.reject(msg.error)
+    // Detects silently dead connections (e.g. HA host gone without closing the socket)
+    Timer {
+        interval: 30000
+        repeat: true
+        running: _.authenticated
+        onTriggered: {
+            if (_.awaitingPong) {
+                socket.active = false
+                return
             }
-            promises.delete(msg.id)
+            _.awaitingPong = true
+            client.command({ type: "ping" })
+        }
+    }
+
+    QtObject {
+        id: _
+        property bool authenticated: false
+        property bool authFailed: false
+        property bool awaitingPong: false
+        property int nextId: 1
+        property int failures: 0
+        readonly property var pending: new Map()
+        readonly property var subscriptions: new Map()
+        readonly property var delays: [2000, 5000, 10000, 30000, 60000]
+
+        function connect() {
+            if (!client.configured || authFailed) return
+            socket.active = false
+            socket.active = true
         }
 
-        function auth(token) {
-            send({"type": "auth", "access_token": token})
-        }
-
-        function notifyStateUpdate(msg) {
-            const callback = subscriptions.get(msg.id)
-            return callback && callback(msg.event)
-        }
-
-        function subscribeEntities(entity_ids, callback) {
-            if (!entity_ids) return
-            const subscription = command({"type": "subscribe_entities", entity_ids})
-            subscriptions.set(subscription, callback)
-            return () => unsubscribe(subscription)
-        }
-
-        function unsubscribe(subscription) {
-            if(!subscriptions.has(subscription)) return
-            return commandAsync({"type": "unsubscribe_events", subscription})
-                .then(() => subscriptions.delete(subscription))
-        }
-
-        function callService({ domain, service, target } = {}, data) {
-            return commandAsync({
-                "type": "call_service",
-                "domain": domain,
-                "service": service,
-                "service_data": data,
-                "target": target
-            })
-        }
-
-        function getStates(entities) {
-            return commandAsync({"type": "get_states"})
-                .then(s => entities ? s.filter(e => entities.includes(e.entity_id)) : s)
-        }
-
-        function getServices() {
-            return commandAsync({"type": "get_services"}).then(Services.fromObject)
-        }
-
-        function getTranslations(language, category, integration) {
-            return commandAsync({
-                "type": "frontend/get_translations",
-                category,
-                language,
-                integration
-            })
-        }
-
-        function getHistory(entity_ids, start_time) {
-            return commandAsync({
-                "type": "history/history_during_period",
-                "start_time": start_time.toISOString(),
-                "entity_ids": entity_ids,
-                "minimal_response": true,
-                "no_attributes": true,
-                "significant_changes_only": false
-            })
-        }
-
-        function ping() {
-            return command({"type": "ping"})
-        }
-
-        function commandAsync(message) {
-            const id = command(message)
-            return new Promise((resolve, reject) => promises.set(id, {resolve, reject}))
-        }
-
-        function command(message) {
-            return send(Object.assign({}, {id: messageCounter}, message))
+        function restart() {
+            authFailed = false
+            failures = 0
+            connect()
         }
 
         function send(message) {
-            sendTextMessage(JSON.stringify(message))
-            return messageCounter++
+            socket.sendTextMessage(JSON.stringify(message))
         }
 
-        function unsubscribeAll() {
-            Array.from(subscriptions.keys()).forEach(unsubscribe)
+        function socketStatusChanged(status) {
+            if (status === WebSocket.Error) client.errorString = socket.errorString
+            if (status === WebSocket.Closed || status === WebSocket.Error) connectionLost()
         }
 
-        Component.onDestruction: unsubscribeAll()
+        function connectionLost() {
+            if (authenticated) {
+                client.disconnectedSince = new Date()
+                client.connectedSince = null
+            }
+            authenticated = false
+            awaitingPong = false
+            for (const p of pending.values()) p.reject({ code: "connection-lost", message: "Connection lost" })
+            pending.clear()
+            // subscription ids are only valid for the connection that created them
+            subscriptions.clear()
+            if (authFailed || !client.configured) return
+            reconnectTimer.interval = delays[Math.min(failures, delays.length - 1)]
+            failures++
+            reconnectTimer.restart()
+        }
+
+        function received(msg) {
+            switch (msg.type) {
+            case "auth_required":
+                send({ type: "auth", access_token: client.token })
+                break
+            case "auth_ok":
+                failures = 0
+                client.errorString = ""
+                client.connectedSince = new Date()
+                client.disconnectedSince = null
+                authenticated = true
+                break
+            case "auth_invalid":
+                authFailed = true
+                client.errorString = msg.message
+                socket.active = false
+                break
+            case "pong":
+                awaitingPong = false
+                break
+            case "result": {
+                const p = pending.get(msg.id)
+                if (!p) break
+                pending.delete(msg.id)
+                if (msg.success) p.resolve(msg.result)
+                else p.reject(msg.error)
+                break
+            }
+            case "event": {
+                const callback = subscriptions.get(msg.id)
+                if (callback) callback(msg.event)
+                break
+            }
+            }
+        }
     }
+
+    Component.onDestruction: socket.active = false
 }

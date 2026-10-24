@@ -35,7 +35,7 @@ KCM.SimpleKCM {
     signal configurationChanged
     function tr(key, ...args) { return I18n.tr(plasmoid.configuration.language, key, ...args) }
 
-    // Schieberegler mit Zahlenanzeige
+    // Slider with value display
     component ValueSlider: RowLayout {
         property alias value: slider.value
         property alias from: slider.from

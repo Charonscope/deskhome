@@ -35,7 +35,7 @@
     <entry name="compactIconSpacing" type="int">
       <default>2</default>
     </entry>
-    <!-- DeskHome: Aussehen -->
+    <!-- DeskHome: appearance -->
     <entry name="tileOpacity" type="int">
       <default>78</default>
     </entry>

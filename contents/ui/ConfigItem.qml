@@ -88,7 +88,7 @@ Kirigami.FormLayout {
         onCheckedChanged: item.notify = checked
     }
 
-    // --- Kachel-Optionen (DeskHome) ---
+    // --- Tile options (DeskHome) ---
     readonly property bool sourceIsNumber: source.state !== undefined && source.state !== '' && !isNaN(+source.state)
 
     function parseNumber(text) {

@@ -1,4 +1,4 @@
-// Kachel-Typen und Standard-Aktionen, die nicht in der Konfiguration stehen müssen
+// Tile types and default actions that do not need to be in the configuration
 const TOGGLEABLE = Object.freeze(["light", "switch", "fan", "input_boolean", "cover", "siren", "humidifier"])
 const NUMERIC_DOMAINS = Object.freeze(["sensor", "number", "input_number", "counter"])
 
@@ -14,7 +14,7 @@ export function tileKind(config = {}, state = "") {
     return "simple"
 }
 
-// Ergänzt Klick-/Scroll-Aktionen für Schalter und Lichter, wenn keine gesetzt sind
+// Adds click/scroll actions for switches and lights when none are configured
 export function applyItemDefaults(items = []) {
     return items.map(item => {
         if (item.tile === "simple" || !TOGGLEABLE.includes(item.domain)) return item
@@ -43,7 +43,7 @@ const DOMAIN_ICONS = Object.freeze({
     cover: "blinds", sensor: "eye", binary_sensor: "check-circle"
 })
 
-// HA liefert für viele Entities kein icon-Attribut (das Frontend leitet es aus device_class ab)
+// HA sends no icon attribute for many entities (the frontend derives it from device_class)
 export function fallbackIcon(domain, deviceClass, active) {
     if (domain === "light" && !active) return "mdi:lightbulb-outline"
     if (domain === "battery" || deviceClass === "battery") return "mdi:battery"

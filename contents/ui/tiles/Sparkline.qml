@@ -2,7 +2,7 @@ import QtQuick
 
 import org.kde.kirigami as Kirigami
 
-// Verlaufslinie über ein festes Zeitfenster bis "jetzt"
+// History line over a fixed time window up to "now"
 Canvas {
     id: spark
     property var points: []
@@ -12,7 +12,7 @@ Canvas {
     property real currentValue: NaN
     property real lineWidth: 1.5
     property bool fill: true
-    // Rundung der unteren Ecken, damit Linie und Fläche nicht über die Kachelecken laufen
+    // Radius of the bottom corners, so line and area do not run over the tile corners
     property real cornerRadius: 0
 
     onRevisionChanged: requestPaint()
@@ -30,7 +30,7 @@ Canvas {
         const now = Date.now()
         const from = now - windowMs
         const data = points.filter(p => p[0] >= from)
-        // letzter Punkt vor dem Fenster als Startwert am linken Rand
+        // last point before the window as the start value at the left edge
         const before = points.filter(p => p[0] < from).pop()
         if (before) data.unshift([from, before[1]])
         const last = !isNaN(currentValue) ? currentValue : data.length ? data[data.length - 1][1] : NaN
@@ -53,8 +53,8 @@ Canvas {
         ctx.closePath()
         ctx.clip()
 
-        // Mindesthöhe der Skala: 5 % vom Wert, sonst wird Messrauschen
-        // (z. B. Lüfter 1008–1020 U/min) auf die volle Kachelhöhe aufgeblasen
+        // Minimum scale height: 5 % of the value, otherwise measurement noise
+        // (e.g. fan 1008–1020 rpm) is blown up to the full tile height
         const mid = (max + min) / 2
         const span = Math.max(max - min, Math.abs(mid) * 0.05) || 1
         min = mid - span / 2

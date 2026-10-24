@@ -11,11 +11,34 @@ import org.kde.kirigami as Kirigami
 import "components"
 
 PlasmaExtras.Representation {
+    // Shown only while the connection is lost; the tiles are dimmed because their values are stale
+    Kirigami.InlineMessage {
+        id: connectionBanner
+        anchors {
+            top: parent.top
+            left: parent.left
+            right: parent.right
+        }
+        visible: root.connectionLost
+        type: ha?.authFailed ? Kirigami.MessageType.Error : Kirigami.MessageType.Warning
+        text: root.connectionMessage
+    }
+
     Loader {
         id: gridLoader
         sourceComponent: gridComponent
         active: store.initialized && root.expanded
-        anchors.fill: parent
+        anchors {
+            top: connectionBanner.visible ? connectionBanner.bottom : parent.top
+            topMargin: connectionBanner.visible ? Kirigami.Units.smallSpacing : 0
+            left: parent.left
+            right: parent.right
+            bottom: parent.bottom
+        }
+        opacity: root.connectionLost ? 0.45 : 1
+        Behavior on opacity {
+            NumberAnimation { duration: Kirigami.Units.longDuration }
+        }
     }
 
     Layout.preferredWidth: Kirigami.Units.gridUnit * 24
@@ -27,7 +50,7 @@ PlasmaExtras.Representation {
         id: gridComponent
         ScrollView {
             id: scroll
-            // feste implizite Größe, sonst Binding-Schleife über die Spaltenzahl
+            // fixed implicit size, otherwise a binding loop via the column count
             implicitWidth: Kirigami.Units.gridUnit * 24
             implicitHeight: Kirigami.Units.gridUnit * 14
             contentWidth: availableWidth
@@ -40,10 +63,10 @@ PlasmaExtras.Representation {
                 readonly property int tileHeight: Kirigami.Units.gridUnit * 4 * root.tileScale * (1 + (root.labelGrow - 1) * 0.6)
                 readonly property int compactTileHeight: Kirigami.Units.gridUnit * 2.5 * root.tileScale * root.labelGrow
                 width: scroll.availableWidth
-                // Jede normale Kachel belegt zwei Raster-Spalten, damit halbe Kacheln möglich sind
+                // Every normal tile takes two grid columns so half tiles are possible
                 readonly property int tileColumns: Math.max(1, Math.floor((width + columnSpacing) / (minTileWidth + columnSpacing)))
                 columns: tileColumns * 2
-                // Breiten selbst rechnen: mit fillWidth verteilt GridLayout gemischte Spannen ungleichmäßig
+                // Compute widths ourselves: with fillWidth GridLayout distributes mixed spans unevenly
                 readonly property real cellWidth: (width - (columns - 1) * columnSpacing) / columns
                 function spanWidth(span) {
                     const s = Math.min(span, columns)
@@ -51,9 +74,10 @@ PlasmaExtras.Representation {
                 }
                 columnSpacing: root.look.tileSpacing
                 rowSpacing: root.look.tileSpacing
-                uniformCellWidths: true
+                // widths are set exactly per tile (spanWidth); uniformCellWidths would stretch columns
+                uniformCellWidths: false
 
-                // Wie viele "nur bei Auffälligkeit"-Kacheln gerade unauffällig (und damit ausgeblendet) sind
+                // How many "only when abnormal" tiles are currently ok (and therefore hidden)
                 property int hiddenOkCount: 0
                 function recountHidden() {
                     let n = 0
@@ -73,8 +97,8 @@ PlasmaExtras.Representation {
                     place()
                 }
 
-                // Positionen selbst vergeben: GridLayout sortiert Kacheln mit unterschiedlicher
-                // Spannweite falsch ein, wenn sie zur Laufzeit dazukommen (Kacheln überlagern sich)
+                // Assign positions ourselves: GridLayout misplaces tiles with different
+                // spans when they are added at runtime (tiles overlap)
                 property var positions: []
                 property var okPosition: ({ row: 0, column: 0 })
                 function spanOf(row) {
@@ -115,13 +139,13 @@ PlasmaExtras.Representation {
                         id: wrapper
                         flat: plasmoid.configuration.flat
                         showBackground: true
-                        // voller Name als Tooltip, falls er in der Kachel gekürzt ist
+                        // full name as a tooltip in case it is shortened in the tile
                         tooltipTitle: model.name
                         readonly property int span: Math.min(Math.round((model.colspan || 1) * 2), tileGrid.columns)
                         Layout.preferredWidth: tileGrid.spanWidth(span)
                         Layout.minimumWidth: tileGrid.spanWidth(span)
                         Layout.maximumWidth: tileGrid.spanWidth(span)
-                        // nur Sensoren mit Graph brauchen die volle Höhe
+                        // only sensors with a graph need the full height
                         Layout.preferredHeight: model.kind === "sensor" && model.history_hours > 0 ? tileGrid.tileHeight : tileGrid.compactTileHeight
                         Layout.columnSpan: span
                         Layout.row: tileGrid.positions[index]?.row ?? 0
@@ -174,16 +198,6 @@ PlasmaExtras.Representation {
                     }
                 }
             }
-        }
-    }
-
-    StatusIndicator {
-        icon: "data-error"
-        size: Kirigami.Units.iconSizes.small
-        message: ha?.errorString || ''
-        anchors {
-            bottom: parent.bottom
-            right: parent.right
         }
     }
 

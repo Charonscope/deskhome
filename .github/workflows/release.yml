@@ -1,8 +1,9 @@
-# Builds deskhome-<version>.plasmoid and attaches it to the GitHub release.
+# Tests every push and pull request; builds deskhome-<version>.plasmoid and attaches it to
+# the GitHub release when a version tag is pushed. A release is only built if the tests pass.
 #
 # Normal use: bump "Version" in metadata.json, commit, then push an annotated tag
-#   git tag -a v1.0.1 -m "What changed"
-#   git push origin main v1.0.1
+#   git tag -a v1.1.0 -m "What changed"
+#   git push origin main v1.1.0
 # The tag message becomes the release notes.
 #
 # Manual run (Actions tab → Release → Run workflow): builds any existing tag;
@@ -11,7 +12,9 @@ name: Release
 
 on:
   push:
+    branches: [main]
     tags: ['v*']
+  pull_request:
   workflow_dispatch:
     inputs:
       tag:
@@ -26,7 +29,35 @@ permissions:
   contents: write
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    # Arch has current Plasma 6 / KDE Frameworks packages, like the target desktops
+    container: archlinux:latest
+    steps:
+      - name: Install Qt and KDE QML modules
+        run: |
+          pacman -Syu --noconfirm --needed git python qt6-declarative qt6-websockets \
+            kirigami kcmutils libplasma plasma5support ksvg kdeclarative kitemmodels knotifications
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref }}
+
+      - name: Run tests
+        env:
+          DESKHOME_TEST_OUT: test-output
+        run: tests/run.sh
+
+      - name: Keep test logs and renders
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-output
+          path: test-output
+
   release:
+    needs: test
+    if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     env:
       TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}

@@ -48,6 +48,17 @@ To update an existing installation use `-u` instead of `-i`.
 4. Paste the token into the *Token* field and click *Apply*.
 5. Under *Tiles*, add the entities you want to see.
 
+## Development
+
+Run all checks locally before a release (the GitHub workflow runs the same on every push):
+
+```bash
+tests/run.sh
+```
+
+It lints the QML, checks the translations, loads every settings page and renders the tile view
+(connected and disconnected) outside Plasma.
+
 ## Credits
 
 DeskHome is a fork of [plasma-homeassistant](https://github.com/korapp/plasma-homeassistant) by Krzysztof Korab, licensed under GPLv3. The tile grid, history graphs, status lights, appearance settings, translations and backup were added in DeskHome.

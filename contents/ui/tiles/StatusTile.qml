@@ -7,11 +7,11 @@ import org.kde.kirigami as Kirigami
 import ".."
 import "."
 
-// Ampel-Kachel: farbiger Punkt + Name + Zustand
+// Status tile: colored dot + name + state
 Item {
     id: tile
     readonly property color dotColor: Levels.color(model.level, Kirigami.Theme.positiveTextColor)
-    // halbe Kacheln: nur der Ampelpunkt, kein zusätzliches Icon
+    // half tiles: only the status dot, no extra icon
     readonly property bool narrow: width < Kirigami.Units.gridUnit * 7 * root.labelGrow
 
     RowLayout {
@@ -40,7 +40,7 @@ Item {
             spacing: 0
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignVCenter
-            // Langer Name: zwei Zeilen statt abschneiden; der Zustand steckt dann in der Ampelfarbe
+            // Long name: two lines instead of cutting it off; the state is then shown by the dot color
             PlasmaComponents3.Label {
                 id: nameLabel
                 text: model.name

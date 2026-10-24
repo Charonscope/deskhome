@@ -16,17 +16,17 @@ PlasmoidItem {
     Plasmoid.configurationRequired: !ClientFactory.error && !(url && ha?.token && store.items.length)
     Plasmoid.busy: !ClientFactory.error && !plasmoid.configurationRequired && !store.initialized
     toolTipMainText: ""
-    toolTipSubText: ""
+    toolTipSubText: connectionLost ? connectionMessage : ""
     
     readonly property string url: plasmoid.configuration.url
-    // Ohne Widget-Hintergrund bekommt jede Kachel einen eigenen, damit nur die Kacheln sichtbar sind
+    // Without a widget background every tile gets its own, so only the tiles are visible
     readonly property var look: plasmoid.configuration
     readonly property string lang: I18n.resolve(plasmoid.configuration.language)
     function tr(key, ...args) { return I18n.tr(lang, key, ...args) }
     readonly property color tileBaseColor: look.tileCustomColor ? look.tileColor : Kirigami.Theme.backgroundColor
     readonly property color tileFillColor: tileBackgrounds ? Qt.rgba(tileBaseColor.r, tileBaseColor.g, tileBaseColor.b, look.tileOpacity / 100) : "transparent"
     readonly property real tileScale: look.tileScale / 100
-    // Schriftgröße der Beschriftungen; über 100 % wachsen die Kacheln mit
+    // Label font size; above 100 % the tiles grow with it
     readonly property real labelScale: look.labelScale / 100
     readonly property real labelGrow: Math.max(1, labelScale)
     readonly property real defaultPt: Kirigami.Theme.defaultFont.pointSize * labelScale
@@ -34,6 +34,38 @@ PlasmoidItem {
     readonly property bool tileBackgrounds: !(Plasmoid.effectiveBackgroundHints & (PlasmaCore.Types.StandardBackground | PlasmaCore.Types.TranslucentBackground))
     property Client ha
 
+    // Connection banner: only after a short grace period, so a normal start or a brief
+    // network hiccup does not flash it. A rejected token is reported right away.
+    property bool connectionLost: false
+    readonly property string connectionMessage: !ha ? ""
+        : ha.authFailed ? tr("conn.auth")
+        : tr("conn.lost", Qt.formatTime(ha.disconnectedSince || new Date(), "HH:mm"))
+
+    function updateConnection() {
+        if (!ha || ha.ready || !ha.configured) {
+            connectionLost = false
+            lostTimer.stop()
+        } else if (ha.authFailed) {
+            connectionLost = true
+        } else if (!connectionLost && !lostTimer.running) {
+            lostTimer.restart()
+        }
+    }
+
+    Timer {
+        id: lostTimer
+        interval: 8000
+        onTriggered: root.connectionLost = !!root.ha && root.ha.configured && !root.ha.ready
+    }
+
+    Connections {
+        target: root.ha
+        function onReadyChanged() { root.updateConnection() }
+        function onAuthFailedChanged() { root.updateConnection() }
+        function onConfiguredChanged() { root.updateConnection() }
+    }
+
+    onHaChanged: updateConnection()
     onUrlChanged: initClient(url)
 
     Plasmoid.contextualActions: [

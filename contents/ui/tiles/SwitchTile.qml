@@ -7,11 +7,11 @@ import org.kde.kirigami as Kirigami
 import ".."
 import "."
 
-// Lichter & Schalter: Klick schaltet, Mausrad dimmt (Balken zeichnet EntityWrapper)
+// Lights & switches: click toggles, scroll wheel dims (EntityWrapper draws the bar)
 Item {
     id: tile
     readonly property bool on: model.active
-    // halbe Kacheln: kleineres Icon, damit für den Namen Platz bleibt
+    // half tiles: smaller icon so the name has room
     readonly property bool narrow: width < Kirigami.Units.gridUnit * 7 * root.labelGrow
     readonly property color iconColor: {
         if (model.level === 2) return Levels.color(2)
@@ -42,8 +42,8 @@ Item {
             spacing: 0
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignVCenter
-            // Passt der Name nicht in eine Zeile, bricht er auf zwei um; der Zustand
-            // ist dann am Icon zu sehen (grau = aus, farbig = an). Fehler bleiben als Text sichtbar.
+            // If the name does not fit on one line it wraps to two; the state
+            // is then shown by the icon (grey = off, colored = on). Errors stay visible as text.
             PlasmaComponents3.Label {
                 id: nameLabel
                 text: model.name

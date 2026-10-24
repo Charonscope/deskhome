@@ -62,6 +62,22 @@ GridLayout {
         }
     }
     
+    // Red dot over the panel icons while the connection is lost (reason in the tooltip).
+    // Reparented out of the GridLayout so it overlays instead of taking a cell.
+    Rectangle {
+        parent: grid.parent
+        visible: root.connectionLost
+        z: 10
+        width: Math.max(6, Math.round(grid.itemSize / 3))
+        height: width
+        radius: width / 2
+        x: grid.x + grid.width - width
+        y: grid.y
+        color: Kirigami.Theme.negativeTextColor
+        border.width: 1
+        border.color: Kirigami.Theme.backgroundColor
+    }
+
     ExpandButton {
         onClicked: root.expanded = !root.expanded
         visible: store.hasFullRepresenationItems || !trayMode

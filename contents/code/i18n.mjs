@@ -1,12 +1,12 @@
-// Eigene Übersetzungen (Deutsch/Englisch), umschaltbar in den Einstellungen unter "Allgemein".
-// Einträge: Schlüssel -> [Deutsch, Englisch]; %1, %2 … werden durch Argumente ersetzt.
+// Own translations (German/English), selectable in the settings under "General".
+// Entries: key -> [German, English]; %1, %2 … are replaced by arguments.
 const STRINGS = Object.freeze({
-    // Einstellungs-Kategorien
+    // Settings categories
     "cat.general": ["Allgemein", "General"],
     "cat.items": ["Kacheln", "Tiles"],
     "cat.look": ["Aussehen", "Appearance"],
 
-    // Allgemein
+    // General
     "general.language": ["Sprache:", "Language:"],
     "general.languageAuto": ["Automatisch (System)", "Automatic (system)"],
     "general.api": ["Verbindung", "Connection"],
@@ -36,7 +36,7 @@ const STRINGS = Object.freeze({
     ],
     "general.tokenLink": ["Direkt zur Profilseite „Sicherheit“:", "Go directly to the “Security” profile page:"],
 
-    // Kachel-Liste
+    // Tile list
     "items.displayMode": ["Anzeige für alle Kacheln", "Display mode for all tiles"],
     "items.compact": ["In der Leiste anzeigen (kompakt)", "Display in compact view"],
     "items.full": ["Im Widget anzeigen", "Display in full view"],
@@ -57,7 +57,7 @@ const STRINGS = Object.freeze({
     "items.importFailed": ["Import fehlgeschlagen: %1", "Import failed: %1"],
     "items.unknownFormat": ["Unbekanntes Dateiformat", "Unknown file format"],
 
-    // Einzelne Kachel
+    // Single tile
     "item.entity": ["Entity:", "Entity:"],
     "item.precision": ["Nachkommastellen:", "Precision:"],
     "item.precisionRaw": ["%1 (unverändert)", "%1 (raw)"],
@@ -89,7 +89,7 @@ const STRINGS = Object.freeze({
     "item.dclick": ["Doppelklick-Aktion:", "Double click action:"],
     "item.scroll": ["Mausrad-Aktion:", "Scroll action:"],
 
-    // Aussehen
+    // Appearance
     "look.tiles": ["Kacheln", "Tiles"],
     "look.opacity": ["Deckkraft Hintergrund:", "Background opacity:"],
     "look.bgColor": ["Hintergrundfarbe:", "Background color:"],
@@ -127,7 +127,11 @@ const STRINGS = Object.freeze({
     "look.normal": ["Normal", "Normal"],
     "look.large": ["Groß", "Large"],
 
-    // Widget selbst
+    // Connection banner
+    "conn.lost": ["Keine Verbindung zu Home Assistant seit %1 – verbinde neu …", "No connection to Home Assistant since %1 – reconnecting …"],
+    "conn.auth": ["Anmeldung bei Home Assistant fehlgeschlagen – bitte den Token in den Einstellungen prüfen.", "Home Assistant rejected the login – please check the token in the settings."],
+
+    // Widget itself
     "state.unknown": ["unbekannt", "unknown"],
     "state.unavailable": ["nicht verfügbar", "unavailable"],
     "state.on": ["An", "On"],
@@ -146,7 +150,7 @@ const STRINGS = Object.freeze({
     "configure": ["Einrichten …", "Configure…"]
 })
 
-// "auto" folgt der Systemsprache: Deutsch, sonst Englisch
+// "auto" follows the system language: German, otherwise English
 export function resolve(language) {
     if (language === "de" || language === "en") return language
     return Qt.locale().name.startsWith("de") ? "de" : "en"
@@ -155,7 +159,7 @@ export function resolve(language) {
 export function tr(language, key, ...args) {
     const entry = STRINGS[key]
     let text = entry ? entry[resolve(language) === "de" ? 0 : 1] : key
-    // bewusst keine forEach-Pfeilfunktion: die QML-Engine verliert darin die Zuweisung an "text"
+    // deliberately no forEach arrow function: the QML engine loses the assignment to "text" in it
     for (let i = 0; i < args.length; i++) text = text.replace("%" + (i + 1), args[i])
     return text
 }

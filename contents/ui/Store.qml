@@ -12,15 +12,15 @@ BaseObject {
     readonly property ListModel itemModel: ListModel {}
     readonly property var getFieldScrollMapper: _.getFieldScrollMapper
     readonly property alias hasFullRepresenationItems: _.hasFullRepresenationItems
-    // Wird bei jeder Verlaufsänderung hochgezählt, damit Kacheln neu zeichnen
+    // Incremented on every history change so tiles repaint
     property int historyRevision: 0
 
-    // callLater: erst nachdem abhängige Bindings (z. B. historyHoursByEntityId) neu berechnet sind,
-    // und mehrere Auslöser kurz hintereinander ergeben nur ein Abonnement
+    // callLater: only after dependent bindings (e.g. historyHoursByEntityId) are re-evaluated,
+    // and several triggers in quick succession result in a single subscription
     onItemsChanged: Qt.callLater(fetchDataAndSubscribe)
     onLanguageChanged: Qt.callLater(fetchDataAndSubscribe)
-    // Die HA-Verbindung wird zwischen Widgets geteilt und lebt weiter: beim Entfernen abmelden,
-    // sonst ruft sie für jede Wertänderung noch den gelöschten Store auf
+    // The HA connection is shared between widgets and lives on: unsubscribe when removed,
+    // otherwise it keeps calling the deleted store on every value change
     Component.onDestruction: {
         if (_.client) _.client.readyChanged.disconnect(fetchDataAndSubscribe)
         _.unsubscribe()
@@ -112,7 +112,7 @@ BaseObject {
             for (const id in histories) {
                 const from = now - (historyHoursByEntityId[id] || 0) * 3600000
                 const points = histories[id]
-                // einen Punkt vor dem Fensterbeginn behalten, damit die Linie am linken Rand anfängt
+                // keep one point before the window start so the line begins at the left edge
                 let cut = 0
                 while (cut < points.length - 1 && points[cut + 1][0] < from) cut++
                 if (cut) points.splice(0, cut)

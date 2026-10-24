@@ -8,7 +8,7 @@ export function EntityUpdate(config = {}, update = {}, entity = {}, options = {}
     this.state = update.s || entity.state || ''
     this.active = isActiveState(config.domain, this.state)
     this.value = options.valueFormatter?.(this, config) ?? ''
-    // Flache Hilfswerte für die Kacheln (verschachtelte Objekte/Arrays sind im ListModel umständlich)
+    // Flat helper values for the tiles (nested objects/arrays are awkward in a ListModel)
     this.kind = tileKind(config, this.state)
     this.level = levelOf(config, this)
     this.num = this.state !== '' && !isNaN(+this.state) ? +this.state : NaN
@@ -31,7 +31,7 @@ export function Entity(config = {}, data = {}, options = {}) {
     this.scroll_action = config.scroll_action || {}
     this.display = config.display ?? 1
     this.domain = config.domain || ''
-    // 0.5 = halbe Kachel, sonst ganze Spalten
+    // 0.5 = half tile, otherwise whole columns
     this.colspan = +config.colspan === 0.5 ? 0.5 : Math.max(1, +config.colspan || 1)
     this.history_hours = historyHoursOf(config)
     this.hide_when_ok = !!config.hide_when_ok
