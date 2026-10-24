@@ -102,26 +102,30 @@ BaseObject {
         }
     }
 
-    // Detects silently dead connections (e.g. HA host gone without closing the socket)
+    // Detects silently dead connections (e.g. network cable pulled: the socket is never
+    // closed). Ping every 15 s; no answer within 5 s means the connection is gone.
     Timer {
-        interval: 30000
+        interval: 15000
         repeat: true
         running: _.authenticated
         onTriggered: {
-            if (_.awaitingPong) {
-                socket.active = false
-                return
-            }
-            _.awaitingPong = true
             client.command({ type: "ping" })
+            pongTimer.restart()
         }
+    }
+
+    Timer {
+        id: pongTimer
+        interval: 5000
+        onTriggered: socket.active = false
     }
 
     QtObject {
         id: _
         property bool authenticated: false
         property bool authFailed: false
-        property bool awaitingPong: false
+        // last time anything arrived; a lost connection is dated to this moment
+        property var lastMessageAt: new Date()
         property int nextId: 1
         property int failures: 0
         readonly property var pending: new Map()
@@ -151,11 +155,11 @@ BaseObject {
 
         function connectionLost() {
             if (authenticated) {
-                client.disconnectedSince = new Date()
+                client.disconnectedSince = lastMessageAt
                 client.connectedSince = null
             }
             authenticated = false
-            awaitingPong = false
+            pongTimer.stop()
             for (const p of pending.values()) p.reject({ code: "connection-lost", message: "Connection lost" })
             pending.clear()
             // subscription ids are only valid for the connection that created them
@@ -167,6 +171,8 @@ BaseObject {
         }
 
         function received(msg) {
+            lastMessageAt = new Date()
+            pongTimer.stop()
             switch (msg.type) {
             case "auth_required":
                 send({ type: "auth", access_token: client.token })
@@ -184,7 +190,6 @@ BaseObject {
                 socket.active = false
                 break
             case "pong":
-                awaitingPong = false
                 break
             case "result": {
                 const p = pending.get(msg.id)
