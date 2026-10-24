@@ -35,7 +35,7 @@
 **From a file:**
 
 ```bash
-kpackagetool6 -t Plasma/Applet -i deskhome-1.0.0.plasmoid
+kpackagetool6 -t Plasma/Applet -i deskhome-<version>.plasmoid
 ```
 
 To update an existing installation use `-u` instead of `-i`.

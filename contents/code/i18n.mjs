@@ -20,14 +20,16 @@ const STRINGS = Object.freeze({
         "2. Oben den Reiter „Sicherheit“ wählen.\n" +
         "3. Ganz unten bei „Langlebige Zugangstoken“ auf „Token erstellen“ klicken und einen Namen vergeben, z. B. „Plasma-Desktop“.\n" +
         "4. Den angezeigten Token sofort kopieren – Home Assistant zeigt ihn nur dieses eine Mal an.\n" +
-        "5. Hier ins Feld „Token“ einfügen und mit „Anwenden“ speichern.\n\n" +
+        "5. Hier ins Feld „Token“ einfügen und mit „Anwenden“ speichern.\n" +
+        "6. Danach erscheint links die Seite „Kacheln“, dort fügst du die gewünschten Entities hinzu.\n\n" +
         "Der Token wird in der KDE-Brieftasche (KWallet) gespeichert, nicht in der Widget-Konfiguration oder im Backup. " +
         "Verloren oder auf einem neuen Rechner? Einfach in Home Assistant einen neuen erstellen und den alten dort löschen.",
         "1. Open Home Assistant in your browser and click your user name at the bottom left (profile).\n" +
         "2. Select the “Security” tab at the top.\n" +
         "3. At the very bottom under “Long-lived access tokens”, click “Create token” and enter a name, e.g. “Plasma desktop”.\n" +
         "4. Copy the token right away – Home Assistant shows it only this once.\n" +
-        "5. Paste it into the “Token” field here and save with “Apply”.\n\n" +
+        "5. Paste it into the “Token” field here and save with “Apply”.\n" +
+        "6. The “Tiles” page then appears on the left – add the entities you want there.\n\n" +
         "The token is stored in the KDE wallet (KWallet), not in the widget configuration or the backup. " +
         "Lost it or on a new computer? Simply create a new one in Home Assistant and delete the old one there."
     ],
@@ -152,6 +154,7 @@ export function resolve(language) {
 export function tr(language, key, ...args) {
     const entry = STRINGS[key]
     let text = entry ? entry[resolve(language) === "de" ? 0 : 1] : key
-    args.forEach((a, i) => text = text.replace(`%${i + 1}`, a))
+    // bewusst keine forEach-Pfeilfunktion: die QML-Engine verliert darin die Zuweisung an "text"
+    for (let i = 0; i < args.length; i++) text = text.replace("%" + (i + 1), args[i])
     return text
 }
