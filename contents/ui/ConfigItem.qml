@@ -139,6 +139,14 @@ Kirigami.FormLayout {
         onActivated: item.colspan = currentValue === 1 ? undefined : currentValue
     }
 
+    Label {
+        text: tr("item.widthHint")
+        wrapMode: Text.WordWrap
+        opacity: 0.7
+        font: Kirigami.Theme.smallFont
+        Layout.maximumWidth: Kirigami.Units.gridUnit * 18
+    }
+
     ComboBox {
         Kirigami.FormData.label: tr("item.history")
         visible: sourceIsNumber

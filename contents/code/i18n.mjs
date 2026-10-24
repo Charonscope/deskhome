@@ -71,6 +71,7 @@ const STRINGS = Object.freeze({
     "item.type.simple": ["Einfach (wie Original)", "Simple (like original)"],
     "item.width": ["Breite (Spalten):", "Width (columns):"],
     "item.widthHalf": ["½ (halbe Kachel)", "½ (half tile)"],
+    "item.widthHint": ["Zwei halbe Kacheln stehen nebeneinander, wenn sie in der Kachel-Liste direkt aufeinander folgen. Die Reihenfolge änderst du, indem du einen Eintrag am Griff links an die gewünschte Stelle ziehst.", "Two half tiles sit side by side when they follow each other directly in the tile list. Change the order by dragging an entry by the handle on the left."],
     "item.history": ["Verlauf:", "History:"],
     "item.historyOff": ["Aus", "Off"],
     "item.hour": ["1 Stunde", "1 hour"],
