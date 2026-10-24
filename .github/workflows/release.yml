@@ -1,0 +1,74 @@
+# Builds deskhome-<version>.plasmoid and attaches it to the GitHub release.
+#
+# Normal use: bump "Version" in metadata.json, commit, then push an annotated tag
+#   git tag -a v1.0.1 -m "What changed"
+#   git push origin main v1.0.1
+# The tag message becomes the release notes.
+#
+# Manual run (Actions tab → Release → Run workflow): builds any existing tag;
+# with "publish" unchecked it only produces a downloadable test artifact.
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Existing tag to build, e.g. v1.0.0'
+        required: true
+      publish:
+        description: 'Upload the package to the GitHub release'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TAG }}
+
+      - name: Check that the tag matches metadata.json
+        id: version
+        run: |
+          VERSION=$(jq -r .KPlugin.Version metadata.json)
+          if [ "v$VERSION" != "$TAG" ]; then
+            echo "::error::metadata.json has version $VERSION, but the tag is $TAG"
+            exit 1
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Build plasmoid
+        env:
+          FILE: deskhome-${{ steps.version.outputs.version }}.plasmoid
+        run: |
+          git archive --format=zip -o "$FILE" HEAD metadata.json LICENSE contents
+          unzip -l "$FILE" | tail -1
+          md5sum "$FILE"
+          sha256sum "$FILE"
+
+      - name: Keep package as workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: deskhome-${{ steps.version.outputs.version }}
+          path: deskhome-${{ steps.version.outputs.version }}.plasmoid
+
+      - name: Publish GitHub release
+        if: github.event_name == 'push' || inputs.publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          FILE="deskhome-$VERSION.plasmoid"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" "$FILE" --clobber
+          else
+            gh release create "$TAG" "$FILE" --title "DeskHome $VERSION" --notes-from-tag
+          fi
