@@ -6,7 +6,7 @@
         "Name": "Krzysztof Korab"
       },
       {
-        "Name": "charonscope"
+        "Name": "Charonscope"
       }
     ],
     "Category": "Online Services",
@@ -16,7 +16,7 @@
     "License": "GPLv3",
     "Name": "DeskHome",
     "Version": "1.0.0",
-    "Website": "https://github.com/korapp/plasma-homeassistant",
+    "Website": "https://github.com/Charonscope/deskhome",
     "Description[de]": "Dein Home Assistant auf dem Plasma-Desktop: Kacheln mit Verlaufsgraph, Lichter & Schalter, Status-Übersicht"
   },
   "X-Plasma-API-Minimum-Version": "6.0",
