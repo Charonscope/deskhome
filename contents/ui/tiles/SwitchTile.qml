@@ -42,18 +42,20 @@ Item {
             spacing: 0
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignVCenter
-            // schmal: Name darf auf zwei Zeilen umbrechen, Zustand zeigt dann nur das Icon
+            // Passt der Name nicht in eine Zeile, bricht er auf zwei um; der Zustand
+            // ist dann am Icon zu sehen (grau = aus, farbig = an). Fehler bleiben als Text sichtbar.
             PlasmaComponents3.Label {
+                id: nameLabel
                 text: model.name
                 elide: Text.ElideRight
-                wrapMode: tile.narrow ? Text.Wrap : Text.NoWrap
-                maximumLineCount: tile.narrow ? 2 : 1
+                wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+                maximumLineCount: model.level === 2 ? 1 : 2
                 font.weight: Font.Bold
                 font.pointSize: root.defaultPt
                 Layout.fillWidth: true
             }
             PlasmaComponents3.Label {
-                visible: !tile.narrow || model.level === 2
+                visible: nameLabel.lineCount < 2 || model.level === 2
                 text: tile.stateText
                 elide: Text.ElideRight
                 opacity: 0.75

@@ -40,13 +40,18 @@ Item {
             spacing: 0
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignVCenter
+            // Langer Name: zwei Zeilen statt abschneiden; der Zustand steckt dann in der Ampelfarbe
             PlasmaComponents3.Label {
+                id: nameLabel
                 text: model.name
                 elide: Text.ElideRight
+                wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+                maximumLineCount: model.level ? 1 : 2
                 font.pointSize: root.defaultPt
                 Layout.fillWidth: true
             }
             PlasmaComponents3.Label {
+                visible: nameLabel.lineCount < 2 || model.level > 0
                 text: model.value
                 elide: Text.ElideRight
                 font.pointSize: root.smallPt

@@ -73,7 +73,9 @@ KCM.SimpleKCM {
             text: tr("general.urlHint", "\nhttp://homeassistant.local:8123\nhttps://example.duckdns.org")
         }
 
-        TextField {
+        // Passwortfeld mit Augen-Symbol: der Token ist so mächtig wie das HA-Passwort
+        // und soll nicht auf Screenshots der Einstellungen landen
+        Kirigami.PasswordField {
             id: token
             text: secrets.token
             onTextEdited: configurationChanged()

@@ -115,6 +115,8 @@ PlasmaExtras.Representation {
                         id: wrapper
                         flat: plasmoid.configuration.flat
                         showBackground: true
+                        // voller Name als Tooltip, falls er in der Kachel gekürzt ist
+                        tooltipTitle: model.name
                         readonly property int span: Math.min(Math.round((model.colspan || 1) * 2), tileGrid.columns)
                         Layout.preferredWidth: tileGrid.spanWidth(span)
                         Layout.minimumWidth: tileGrid.spanWidth(span)
