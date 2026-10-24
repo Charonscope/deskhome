@@ -1,0 +1,5 @@
+singleton Levels 1.0 Levels.qml
+Sparkline 1.0 Sparkline.qml
+SensorTile 1.0 SensorTile.qml
+SwitchTile 1.0 SwitchTile.qml
+StatusTile 1.0 StatusTile.qml

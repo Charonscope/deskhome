@@ -1,0 +1,24 @@
+{
+  "KPackageStructure": "Plasma/Applet",
+  "KPlugin": {
+    "Authors": [
+      {
+        "Name": "Krzysztof Korab"
+      },
+      {
+        "Name": "charonscope"
+      }
+    ],
+    "Category": "Online Services",
+    "Description": "Your Home Assistant on the Plasma desktop: tiles with history graphs, lights & switches, status overview",
+    "Icon": "go-home-symbolic",
+    "Id": "io.github.deskhome",
+    "License": "GPLv3",
+    "Name": "DeskHome",
+    "Version": "1.0.0",
+    "Website": "https://github.com/korapp/plasma-homeassistant",
+    "Description[de]": "Dein Home Assistant auf dem Plasma-Desktop: Kacheln mit Verlaufsgraph, Lichter & Schalter, Status-Übersicht"
+  },
+  "X-Plasma-API-Minimum-Version": "6.0",
+  "X-Plasma-StandAloneApp": true
+}

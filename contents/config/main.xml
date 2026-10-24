@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kcfg xmlns="http://www.kde.org/standards/kcfg/1.0"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.kde.org/standards/kcfg/1.0
+      http://www.kde.org/standards/kcfg/1.0/kcfg.xsd" >
+  <kcfgfile name=""/>
+
+  <group name="General">
+    <entry name="url" type="string">
+      <default></default>
+    </entry>
+    <entry name="language" type="string">
+      <default>auto</default>
+    </entry>
+  </group>
+  <group name="Items">
+    <entry name="items" type="string">
+      <default>[]</default>
+    </entry>
+    <entry name="autoBackupFile" type="string"></entry>
+    <entry name="itemDisplayDefault" type="int">
+      <default>1</default>
+    </entry>
+  </group>
+  <group name="Look">
+    <entry name="flat" type="bool">
+      <default>false</default>
+    </entry>
+    <entry name="compactEntity" type="string">
+      <default>icon</default>
+    </entry>
+    <entry name="compactScaleIconsToFit" type="bool">
+      <default>false</default>
+    </entry>
+    <entry name="compactIconSpacing" type="int">
+      <default>2</default>
+    </entry>
+    <!-- DeskHome: Aussehen -->
+    <entry name="tileOpacity" type="int">
+      <default>78</default>
+    </entry>
+    <entry name="tileCustomColor" type="bool">
+      <default>false</default>
+    </entry>
+    <entry name="tileColor" type="Color">
+      <default>#2e3440</default>
+    </entry>
+    <entry name="tileRadius" type="int">
+      <default>8</default>
+    </entry>
+    <entry name="tileBorder" type="bool">
+      <default>true</default>
+    </entry>
+    <entry name="levelBorder" type="bool">
+      <default>true</default>
+    </entry>
+    <entry name="tileScale" type="int">
+      <default>100</default>
+    </entry>
+    <entry name="tileSpacing" type="int">
+      <default>6</default>
+    </entry>
+    <entry name="labelScale" type="int">
+      <default>100</default>
+    </entry>
+    <entry name="valueScale" type="int">
+      <default>100</default>
+    </entry>
+    <entry name="showMinMax" type="bool">
+      <default>true</default>
+    </entry>
+    <entry name="showTrend" type="bool">
+      <default>true</default>
+    </entry>
+    <entry name="graphHeight" type="int">
+      <default>42</default>
+    </entry>
+    <entry name="graphLineWidth" type="Double">
+      <default>1.5</default>
+    </entry>
+    <entry name="graphFill" type="bool">
+      <default>true</default>
+    </entry>
+    <entry name="graphCustomColor" type="bool">
+      <default>false</default>
+    </entry>
+    <entry name="graphColor" type="Color">
+      <default>#88c0d0</default>
+    </entry>
+  </group>
+</kcfg>
