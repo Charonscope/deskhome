@@ -115,7 +115,7 @@ PlasmaExtras.Representation {
                         const e = entryOf(i)
                         const span = Math.min(Math.round((e.colspan || 1) * 2), columns)
                         // only sensors with a graph need the full height
-                        const height = e.kind === "sensor" && e.history_hours > 0 ? tileHeight : compactTileHeight
+                        const height = (e.kind === "sensor" || e.kind === "combo") && e.history_hours > 0 ? tileHeight : compactTileHeight
                         result.push(put(span, height))
                     }
                     if (hiddenOkCount > 0) okPosition = put(Math.min(2, columns), compactTileHeight)
@@ -172,6 +172,7 @@ PlasmaExtras.Representation {
                             source: {
                                 switch (model.kind) {
                                     case "sensor": return "tiles/SensorTile.qml"
+                                    case "combo": return "tiles/ComboTile.qml"
                                     case "switch": return "tiles/SwitchTile.qml"
                                     case "status": return "tiles/StatusTile.qml"
                                 }

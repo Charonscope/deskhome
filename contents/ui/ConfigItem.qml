@@ -120,12 +120,38 @@ Kirigami.FormLayout {
         model: [
             { value: "auto", text: tr("item.type.auto") },
             { value: "sensor", text: tr("item.type.sensor") },
+            { value: "combo", text: tr("item.type.combo") },
             { value: "switch", text: tr("item.type.switch") },
             { value: "status", text: tr("item.type.status") },
             { value: "simple", text: tr("item.type.simple") }
         ]
         Component.onCompleted: currentIndex = Math.max(0, indexOfValue(item.tile || "auto"))
-        onActivated: item.tile = currentValue === "auto" ? undefined : currentValue
+        onActivated: {
+            item.tile = currentValue === "auto" ? undefined : currentValue
+            form.tileType = currentValue
+        }
+    }
+
+    property string tileType: item.tile || "auto"
+
+    TextField {
+        Kirigami.FormData.label: tr("item.secondEntity")
+        visible: form.tileType === "combo"
+        text: item.second_entity_id || ""
+        placeholderText: "sensor.…"
+        onTextChanged: item.second_entity_id = text.trim() || undefined
+        Autocompletion {
+            model: Object.keys(entities).filter(e => e.startsWith("sensor.") || e.startsWith("number.") || e.startsWith("input_number.")).sort()
+        }
+    }
+
+    Label {
+        visible: form.tileType === "combo"
+        text: tr("item.secondHint")
+        wrapMode: Text.WordWrap
+        opacity: 0.7
+        font: Kirigami.Theme.smallFont
+        Layout.maximumWidth: Kirigami.Units.gridUnit * 18
     }
 
     ComboBox {

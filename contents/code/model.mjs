@@ -21,6 +21,15 @@ export function EntityUpdate(config = {}, update = {}, entity = {}, options = {}
     this.brightness_pct = b === undefined || b === null ? -1 : Math.round(b / 2.55)
 }
 
+// Second value of a combo tile (e.g. humidity next to temperature)
+export function SecondValue(config = {}, data = {}, options = {}) {
+    const attributes = data.attributes || data.a || {}
+    const state = data.state ?? data.s ?? ''
+    const secondConfig = { domain: (config.second_entity_id || '').split('.')[0], value_number_precision: config.value_number_precision }
+    this.value2 = options.valueFormatter?.({ attributes, state }, secondConfig) ?? ''
+    this.num2 = state !== '' && !isNaN(+state) ? +state : NaN
+}
+
 export function Entity(config = {}, data = {}, options = {}) {
     Object.assign(this, new EntityUpdate(config, data, undefined, options))
     this.entity_id = config.entity_id
@@ -35,6 +44,9 @@ export function Entity(config = {}, data = {}, options = {}) {
     this.colspan = +config.colspan === 0.5 ? 0.5 : Math.max(1, +config.colspan || 1)
     this.history_hours = historyHoursOf(config)
     this.hide_when_ok = !!config.hide_when_ok
+    this.second_entity_id = config.second_entity_id || ''
+    this.value2 = ''
+    this.num2 = NaN
 }
 
 export function ConfigEntity(config = {}) {
@@ -79,6 +91,7 @@ export function ConfigEntity(config = {}) {
     this.crit_above = config.crit_above
     this.ok_states = config.ok_states
     this.hide_when_ok = config.hide_when_ok
+    this.second_entity_id = config.second_entity_id
 }
 
 function addActionProperty(o, name) {

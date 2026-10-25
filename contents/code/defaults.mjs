@@ -5,6 +5,7 @@ const NUMERIC_DOMAINS = Object.freeze(["sensor", "number", "input_number", "coun
 export const DEFAULT_HISTORY_HOURS = 24
 
 export function tileKind(config = {}, state = "") {
+    if (config.tile === "combo" && !config.second_entity_id) return "sensor"
     if (config.tile && config.tile !== "auto") return config.tile
     const domain = config.domain
     if (TOGGLEABLE.includes(domain)) return "switch"

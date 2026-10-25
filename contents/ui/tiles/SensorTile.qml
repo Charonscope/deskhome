@@ -7,6 +7,7 @@ import org.kde.kirigami as Kirigami
 import ".."
 import "."
 import "../../code/formatter.mjs" as Formatter
+import "../../code/stats.mjs" as Stats
 
 // Large value, below it the history with min/max and trend arrow
 Item {
@@ -19,29 +20,7 @@ Item {
     readonly property var stats: computeStats(points, model.num, store.historyRevision)
 
     function computeStats(points, current, revision) {
-        const from = Date.now() - windowMs
-        let min = Infinity, max = -Infinity, hourAgo = NaN
-        const hourMark = Date.now() - 3600000
-        for (const p of points) {
-            if (p[0] >= from) {
-                if (p[1] < min) min = p[1]
-                if (p[1] > max) max = p[1]
-            }
-            if (p[0] <= hourMark) hourAgo = p[1]
-        }
-        if (!isNaN(current)) {
-            min = Math.min(min, current)
-            max = Math.max(max, current)
-        }
-        // same minimum span as the graph, so noise does not trigger a trend arrow
-        const range = Math.max(max - min, Math.abs(current) * 0.05)
-        let trend = ""
-        if (!isNaN(hourAgo) && !isNaN(current) && range > 0) {
-            const d = current - hourAgo
-            if (Math.abs(d) >= range * 0.1) trend = d > 0 ? "↗" : "↘"
-            else trend = "→"
-        }
-        return { min, max, trend }
+        return Stats.computeStats(points, current, windowMs)
     }
 
     function fmt(v) {

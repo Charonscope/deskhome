@@ -65,20 +65,32 @@ BaseObject {
         readonly property var fields: new Map()
         property var translations
         readonly property bool hasFullRepresenationItems: items.some(e => e.display & DisplayFilterModel.Full)
-        readonly property var itemIdxsByEntityId: items.reduce((o, { entity_id: e }, i) => (o[e] = o[e] || []).push(i) && o, {})
+        // primary and second (combo tile) entity ids -> indexes of the items that show them
+        readonly property var itemIdxsByEntityId: items.reduce((o, item, i) => {
+            for (const e of [item.entity_id, item.second_entity_id]) {
+                if (!e) continue
+                if (!o[e]) o[e] = []
+                if (!o[e].includes(i)) o[e].push(i)
+            }
+            return o
+        }, {})
+        // last known state of second entities, needed to format partial updates
+        property var secondStates: ({})
         readonly property var entityModelOptions: ({ valueFormatter: getDisplayValue })
         property Client client
         property var cancelSubscription
         property var histories: ({})
         readonly property var historyHoursByEntityId: items.reduce((o, i) => {
             if (!wantsHistory(i)) return o
-            o[i.entity_id] = Math.max(o[i.entity_id] || 0, Defaults.historyHoursOf(i))
+            const hours = Defaults.historyHoursOf(i)
+            o[i.entity_id] = Math.max(o[i.entity_id] || 0, hours)
+            if (i.tile === "combo" && i.second_entity_id) o[i.second_entity_id] = Math.max(o[i.second_entity_id] || 0, hours)
             return o
         }, {})
 
         function wantsHistory(config) {
             if (Defaults.historyHoursOf(config) <= 0) return false
-            if (config.tile === "sensor") return true
+            if (config.tile === "sensor" || config.tile === "combo") return true
             if (config.tile && config.tile !== "auto") return false
             return ["sensor", "number", "input_number", "counter"].includes(config.domain)
         }
@@ -176,12 +188,22 @@ BaseObject {
 
         function updateState(state) {
             for (const id in state) {
-                const itemIdxs = itemIdxsByEntityId[id]
+                const itemIdxs = itemIdxsByEntityId[id] || []
                 const change = state[id]['+']
                 if (change) appendHistory(id, change)
                 for (const itemIdx of itemIdxs) {
                     const config = items[itemIdx]
                     const item = itemModel.get(itemIdx)
+                    if (config.second_entity_id === id) {
+                        const previous = secondStates[id] || {}
+                        const merged = {
+                            state: change?.s ?? previous.state,
+                            attributes: Object.assign({}, previous.attributes, change?.a)
+                        }
+                        secondStates[id] = merged
+                        itemModel.set(itemIdx, new Model.SecondValue(config, merged, entityModelOptions))
+                        if (config.entity_id !== id) continue
+                    }
                     const newItem = new Model.EntityUpdate(config, change, item, entityModelOptions)
                     const oldValue = item.value
                     itemModel.set(itemIdx, newItem)
@@ -197,6 +219,11 @@ BaseObject {
                 const entityData = state[config.entity_id]
                 if (!entityData && initialized) return
                 itemModel.set(idx, new Model.Entity(config, entityData, entityModelOptions))
+                const second = config.second_entity_id && state[config.second_entity_id]
+                if (second) {
+                    secondStates[config.second_entity_id] = { state: second.s, attributes: second.a || {} }
+                    itemModel.set(idx, new Model.SecondValue(config, secondStates[config.second_entity_id], entityModelOptions))
+                }
             })
         }
 
