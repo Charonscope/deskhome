@@ -300,11 +300,12 @@ PlasmaExtras.Representation {
                                         Layout.fillWidth: true
                                     }
                                     PlasmaComponents3.Label {
-                                        text: Math.round(modelData.level) + " %"
+                                        // -1: a sensor that only reports "low" (no percentage)
+                                        text: modelData.level < 0 ? root.tr("battery.low") : Math.round(modelData.level) + " %"
                                         font.pointSize: root.defaultPt
                                         font.weight: Font.Bold
                                         // half the threshold or less is critical
-                                        color: modelData.level <= root.batteries.threshold / 2 ? root.critColor : root.warnColor
+                                        color: modelData.level < 0 || modelData.level <= root.batteries.threshold / 2 ? root.critColor : root.warnColor
                                     }
                                 }
                             }

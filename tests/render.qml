@@ -81,7 +81,8 @@ ApplicationWindow {
         function ago(ms) { return look.showLastChanged && ms ? Math.round((now - ms) / 60000) + " min ago" : "" }
         property var batteries: ({ enabled: true, total: 12, threshold: 20, low: [
             { entity_id: "sensor.hall_battery", name: "Hall sensor battery", level: 8 },
-            { entity_id: "sensor.door_battery", name: "Front door battery", level: 17 }
+            { entity_id: "sensor.door_battery", name: "Front door battery", level: 17 },
+            { entity_id: "binary_sensor.radiator_battery", name: "Radiator battery", level: -1 }
         ] })
     }
 
@@ -144,7 +145,7 @@ ApplicationWindow {
     }
 
     readonly property var valueTexts: ["12.4 °C", "23.7 °C", "45%", "1000 rpm"]
-    readonly property var expectedTexts: ["12.4 °C", "Outside", "Outside humidity", "Desk climate", "45%", "Fan speed", "1000 rpm", "Heating", "Lights", "Weak batteries", "Hall sensor battery", "8 %", "Front door battery", "Living room", "heating", "Desk lamp", "Kitchen", "Hallway motion", "unavailable · 5 min ago", "Late tile", "1 more check OK"]
+    readonly property var expectedTexts: ["12.4 °C", "Outside", "Outside humidity", "Desk climate", "45%", "Fan speed", "1000 rpm", "Heating", "Lights", "Weak batteries", "Hall sensor battery", "8 %", "Front door battery", "Radiator battery", "low", "Living room", "heating", "Desk lamp", "Kitchen", "Hallway motion", "unavailable · 5 min ago", "Late tile", "1 more check OK"]
 
     FullRepresentation {
         id: view
