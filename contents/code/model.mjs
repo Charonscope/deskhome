@@ -71,6 +71,9 @@ export function Entity(config = {}, data = {}, options = {}) {
     this.label_color = config.label_color || ''
     this.second_color = config.second_color || ''
     this.graph_color = config.graph_color || ''
+    this.bg_color = config.bg_color || ''
+    // own background opacity in % (-1 = the global one)
+    this.bg_opacity = config.bg_opacity === undefined || config.bg_opacity === null || config.bg_opacity === '' ? -1 : +config.bg_opacity
     this.value2 = ''
     this.num2 = NaN
 }
@@ -123,6 +126,8 @@ export function ConfigEntity(config = {}) {
     this.label_color = config.label_color
     this.second_color = config.second_color
     this.graph_color = config.graph_color
+    this.bg_color = config.bg_color
+    this.bg_opacity = config.bg_opacity
 }
 
 function addActionProperty(o, name) {

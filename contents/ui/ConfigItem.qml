@@ -290,6 +290,8 @@ Kirigami.FormLayout {
 
     component ColorOverride: RowLayout {
         property string key
+        // starting color when the own color is switched on
+        property color fallback: Kirigami.Theme.textColor
         CheckBox {
             id: own
             text: tr("look.customColor")
@@ -300,7 +302,7 @@ Kirigami.FormLayout {
             id: button
             enabled: own.checked
             showAlphaChannel: false
-            color: item[key] || Kirigami.Theme.textColor
+            color: item[key] || fallback
             onColorChanged: if (own.checked) item[key] = color.toString()
         }
     }
@@ -321,6 +323,35 @@ Kirigami.FormLayout {
     ColorOverride {
         key: "graph_color"
         Kirigami.FormData.label: tr("look.lineColor")
+    }
+    ColorOverride {
+        key: "bg_color"
+        fallback: Kirigami.Theme.backgroundColor
+        Kirigami.FormData.label: tr("look.bgColor")
+    }
+    RowLayout {
+        Kirigami.FormData.label: tr("look.opacity")
+        CheckBox {
+            id: ownOpacity
+            text: tr("item.ownValue")
+            checked: item.bg_opacity !== undefined && item.bg_opacity !== null
+            onToggled: item.bg_opacity = checked ? opacitySlider.value : undefined
+        }
+        Slider {
+            id: opacitySlider
+            enabled: ownOpacity.checked
+            from: 0
+            to: 100
+            stepSize: 5
+            snapMode: Slider.SnapAlways
+            value: item.bg_opacity ?? plasmoid.configuration.tileOpacity ?? 78
+            onMoved: item.bg_opacity = value
+            Layout.preferredWidth: Kirigami.Units.gridUnit * 8
+        }
+        Label {
+            text: Math.round(opacitySlider.value) + " %"
+            opacity: ownOpacity.checked ? 1 : 0.5
+        }
     }
     Label {
         text: tr("item.colorsHint")

@@ -49,6 +49,13 @@ PlasmoidItem {
     function tileLabelOpacity(e) { return palette.tileLabelOpacity(e) }
     function tileGraphColor(e) { return palette.tileGraph(e) }
     function tileSecondColor(e) { return palette.tileSecond(e) }
+    // a tile's own background color and opacity (own tile style only)
+    function tileFill(e) {
+        if (!tileBackgrounds) return "transparent"
+        const c = Qt.color(e?.bg_color || palette.background)
+        const opacity = e?.bg_opacity >= 0 ? e.bg_opacity : look.tileOpacity
+        return Qt.rgba(c.r, c.g, c.b, opacity / 100)
+    }
 
     // Home Assistant themes are loaded only when they are the color source
     function loadThemes() {

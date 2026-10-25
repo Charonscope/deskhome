@@ -51,7 +51,7 @@ MouseArea {
                     readonly property bool activeFrame: root.tileBackgrounds && !!root.look.activeFrame && !!model.active
                     anchors.fill: parent
                     radius: root.look.tileRadius
-                    color: root.tileFillColor
+                    color: root.tileFill(model)
                     border.width: levelFrame || activeFrame ? 1.5 : (root.look.tileBorder && root.tileBackgrounds ? 1 : 0)
                     border.color: levelFrame ? root.levelColor(model.level)
                         : activeFrame ? root.accentColor
