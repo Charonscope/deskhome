@@ -69,6 +69,9 @@
     <entry name="labelColor" type="Color">
       <default>#cccccc</default>
     </entry>
+    <entry name="showLastChanged" type="bool">
+      <default>false</default>
+    </entry>
     <entry name="animations" type="bool">
       <default>true</default>
     </entry>

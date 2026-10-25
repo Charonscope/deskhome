@@ -5,7 +5,7 @@ export const LOOK_KEYS = Object.freeze([
     "tileScale", "tileSpacing", "labelScale", "valueScale", "showMinMax", "showTrend",
     "graphHeight", "graphLineWidth", "graphFill", "graphCustomColor", "graphColor",
     "colorSource", "haTheme", "valueCustomColor", "valueColor", "labelCustomColor", "labelColor", "animations",
-    "batteryThreshold"
+    "batteryThreshold", "showLastChanged"
 ])
 
 export function backupData(configuration, items) {

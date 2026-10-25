@@ -29,7 +29,7 @@ ApplicationWindow {
             // "theme": colors from a (fake) Home Assistant theme plus an own label color
             colorSource: window.args[1] === "theme" ? "ha" : "plasma", haTheme: "",
             valueCustomColor: false, valueColor: "#ffffff",
-            labelCustomColor: window.args[1] === "theme", labelColor: "#ffd27f", animations: true
+            labelCustomColor: window.args[1] === "theme", labelColor: "#ffd27f", animations: true, showLastChanged: true
         })
     }
 
@@ -77,6 +77,8 @@ ApplicationWindow {
         property bool connectionLost: !ha.ready
         property string connectionMessage: tr("conn.lost", "14:05")
         // two weak batteries below a threshold of 20 %
+        property double now: new Date(2026, 9, 25, 12, 0).getTime()
+        function ago(ms) { return look.showLastChanged && ms ? Math.round((now - ms) / 60000) + " min ago" : "" }
         property var batteries: ({ enabled: true, total: 12, threshold: 20, low: [
             { entity_id: "sensor.hall_battery", name: "Hall sensor battery", level: 8 },
             { entity_id: "sensor.door_battery", name: "Front door battery", level: 17 }
@@ -95,14 +97,14 @@ ApplicationWindow {
         function history(id) { return id.startsWith("sensor.") ? points : [] }
         property ListModel itemModel: ListModel {
             Component.onCompleted: {
-                const base = { attributes: {}, default_action: {}, dclick_action: {}, scroll_action: {}, display: 1, hide_when_ok: false, light_color: "", brightness_pct: -1, device_class: "", unit: "", attribute: "", second_entity_id: "", value2: "", num2: NaN, current_temp: NaN, target_temp: NaN, temp_min: 7, temp_max: 35, temp_step: 0.5, current_humidity: NaN, hvac_action: "", heading: "" }
+                const base = { attributes: {}, default_action: {}, dclick_action: {}, scroll_action: {}, display: 1, hide_when_ok: false, light_color: "", brightness_pct: -1, device_class: "", unit: "", attribute: "", second_entity_id: "", value2: "", num2: NaN, current_temp: NaN, target_temp: NaN, temp_min: 7, temp_max: 35, temp_step: 0.5, current_humidity: NaN, hvac_action: "", heading: "", last_changed: 0 }
                 const add = o => append(Object.assign({}, base, o))
                 add({ entity_id: "sensor.outside", name: "Outside", kind: "sensor", value: "9.6 °C", num: 9.6, state: "9.6", level: 0, icon: "mdi:thermometer", colspan: 1, history_hours: 24, domain: "sensor", active: false })
                 add({ entity_id: "sensor.humidity", name: "Outside humidity", kind: "sensor", value: "63%", num: 63, state: "63", level: 0, icon: "mdi:water-percent", colspan: 1, history_hours: 24, domain: "sensor", active: false })
                 add({ entity_id: "sensor.desk_temp", name: "Desk climate", kind: "combo", value: "23.7 °C", num: 23.7, state: "23.7", level: 0, icon: "mdi:thermometer", colspan: 1, history_hours: 24, domain: "sensor", active: false, second_entity_id: "sensor.desk_humidity", value2: "45%", num2: 45 })
                 add({ entity_id: "climate.living", heading: "Heating", name: "Living room", kind: "thermostat", value: "Auto", num: NaN, state: "auto", level: 0, icon: "mdi:thermostat", colspan: 1, history_hours: 0, domain: "climate", active: false, current_temp: 21.9, target_temp: 21, current_humidity: 52, hvac_action: "heating" })
                 add({ entity_id: "light.desk", heading: "Lights", name: "Desk lamp", kind: "switch", value: "on", num: NaN, state: "on", level: 0, icon: "mdi:lightbulb", colspan: 0.5, history_hours: 0, domain: "light", active: true, brightness_pct: 60, light_color: "#ffcc66" })
-                add({ entity_id: "light.kitchen", name: "Kitchen", kind: "switch", value: "off", num: NaN, state: "off", level: 0, icon: "mdi:lightbulb-outline", colspan: 0.5, history_hours: 0, domain: "light", active: false })
+                add({ entity_id: "light.kitchen", last_changed: new Date(2026, 9, 25, 11, 55).getTime(), name: "Kitchen", kind: "switch", value: "off", num: NaN, state: "off", level: 0, icon: "mdi:lightbulb-outline", colspan: 0.5, history_hours: 0, domain: "light", active: false })
                 add({ entity_id: "binary_sensor.hall", name: "Hallway motion", kind: "status", value: "unavailable", num: NaN, state: "unavailable", level: 2, icon: "mdi:motion-sensor", colspan: 1, history_hours: 0, domain: "binary_sensor", active: false })
                 // hidden while ok -> must show up in the "1 more check OK" summary tile
                 add({ entity_id: "sensor.battery_ok", name: "Bedroom battery", kind: "status", value: "100%", num: 100, state: "100", level: 0, icon: "mdi:battery", colspan: 1, history_hours: 0, domain: "sensor", active: false, hide_when_ok: true })
@@ -141,7 +143,7 @@ ApplicationWindow {
     }
 
     readonly property var valueTexts: ["12.4 °C", "23.7 °C", "45%"]
-    readonly property var expectedTexts: ["12.4 °C", "Outside", "Outside humidity", "Desk climate", "45%", "Heating", "Lights", "Weak batteries", "Hall sensor battery", "8 %", "Front door battery", "Living room", "heating", "Desk lamp", "Kitchen", "Hallway motion", "Late tile", "1 more check OK"]
+    readonly property var expectedTexts: ["12.4 °C", "Outside", "Outside humidity", "Desk climate", "45%", "Heating", "Lights", "Weak batteries", "Hall sensor battery", "8 %", "Front door battery", "Living room", "heating", "Desk lamp", "Kitchen", "Off · 5 min ago", "Hallway motion", "Late tile", "1 more check OK"]
 
     FullRepresentation {
         id: view

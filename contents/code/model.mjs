@@ -6,6 +6,8 @@ export function EntityUpdate(config = {}, update = {}, entity = {}, options = {}
     this.attributes = Object.assign({}, entity.attributes, update.a)
     this.icon = config.icon || this.attributes.icon || ''
     this.state = update.s || entity.state || ''
+    // last state change (ms); HA sends lc only when the state itself changed
+    this.last_changed = update.lc ? update.lc * 1000 : (entity.last_changed || 0)
     this.active = isActiveState(config.domain, this.state)
     this.value = options.valueFormatter?.(this, config) ?? ''
     // Flat helper values for the tiles (nested objects/arrays are awkward in a ListModel)

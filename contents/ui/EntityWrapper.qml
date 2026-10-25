@@ -11,7 +11,10 @@ MouseArea {
     id: control
     clip: true
     // thermostats have no click action but take the scroll wheel
-    readonly property bool interactive: !!actions.length || model.kind === "thermostat"
+    // sensors without an own click action open their history in Home Assistant
+    readonly property bool opensHistory: sourceIndex >= 0 && !default_action?.service
+        && ["sensor", "combo", "status"].includes(model.kind) && !!root.url
+    readonly property bool interactive: !!actions.length || model.kind === "thermostat" || opensHistory
     // row in the tile list (store.items); tiles with one get the right-click menu
     property int sourceIndex: -1
     signal contextMenuRequested(real x, real y)
@@ -20,6 +23,7 @@ MouseArea {
     acceptedButtons: sourceIndex >= 0 ? Qt.LeftButton | Qt.RightButton : Qt.LeftButton
     onClicked: mouse => {
         if (mouse.button === Qt.RightButton) contextMenuRequested(mouse.x, mouse.y)
+        else if (opensHistory) Qt.openUrlExternally(`${root.url}/history?entity_id=${encodeURIComponent(model.entity_id)}`)
     }
     property bool flat: true
     property bool showBackground: false
@@ -100,7 +104,9 @@ MouseArea {
     PlasmaCore.ToolTipArea {
         id: tooltip
         anchors.fill: parent
-        subText: actions.map(c => c.item.tip).concat(model.kind === "thermostat" ? [root.tr("tip.thermostat")] : []).join("\n")
+        subText: actions.map(c => c.item.tip)
+            .concat(model.kind === "thermostat" ? [root.tr("tip.thermostat")] : [])
+            .concat(control.opensHistory ? [root.tr("tip.history")] : []).join("\n")
     }
 
     function format(underscoredText) {

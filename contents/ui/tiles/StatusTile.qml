@@ -59,7 +59,7 @@ Item {
             }
             PlasmaComponents3.Label {
                 visible: nameLabel.lineCount < 2 || model.level > 0
-                text: model.value
+                text: root.ago(model.last_changed) ? model.value + " · " + root.ago(model.last_changed) : model.value
                 elide: Text.ElideRight
                 font.pointSize: root.smallPt
                 color: model.level ? tile.dotColor : root.labelColor

@@ -90,18 +90,30 @@ Item {
             }
         }
 
-        CountingLabel {
-            value: model.value
-            color: tile.levelColor
-            font.pixelSize: Kirigami.Units.gridUnit * (showHistory ? 1.3 : 1.8) * root.tileScale * root.look.valueScale / 100
-            font.weight: Font.Bold
-            // too wide for the tile: smaller font rather than a cut-off value
-            fontSizeMode: Text.HorizontalFit
-            minimumPixelSize: Math.round(font.pixelSize * 0.5)
-            elide: Text.ElideRight
+        RowLayout {
+            spacing: Kirigami.Units.smallSpacing
             Layout.fillWidth: true
             // aligned with the visible left edge of the icon (the SVG has an inner margin)
             Layout.leftMargin: headerIcon.item?.size ? (headerIcon.width - headerIcon.item.size.width) / 2 : 0
+            CountingLabel {
+                value: model.value
+                color: tile.levelColor
+                font.pixelSize: Kirigami.Units.gridUnit * (showHistory ? 1.3 : 1.8) * root.tileScale * root.look.valueScale / 100
+                font.weight: Font.Bold
+                // too wide for the tile: smaller font rather than a cut-off value
+                fontSizeMode: Text.HorizontalFit
+                minimumPixelSize: Math.round(font.pixelSize * 0.5)
+                elide: Text.ElideRight
+                Layout.fillWidth: true
+            }
+            PlasmaComponents3.Label {
+                text: root.ago(model.last_changed)
+                visible: !!text
+                font.pointSize: root.smallPt
+                color: root.labelColor
+                opacity: root.labelOpacity * 0.8
+                Layout.alignment: Qt.AlignBottom
+            }
         }
 
         Item { Layout.fillHeight: true }

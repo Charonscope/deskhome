@@ -41,6 +41,7 @@ KCM.SimpleKCM {
     property alias cfg_labelCustomColor: labelCustomColor.checked
     property alias cfg_labelColor: labelColor.color
     property alias cfg_animations: animations.checked
+    property alias cfg_showLastChanged: showLastChanged.checked
 
     // HA theme names for the selection; loaded from the shared connection
     property Client ha
@@ -301,6 +302,11 @@ KCM.SimpleKCM {
         CheckBox {
             id: showTrend
             text: tr("look.trend")
+        }
+
+        CheckBox {
+            id: showLastChanged
+            text: tr("look.lastChanged")
         }
 
         Item {

@@ -8,6 +8,7 @@ import "."
 import "../code/defaults.mjs" as Defaults
 import "../code/i18n.mjs" as I18n
 import "../code/backup.mjs" as Backup
+import "../code/timeago.mjs" as TimeAgo
 import "components"
 
 PlasmoidItem {
@@ -58,6 +59,15 @@ PlasmoidItem {
     // Transitions follow Plasma's animation speed (0 when animations are off there)
     readonly property int animationDuration: look.animations ? Kirigami.Units.longDuration : 0
     readonly property real tileScale: look.tileScale / 100
+    // "5 min ago" texts, refreshed every 30 s; empty when the option is off
+    property double now: Date.now()
+    Timer {
+        interval: 30000
+        repeat: true
+        running: !!root.look.showLastChanged
+        onTriggered: root.now = Date.now()
+    }
+    function ago(ms) { return look.showLastChanged ? TimeAgo.ago(lang, ms, now) : "" }
     // Label font size; above 100 % the tiles grow with it
     readonly property real labelScale: look.labelScale / 100
     readonly property real labelGrow: Math.max(1, labelScale)

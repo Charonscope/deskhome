@@ -59,7 +59,7 @@ Item {
             }
             PlasmaComponents3.Label {
                 visible: nameLabel.lineCount < 2 || model.level === 2
-                text: tile.stateText
+                text: root.ago(model.last_changed) ? tile.stateText + " · " + root.ago(model.last_changed) : tile.stateText
                 elide: Text.ElideRight
                 opacity: model.level === 2 ? 1 : root.labelOpacity * 0.9
                 font.pointSize: root.smallPt
