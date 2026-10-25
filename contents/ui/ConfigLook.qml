@@ -7,6 +7,8 @@ import org.kde.kcmutils as KCM
 import org.kde.kquickcontrols as KQControls
 
 import "../code/i18n.mjs" as I18n
+import "../code/themes.mjs" as Themes
+import "."
 
 KCM.SimpleKCM {
     property alias cfg_flat: flat.checked
@@ -32,6 +34,25 @@ KCM.SimpleKCM {
     property alias cfg_graphFill: graphFill.checked
     property alias cfg_graphCustomColor: graphCustomColor.checked
     property alias cfg_graphColor: graphColor.color
+    property string cfg_colorSource
+    property string cfg_haTheme
+    property alias cfg_valueCustomColor: valueCustomColor.checked
+    property alias cfg_valueColor: valueColor.color
+    property alias cfg_labelCustomColor: labelCustomColor.checked
+    property alias cfg_labelColor: labelColor.color
+
+    // HA theme names for the selection; loaded from the shared connection
+    property Client ha
+    property var haThemes: null
+    function loadThemes() {
+        if (ha?.ready) ha.getThemes().then(result => haThemes = result, () => {})
+    }
+    Component.onCompleted: {
+        if (!plasmoid.configuration.url) return
+        ha = ClientFactory.getClient(this, plasmoid.configuration.url)
+        ha.readyChanged.connect(loadThemes)
+        loadThemes()
+    }
 
     signal configurationChanged
     function tr(key, ...args) { return I18n.tr(plasmoid.configuration.language, key, ...args) }
@@ -126,6 +147,87 @@ KCM.SimpleKCM {
             id: activeFrame
             enabled: flat.checked
             text: tr("look.activeFrame")
+        }
+
+        Item {
+            Kirigami.FormData.isSection: true
+            Kirigami.FormData.label: tr("look.colors")
+        }
+
+        ComboBox {
+            id: colorSource
+            Kirigami.FormData.label: tr("look.colorSource")
+            model: [
+                { value: "plasma", text: tr("look.source.plasma") },
+                { value: "ha", text: tr("look.source.ha") }
+            ]
+            textRole: "text"
+            valueRole: "value"
+            Component.onCompleted: currentIndex = Math.max(0, indexOfValue(cfg_colorSource))
+            onActivated: cfg_colorSource = currentValue
+        }
+
+        ComboBox {
+            id: haTheme
+            visible: cfg_colorSource === "ha"
+            enabled: !!haThemes
+            Kirigami.FormData.label: tr("look.haTheme")
+            model: {
+                const def = haThemes ? Themes.themeName(haThemes, "", false) : ""
+                return [{ value: "", text: tr("look.haDefault", def || "…") }]
+                    .concat((haThemes ? Themes.themeNames(haThemes) : []).map(n => ({ value: n, text: n })))
+            }
+            textRole: "text"
+            valueRole: "value"
+            onModelChanged: currentIndex = Math.max(0, indexOfValue(cfg_haTheme))
+            onActivated: cfg_haTheme = currentValue
+            Layout.maximumWidth: Kirigami.Units.gridUnit * 20
+        }
+
+        Label {
+            visible: cfg_colorSource === "ha"
+            text: haThemes ? tr("look.haHint") : tr("look.haNotConnected")
+            wrapMode: Text.WordWrap
+            opacity: 0.7
+            Layout.maximumWidth: Kirigami.Units.gridUnit * 20
+        }
+
+        RowLayout {
+            Kirigami.FormData.label: tr("look.valueColor")
+            CheckBox {
+                id: valueCustomColor
+                text: tr("look.customColor")
+            }
+            KQControls.ColorButton {
+                id: valueColor
+                enabled: valueCustomColor.checked
+                showAlphaChannel: false
+            }
+        }
+
+        RowLayout {
+            Kirigami.FormData.label: tr("look.labelColor")
+            CheckBox {
+                id: labelCustomColor
+                text: tr("look.customColor")
+            }
+            KQControls.ColorButton {
+                id: labelColor
+                enabled: labelCustomColor.checked
+                showAlphaChannel: false
+            }
+        }
+
+        Label {
+            text: tr("look.colorHint")
+            wrapMode: Text.WordWrap
+            opacity: 0.7
+            Layout.maximumWidth: Kirigami.Units.gridUnit * 20
+        }
+
+        Item {
+            Kirigami.FormData.isSection: true
+            Kirigami.FormData.label: tr("look.layout")
         }
 
         ValueSlider {

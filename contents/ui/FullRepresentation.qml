@@ -192,13 +192,13 @@ PlasmaExtras.Representation {
                     radius: root.look.tileRadius
                     color: root.tileBackgrounds
                         ? root.tileFillColor
-                        : Qt.rgba(Kirigami.Theme.positiveTextColor.r, Kirigami.Theme.positiveTextColor.g, Kirigami.Theme.positiveTextColor.b, 0.12)
+                        : Qt.rgba(root.okColor.r, root.okColor.g, root.okColor.b, 0.12)
                     RowLayout {
                         anchors.fill: parent
                         anchors.margins: Kirigami.Units.smallSpacing
                         Kirigami.Icon {
                             source: "checkmark"
-                            color: Kirigami.Theme.positiveTextColor
+                            color: root.okColor
                             isMask: true
                             Layout.preferredWidth: Kirigami.Units.iconSizes.medium
                             Layout.preferredHeight: Kirigami.Units.iconSizes.medium
@@ -206,7 +206,7 @@ PlasmaExtras.Representation {
                         PlasmaComponents3.Label {
                             text: tileGrid.hiddenOkCount === 1 ? root.tr("ok.one") : root.tr("ok.many", tileGrid.hiddenOkCount)
                             font.pointSize: root.defaultPt
-                            color: Kirigami.Theme.positiveTextColor
+                            color: root.okColor
                             wrapMode: Text.WordWrap
                             Layout.fillWidth: true
                         }

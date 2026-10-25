@@ -7,7 +7,7 @@ Canvas {
     id: spark
     property var points: []
     property real windowMs: 24 * 3600000
-    property color color: Kirigami.Theme.highlightColor
+    property color color: root.accentColor
     property int revision: 0
     property real currentValue: NaN
     property real lineWidth: 1.5

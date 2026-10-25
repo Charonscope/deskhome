@@ -10,7 +10,7 @@ import "."
 // Status tile: colored dot + name + state
 Item {
     id: tile
-    readonly property color dotColor: Levels.color(model.level, Kirigami.Theme.positiveTextColor)
+    readonly property color dotColor: root.levelColor(model.level, root.okColor)
     // half tiles: only the status dot, no extra icon
     readonly property bool narrow: width < Kirigami.Units.gridUnit * 7 * root.labelGrow
 
@@ -48,6 +48,7 @@ Item {
                 wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                 maximumLineCount: model.level ? 1 : 2
                 font.pointSize: root.defaultPt
+                color: root.labelColor
                 Layout.fillWidth: true
             }
             PlasmaComponents3.Label {
@@ -55,8 +56,8 @@ Item {
                 text: model.value
                 elide: Text.ElideRight
                 font.pointSize: root.smallPt
-                color: model.level ? tile.dotColor : Kirigami.Theme.textColor
-                opacity: model.level ? 1 : 0.7
+                color: model.level ? tile.dotColor : root.labelColor
+                opacity: model.level ? 1 : root.labelOpacity * 0.9
                 Layout.fillWidth: true
             }
         }

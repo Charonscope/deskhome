@@ -16,12 +16,12 @@ Item {
     readonly property bool showHistory: model.history_hours > 0
     readonly property var points: { store.historyRevision; return store.history(model.entity_id) }
     readonly property var points2: { store.historyRevision; return store.history(model.second_entity_id) }
-    readonly property color levelColor: Levels.color(model.level)
-    readonly property color firstLineColor: model.level ? levelColor : (root.look.graphCustomColor ? root.look.graphColor : Kirigami.Theme.highlightColor)
+    readonly property color levelColor: root.levelColor(model.level)
+    readonly property color firstLineColor: model.level ? levelColor : root.graphLineColor
     // accent for the second value: the highlight color turned a quarter back on the color wheel (blue -> green)
-    readonly property color secondColor: Qt.hsla((Kirigami.Theme.highlightColor.hslHue + 0.75) % 1,
-                                                 Math.max(0.45, Kirigami.Theme.highlightColor.hslSaturation),
-                                                 Math.min(0.65, Math.max(0.5, Kirigami.Theme.highlightColor.hslLightness)), 1)
+    readonly property color secondColor: Qt.hsla((root.accentColor.hslHue + 0.75) % 1,
+                                                 Math.max(0.45, root.accentColor.hslSaturation),
+                                                 Math.min(0.65, Math.max(0.5, root.accentColor.hslLightness)), 1)
     // revision as an argument because the point arrays are always the same (growing) arrays
     readonly property var stats: Stats.computeStats(points, model.num, windowMs, store.historyRevision)
     readonly property var stats2: Stats.computeStats(points2, model.num2, windowMs, store.historyRevision)
@@ -78,14 +78,16 @@ Item {
             PlasmaComponents3.Label {
                 text: model.name
                 elide: Text.ElideRight
-                opacity: 0.8
+                color: root.labelColor
+                opacity: root.labelOpacity
                 font.pointSize: root.smallPt
                 Layout.fillWidth: true
             }
             PlasmaComponents3.Label {
                 text: tile.stats.trend
                 visible: !!text && showHistory && root.look.showTrend
-                opacity: 0.8
+                color: root.labelColor
+                opacity: root.labelOpacity
                 font.pointSize: root.defaultPt
             }
             PlasmaComponents3.Label {

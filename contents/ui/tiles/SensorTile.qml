@@ -15,7 +15,7 @@ Item {
     readonly property real windowMs: model.history_hours * 3600000
     readonly property bool showHistory: model.history_hours > 0
     readonly property var points: { store.historyRevision; return store.history(model.entity_id) }
-    readonly property color levelColor: Levels.color(model.level)
+    readonly property color levelColor: root.levelColor(model.level)
     // revision as an argument because points is always the same (growing) array
     readonly property var stats: computeStats(points, model.num, store.historyRevision)
 
@@ -47,7 +47,7 @@ Item {
         windowMs: tile.windowMs
         revision: store.historyRevision
         currentValue: model.num
-        color: model.level ? tile.levelColor : (root.look.graphCustomColor ? root.look.graphColor : Kirigami.Theme.highlightColor)
+        color: model.level ? tile.levelColor : root.graphLineColor
     }
 
     ColumnLayout {
@@ -68,7 +68,8 @@ Item {
             PlasmaComponents3.Label {
                 text: model.name
                 elide: Text.ElideRight
-                opacity: 0.8
+                color: root.labelColor
+                opacity: root.labelOpacity
                 font.pointSize: root.smallPt
                 Layout.fillWidth: true
             }
@@ -76,13 +77,15 @@ Item {
                 visible: showHistory && root.look.showMinMax && isFinite(stats.min)
                 text: `↓${fmt(stats.min)}  ↑${fmt(stats.max)}`
                 font.pointSize: root.smallPt
-                opacity: 0.7
+                color: root.labelColor
+                opacity: root.labelOpacity * 0.9
             }
             PlasmaComponents3.Label {
                 text: stats.trend
                 visible: !!text && showHistory && root.look.showTrend
                 font.pointSize: root.defaultPt
-                opacity: 0.8
+                color: root.labelColor
+                opacity: root.labelOpacity
             }
         }
 

@@ -48,6 +48,24 @@
     <entry name="tileColor" type="Color">
       <default>#2e3440</default>
     </entry>
+    <entry name="colorSource" type="string">
+      <default>plasma</default>
+    </entry>
+    <entry name="haTheme" type="string">
+      <default></default>
+    </entry>
+    <entry name="valueCustomColor" type="bool">
+      <default>false</default>
+    </entry>
+    <entry name="valueColor" type="Color">
+      <default>#ffffff</default>
+    </entry>
+    <entry name="labelCustomColor" type="bool">
+      <default>false</default>
+    </entry>
+    <entry name="labelColor" type="Color">
+      <default>#cccccc</default>
+    </entry>
     <entry name="tileRadius" type="int">
       <default>8</default>
     </entry>

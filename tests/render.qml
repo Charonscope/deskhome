@@ -25,7 +25,11 @@ ApplicationWindow {
             tileOpacity: 78, tileCustomColor: false, tileColor: "#2e3440", tileRadius: 8, tileBorder: true,
             levelBorder: true, activeFrame: true, tileScale: 100, tileSpacing: 6, labelScale: 100, valueScale: 100,
             showMinMax: true, showTrend: true, graphHeight: 42, graphLineWidth: 1.5, graphFill: true,
-            graphCustomColor: false, graphColor: "#88c0d0"
+            graphCustomColor: false, graphColor: "#88c0d0",
+            // "theme": colors from a (fake) Home Assistant theme plus an own label color
+            colorSource: window.args[1] === "theme" ? "ha" : "plasma", haTheme: "",
+            valueCustomColor: false, valueColor: "#ffffff",
+            labelCustomColor: window.args[1] === "theme", labelColor: "#ffd27f"
         })
     }
 
@@ -43,7 +47,26 @@ ApplicationWindow {
         property var look: plasmoid.configuration
         property string lang: "en"
         function tr(key, ...args) { return I18n.tr(lang, key, ...args) }
-        property color tileFillColor: Qt.rgba(0.18, 0.2, 0.25, 0.78)
+        property color tileFillColor: Qt.rgba(palette.background.r, palette.background.g, palette.background.b, 0.78)
+        Palette {
+            id: palette
+            look: plasmoid.configuration
+            haThemes: ({
+                default_theme: "fake",
+                themes: { fake: { "primary-color": "#e91e63", "ha-card-background": "rgba(20, 60, 40, 0.5)", "success-color": "#00e676" } }
+            })
+        }
+        readonly property alias accentColor: palette.accent
+        readonly property alias textColor: palette.text
+        readonly property alias mutedColor: palette.muted
+        readonly property alias okColor: palette.ok
+        readonly property alias warnColor: palette.warn
+        readonly property alias critColor: palette.crit
+        readonly property alias valueColor: palette.value
+        readonly property alias labelColor: palette.label
+        readonly property alias labelOpacity: palette.labelOpacity
+        readonly property alias graphLineColor: palette.graph
+        function levelColor(level, okColor) { return palette.levelColor(level, okColor) }
         property real tileScale: 1
         property real labelScale: 1
         property real labelGrow: 1

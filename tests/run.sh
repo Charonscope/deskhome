@@ -27,9 +27,11 @@ run() {
 run syntax bash -c "\"$QMLLINT\" --bare -I contents/ui contents/ui/*.qml contents/ui/*/*.qml contents/config/*.qml 2>&1 | grep -E 'Syntax error|Expected token' && exit 1 || exit 0"
 run i18n-static python3 tests/check_i18n.py
 run i18n-engine timeout 30 "$QML" tests/i18n.qml
+run themes timeout 30 "$QML" tests/themes.qml
 run settings-pages timeout 30 "$QML" tests/pages.qml
 run render-connected timeout 30 "$QML" tests/render.qml -- "$OUT/connected.png" ok
 run render-disconnected timeout 30 "$QML" tests/render.qml -- "$OUT/disconnected.png" lost
+run render-ha-theme timeout 30 "$QML" tests/render.qml -- "$OUT/ha-theme.png" theme
 
 echo "Logs and renders: $OUT"
 exit $status

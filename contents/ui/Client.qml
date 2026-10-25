@@ -56,6 +56,10 @@ BaseObject {
         return commandAsync({ type: "frontend/get_translations", category, language, integration })
     }
 
+    function getThemes() {
+        return commandAsync({ type: "frontend/get_themes" })
+    }
+
     function getHistory(entityIds, startTime) {
         return commandAsync({
             type: "history/history_during_period",

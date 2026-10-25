@@ -14,9 +14,9 @@ Item {
     // half tiles: smaller icon so the name has room
     readonly property bool narrow: width < Kirigami.Units.gridUnit * 7 * root.labelGrow
     readonly property color iconColor: {
-        if (model.level === 2) return Levels.color(2)
-        if (!on) return Kirigami.Theme.disabledTextColor
-        return model.light_color || Kirigami.Theme.highlightColor
+        if (model.level === 2) return root.critColor
+        if (!on) return root.mutedColor
+        return model.light_color || root.accentColor
     }
     readonly property string stateText: {
         if (model.level === 2 || model.state === "unknown") return model.value
@@ -52,15 +52,16 @@ Item {
                 maximumLineCount: model.level === 2 ? 1 : 2
                 font.weight: Font.Bold
                 font.pointSize: root.defaultPt
+                color: root.labelColor
                 Layout.fillWidth: true
             }
             PlasmaComponents3.Label {
                 visible: nameLabel.lineCount < 2 || model.level === 2
                 text: tile.stateText
                 elide: Text.ElideRight
-                opacity: 0.75
+                opacity: model.level === 2 ? 1 : root.labelOpacity * 0.9
                 font.pointSize: root.smallPt
-                color: model.level === 2 ? Levels.color(2) : Kirigami.Theme.textColor
+                color: model.level === 2 ? root.critColor : root.labelColor
                 Layout.fillWidth: true
             }
         }

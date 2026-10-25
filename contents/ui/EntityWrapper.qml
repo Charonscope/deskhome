@@ -41,9 +41,9 @@ MouseArea {
                     radius: root.look.tileRadius
                     color: root.tileFillColor
                     border.width: levelFrame || activeFrame ? 1.5 : (root.look.tileBorder && root.tileBackgrounds ? 1 : 0)
-                    border.color: levelFrame ? Levels.color(model.level)
-                        : activeFrame ? Kirigami.Theme.highlightColor
-                        : Qt.rgba(Kirigami.Theme.textColor.r, Kirigami.Theme.textColor.g, Kirigami.Theme.textColor.b, 0.08)
+                    border.color: levelFrame ? root.levelColor(model.level)
+                        : activeFrame ? root.accentColor
+                        : Qt.rgba(root.textColor.r, root.textColor.g, root.textColor.b, 0.08)
                 }
 
                 // Hover for own tile backgrounds; the Plasma button frames below have their own,
@@ -52,7 +52,7 @@ MouseArea {
                     anchors.fill: parent
                     radius: root.look.tileRadius
                     visible: root.tileBackgrounds && control.hoverEnabled && control.containsMouse
-                    color: Qt.rgba(Kirigami.Theme.textColor.r, Kirigami.Theme.textColor.g, Kirigami.Theme.textColor.b, 0.06)
+                    color: Qt.rgba(root.textColor.r, root.textColor.g, root.textColor.b, 0.06)
                 }
 
                 KSvg.FrameSvgItem {
@@ -172,7 +172,7 @@ MouseArea {
                         y: 1
                         height: parent.height - 2 * y
                         width: position * (parent.width - 2 * x)
-                        color: Kirigami.Theme.highlightColor
+                        color: root.accentColor
                         opacity: 0.6
                         Behavior on width {
                             NumberAnimation { duration: Kirigami.Units.shortDuration }

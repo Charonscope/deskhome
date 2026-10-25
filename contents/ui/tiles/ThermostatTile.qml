@@ -14,9 +14,9 @@ Item {
     readonly property bool heating: model.hvac_action === "heating"
     readonly property bool off: model.state === "off"
     readonly property color iconColor: {
-        if (model.level === 2) return Levels.color(2)
-        if (off) return Kirigami.Theme.disabledTextColor
-        return heating ? Kirigami.Theme.neutralTextColor : Kirigami.Theme.highlightColor
+        if (model.level === 2) return root.critColor
+        if (off) return root.mutedColor
+        return heating ? root.warnColor : root.accentColor
     }
     // shown target: the local one while scrolling, otherwise the one from HA
     property real target: NaN
@@ -76,14 +76,15 @@ Item {
             PlasmaComponents3.Label {
                 text: model.name
                 elide: Text.ElideRight
-                opacity: 0.8
+                color: root.labelColor
+                opacity: root.labelOpacity
                 font.pointSize: root.smallPt
                 Layout.fillWidth: true
             }
             PlasmaComponents3.Label {
                 text: tile.heating ? root.tr("thermo.heating") : model.value
-                color: tile.heating ? Kirigami.Theme.neutralTextColor : Kirigami.Theme.textColor
-                opacity: tile.heating ? 1 : 0.6
+                color: tile.heating ? root.warnColor : root.labelColor
+                opacity: tile.heating ? 1 : root.labelOpacity * 0.75
                 font.pointSize: root.smallPt
                 elide: Text.ElideRight
                 Layout.maximumWidth: tile.width * 0.4
@@ -96,14 +97,15 @@ Item {
             Layout.leftMargin: headerIcon.item?.size ? (headerIcon.width - headerIcon.item.size.width) / 2 : 0
             PlasmaComponents3.Label {
                 text: tile.format(model.current_temp, 1)
-                color: model.level ? Levels.color(model.level) : Kirigami.Theme.textColor
+                color: root.levelColor(model.level)
                 font.pixelSize: Kirigami.Units.gridUnit * 1.3 * root.tileScale * root.look.valueScale / 100
                 font.weight: Font.Bold
             }
             PlasmaComponents3.Label {
                 visible: !isNaN(model.current_humidity)
                 text: Number(model.current_humidity).toLocaleString(Qt.locale(), "f", 0) + " %"
-                opacity: 0.6
+                color: root.labelColor
+                opacity: root.labelOpacity * 0.75
                 font.pointSize: root.defaultPt
                 Layout.alignment: Qt.AlignBottom
                 Layout.bottomMargin: 2
@@ -117,8 +119,8 @@ Item {
         PlasmaComponents3.Label {
             visible: !isNaN(tile.target)
             text: root.tr("thermo.target", tile.format(tile.target, tile.targetDecimals))
-            color: holdTimer.running ? Kirigami.Theme.highlightColor : Kirigami.Theme.textColor
-            opacity: holdTimer.running ? 1 : 0.75
+            color: holdTimer.running ? root.accentColor : root.labelColor
+            opacity: holdTimer.running ? 1 : root.labelOpacity
             font.pointSize: root.defaultPt
             font.weight: holdTimer.running ? Font.Bold : Font.Normal
             Layout.leftMargin: headerIcon.item?.size ? (headerIcon.width - headerIcon.item.size.width) / 2 : 0

@@ -22,8 +22,37 @@ PlasmoidItem {
     readonly property var look: plasmoid.configuration
     readonly property string lang: I18n.resolve(plasmoid.configuration.language)
     function tr(key, ...args) { return I18n.tr(lang, key, ...args) }
-    readonly property color tileBaseColor: look.tileCustomColor ? look.tileColor : Kirigami.Theme.backgroundColor
-    readonly property color tileFillColor: tileBackgrounds ? Qt.rgba(tileBaseColor.r, tileBaseColor.g, tileBaseColor.b, look.tileOpacity / 100) : "transparent"
+    readonly property color tileFillColor: tileBackgrounds ? Qt.rgba(palette.background.r, palette.background.g, palette.background.b, look.tileOpacity / 100) : "transparent"
+
+    Palette {
+        id: palette
+        look: root.look
+    }
+    readonly property alias accentColor: palette.accent
+    readonly property alias textColor: palette.text
+    readonly property alias mutedColor: palette.muted
+    readonly property alias okColor: palette.ok
+    readonly property alias warnColor: palette.warn
+    readonly property alias critColor: palette.crit
+    readonly property alias valueColor: palette.value
+    readonly property alias labelColor: palette.label
+    readonly property alias labelOpacity: palette.labelOpacity
+    readonly property alias graphLineColor: palette.graph
+    function levelColor(level, okColor) { return palette.levelColor(level, okColor) }
+
+    // Home Assistant themes are loaded only when they are the color source
+    function loadThemes() {
+        if (!palette.useHaTheme || !ha?.ready) return
+        ha.getThemes().then(result => palette.haThemes = result, () => {})
+    }
+    Connections {
+        target: palette
+        function onUseHaThemeChanged() { root.loadThemes() }
+    }
+    Connections {
+        target: root.ha
+        function onReadyChanged() { root.loadThemes() }
+    }
     readonly property real tileScale: look.tileScale / 100
     // Label font size; above 100 % the tiles grow with it
     readonly property real labelScale: look.labelScale / 100
@@ -90,5 +119,6 @@ PlasmoidItem {
     function initClient(url) {
         ha = url ? ClientFactory.getClient(root, url) : null
         store.setClient(ha)
+        loadThemes()
     }
 }
