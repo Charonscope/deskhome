@@ -40,6 +40,7 @@ KCM.SimpleKCM {
     property alias cfg_valueColor: valueColor.color
     property alias cfg_labelCustomColor: labelCustomColor.checked
     property alias cfg_labelColor: labelColor.color
+    property alias cfg_animations: animations.checked
 
     // HA theme names for the selection; loaded from the shared connection
     property Client ha
@@ -228,6 +229,19 @@ KCM.SimpleKCM {
         Item {
             Kirigami.FormData.isSection: true
             Kirigami.FormData.label: tr("look.layout")
+        }
+
+        CheckBox {
+            id: animations
+            Kirigami.FormData.label: tr("look.animations")
+            text: tr("look.animationsText")
+        }
+
+        Label {
+            text: tr("look.animationsHint")
+            wrapMode: Text.WordWrap
+            opacity: 0.7
+            Layout.maximumWidth: Kirigami.Units.gridUnit * 20
         }
 
         ValueSlider {

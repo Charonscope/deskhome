@@ -162,6 +162,22 @@ PlasmaExtras.Representation {
                         y: geometry?.y ?? 0
                         width: geometry?.width ?? 0
                         height: geometry?.height ?? 0
+                        // fade in when shown; slide when other tiles come or go (not on the first placement)
+                        opacity: geometry ? 1 : 0
+                        property bool placed: false
+                        onGeometryChanged: if (geometry && !placed) Qt.callLater(() => placed = true)
+                        Behavior on opacity {
+                            enabled: root.animationDuration > 0
+                            NumberAnimation { duration: root.animationDuration }
+                        }
+                        Behavior on x {
+                            enabled: wrapper.placed && root.animationDuration > 0
+                            NumberAnimation { duration: root.animationDuration; easing.type: Easing.OutCubic }
+                        }
+                        Behavior on y {
+                            enabled: wrapper.placed && root.animationDuration > 0
+                            NumberAnimation { duration: root.animationDuration; easing.type: Easing.OutCubic }
+                        }
                         flat: plasmoid.configuration.flat
                         showBackground: true
                         // full name as a tooltip in case it is shortened in the tile
@@ -184,7 +200,12 @@ PlasmaExtras.Representation {
                 }
 
                 Rectangle {
-                    visible: tileGrid.hiddenOkCount > 0
+                    visible: opacity > 0
+                    opacity: tileGrid.hiddenOkCount > 0 ? 1 : 0
+                    Behavior on opacity {
+                        enabled: root.animationDuration > 0
+                        NumberAnimation { duration: root.animationDuration }
+                    }
                     x: tileGrid.okPosition.x
                     y: tileGrid.okPosition.y
                     width: tileGrid.okPosition.width

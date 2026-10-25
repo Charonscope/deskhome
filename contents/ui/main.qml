@@ -53,6 +53,8 @@ PlasmoidItem {
         target: root.ha
         function onReadyChanged() { root.loadThemes() }
     }
+    // Transitions follow Plasma's animation speed (0 when animations are off there)
+    readonly property int animationDuration: look.animations ? Kirigami.Units.longDuration : 0
     readonly property real tileScale: look.tileScale / 100
     // Label font size; above 100 % the tiles grow with it
     readonly property real labelScale: look.labelScale / 100

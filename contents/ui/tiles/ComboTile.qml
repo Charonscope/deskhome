@@ -69,6 +69,7 @@ Item {
             spacing: Kirigami.Units.smallSpacing
             Layout.fillWidth: true
             DynamicIcon {
+                animationDuration: root.animationDuration
                 id: headerIcon
                 name: model.icon
                 color: tile.levelColor
@@ -103,15 +104,15 @@ Item {
             Layout.fillWidth: true
             // aligned with the visible left edge of the icon (the SVG has an inner margin)
             Layout.leftMargin: headerIcon.item?.size ? (headerIcon.width - headerIcon.item.size.width) / 2 : 0
-            PlasmaComponents3.Label {
-                text: model.value
+            CountingLabel {
+                value: model.value
                 color: tile.levelColor
                 font.pixelSize: Kirigami.Units.gridUnit * (showHistory ? 1.3 : 1.8) * root.tileScale * root.look.valueScale / 100
                 font.weight: Font.Bold
                 elide: Text.ElideRight
             }
-            PlasmaComponents3.Label {
-                text: model.value2
+            CountingLabel {
+                value: model.value2
                 color: tile.secondColor
                 font.pixelSize: Kirigami.Units.gridUnit * (showHistory ? 1.3 : 1.8) * root.tileScale * root.look.valueScale / 100
                 font.weight: Font.Bold

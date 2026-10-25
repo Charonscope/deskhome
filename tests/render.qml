@@ -29,7 +29,7 @@ ApplicationWindow {
             // "theme": colors from a (fake) Home Assistant theme plus an own label color
             colorSource: window.args[1] === "theme" ? "ha" : "plasma", haTheme: "",
             valueCustomColor: false, valueColor: "#ffffff",
-            labelCustomColor: window.args[1] === "theme", labelColor: "#ffd27f"
+            labelCustomColor: window.args[1] === "theme", labelColor: "#ffd27f", animations: true
         })
     }
 
@@ -68,6 +68,7 @@ ApplicationWindow {
         readonly property alias graphLineColor: palette.graph
         function levelColor(level, okColor) { return palette.levelColor(level, okColor) }
         property real tileScale: 1
+        property int animationDuration: 200
         property real labelScale: 1
         property real labelGrow: 1
         property real defaultPt: 10
@@ -115,7 +116,26 @@ ApplicationWindow {
         }))
     }
 
-    readonly property var expectedTexts: ["Outside", "Outside humidity", "Desk climate", "45%", "Living room", "heating", "Desk lamp", "Kitchen", "Hallway motion", "Late tile", "1 more check OK"]
+    // A changed value counts to the new one: in between neither the old nor the new text is shown
+    property bool sawCounting: false
+    Timer {
+        interval: 600
+        running: true
+        onTriggered: store.itemModel.setProperty(0, "value", "12.4 °C")
+    }
+    Timer {
+        interval: 700
+        running: true
+        onTriggered: {
+            const walk = item => {
+                if (item.text !== undefined && /^\d+\.\d °C$/.test(item.text) && !["9.6 °C", "12.4 °C", "23.7 °C"].includes(item.text)) window.sawCounting = true
+                for (let i = 0; i < item.children.length; i++) walk(item.children[i])
+            }
+            walk(view)
+        }
+    }
+
+    readonly property var expectedTexts: ["12.4 °C", "Outside", "Outside humidity", "Desk climate", "45%", "Living room", "heating", "Desk lamp", "Kitchen", "Hallway motion", "Late tile", "1 more check OK"]
 
     FullRepresentation {
         id: view
@@ -129,6 +149,7 @@ ApplicationWindow {
         onTriggered: {
             if (window.args[2] === "dump") window.dump(view, 0)
             const problems = window.verify()
+            if (!window.sawCounting) problems.push("changed value did not count to the new one")
             for (const p of problems) console.log("FAIL " + p)
             view.grabToImage(r => { r.saveToFile(window.args[0]); console.log("saved " + window.args[0]); Qt.exit(problems.length ? 1 : 0) })
         }

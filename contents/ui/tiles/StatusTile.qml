@@ -24,10 +24,16 @@ Item {
             height: width
             radius: width / 2
             color: tile.dotColor
+            Behavior on color {
+                enabled: root.animationDuration > 0
+                ColorAnimation { duration: root.animationDuration }
+            }
             Layout.alignment: Qt.AlignVCenter
         }
 
         DynamicIcon {
+
+            animationDuration: root.animationDuration
             name: model.icon
             color: tile.dotColor
             visible: !!model.icon && !tile.narrow

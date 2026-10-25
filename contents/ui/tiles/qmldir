@@ -4,3 +4,4 @@ SwitchTile 1.0 SwitchTile.qml
 StatusTile 1.0 StatusTile.qml
 ComboTile 1.0 ComboTile.qml
 ThermostatTile 1.0 ThermostatTile.qml
+CountingLabel 1.0 CountingLabel.qml

@@ -30,7 +30,7 @@ KCM.ScrollViewKCM {
         "tileOpacity", "tileCustomColor", "tileColor", "tileRadius", "tileBorder", "levelBorder",
         "tileScale", "tileSpacing", "labelScale", "valueScale", "showMinMax", "showTrend",
         "graphHeight", "graphLineWidth", "graphFill", "graphCustomColor", "graphColor",
-        "colorSource", "haTheme", "valueCustomColor", "valueColor", "labelCustomColor", "labelColor"
+        "colorSource", "haTheme", "valueCustomColor", "valueColor", "labelCustomColor", "labelColor", "animations"
     ]
 
     function backupData() {

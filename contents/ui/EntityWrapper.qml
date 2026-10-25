@@ -44,6 +44,10 @@ MouseArea {
                     border.color: levelFrame ? root.levelColor(model.level)
                         : activeFrame ? root.accentColor
                         : Qt.rgba(root.textColor.r, root.textColor.g, root.textColor.b, 0.08)
+                    Behavior on border.color {
+                        enabled: root.animationDuration > 0
+                        ColorAnimation { duration: root.animationDuration }
+                    }
                 }
 
                 // Hover for own tile backgrounds; the Plasma button frames below have their own,
@@ -173,7 +177,13 @@ MouseArea {
                         height: parent.height - 2 * y
                         width: position * (parent.width - 2 * x)
                         color: root.accentColor
-                        opacity: 0.6
+                        // fades in when the light is switched on
+                        opacity: 0
+                        Component.onCompleted: opacity = 0.6
+                        Behavior on opacity {
+                            enabled: root.animationDuration > 0
+                            NumberAnimation { duration: root.animationDuration }
+                        }
                         Behavior on width {
                             NumberAnimation { duration: Kirigami.Units.shortDuration }
                         }

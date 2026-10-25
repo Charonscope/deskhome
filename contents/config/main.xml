@@ -66,6 +66,9 @@
     <entry name="labelColor" type="Color">
       <default>#cccccc</default>
     </entry>
+    <entry name="animations" type="bool">
+      <default>true</default>
+    </entry>
     <entry name="tileRadius" type="int">
       <default>8</default>
     </entry>

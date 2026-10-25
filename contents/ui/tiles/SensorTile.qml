@@ -59,6 +59,7 @@ Item {
             spacing: Kirigami.Units.smallSpacing
             Layout.fillWidth: true
             DynamicIcon {
+                animationDuration: root.animationDuration
                 id: headerIcon
                 name: model.icon
                 color: tile.levelColor
@@ -89,8 +90,8 @@ Item {
             }
         }
 
-        PlasmaComponents3.Label {
-            text: model.value
+        CountingLabel {
+            value: model.value
             color: tile.levelColor
             font.pixelSize: Kirigami.Units.gridUnit * (showHistory ? 1.3 : 1.8) * root.tileScale * root.look.valueScale / 100
             font.weight: Font.Bold

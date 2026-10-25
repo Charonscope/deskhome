@@ -30,6 +30,8 @@ Item {
         spacing: Kirigami.Units.smallSpacing
 
         DynamicIcon {
+
+            animationDuration: root.animationDuration
             name: model.icon
             color: tile.iconColor
             opacity: wrapper.pending ? 0.5 : 1
