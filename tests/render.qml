@@ -105,8 +105,8 @@ ApplicationWindow {
                 add({ entity_id: "sensor.fan_rpm", name: "Fan speed", kind: "sensor", value: "1000 rpm", num: 1000, unit: "rpm", state: "1000", level: 0, icon: "mdi:fan", colspan: 1, history_hours: 0, domain: "sensor", active: false })
                 add({ entity_id: "climate.living", heading: "Heating", name: "Living room", kind: "thermostat", value: "Auto", num: NaN, state: "auto", level: 0, icon: "mdi:thermostat", colspan: 1, history_hours: 0, domain: "climate", active: false, current_temp: 21.9, target_temp: 21, current_humidity: 52, hvac_action: "heating" })
                 add({ entity_id: "light.desk", heading: "Lights", name: "Desk lamp", kind: "switch", value: "on", num: NaN, state: "on", level: 0, icon: "mdi:lightbulb", colspan: 0.5, history_hours: 0, domain: "light", active: true, brightness_pct: 60, light_color: "#ffcc66" })
-                add({ entity_id: "light.kitchen", last_changed: new Date(2026, 9, 25, 11, 55).getTime(), name: "Kitchen", kind: "switch", value: "off", num: NaN, state: "off", level: 0, icon: "mdi:lightbulb-outline", colspan: 0.5, history_hours: 0, domain: "light", active: false })
-                add({ entity_id: "binary_sensor.hall", name: "Hallway motion", kind: "status", value: "unavailable", num: NaN, state: "unavailable", level: 2, icon: "mdi:motion-sensor", colspan: 1, history_hours: 0, domain: "binary_sensor", active: false })
+                add({ entity_id: "light.kitchen", name: "Kitchen", kind: "switch", value: "off", num: NaN, state: "off", level: 0, icon: "mdi:lightbulb-outline", colspan: 0.5, history_hours: 0, domain: "light", active: false })
+                add({ entity_id: "binary_sensor.hall", last_changed: new Date(2026, 9, 25, 11, 55).getTime(), name: "Hallway motion", kind: "status", value: "unavailable", num: NaN, state: "unavailable", level: 2, icon: "mdi:motion-sensor", colspan: 1, history_hours: 0, domain: "binary_sensor", active: false })
                 // hidden while ok -> must show up in the "1 more check OK" summary tile
                 add({ entity_id: "sensor.battery_ok", name: "Bedroom battery", kind: "status", value: "100%", num: 100, state: "100", level: 0, icon: "mdi:battery", colspan: 1, history_hours: 0, domain: "sensor", active: false, hide_when_ok: true })
             }
@@ -144,7 +144,7 @@ ApplicationWindow {
     }
 
     readonly property var valueTexts: ["12.4 °C", "23.7 °C", "45%", "1000 rpm"]
-    readonly property var expectedTexts: ["12.4 °C", "Outside", "Outside humidity", "Desk climate", "45%", "Fan speed", "1000 rpm", "Heating", "Lights", "Weak batteries", "Hall sensor battery", "8 %", "Front door battery", "Living room", "heating", "Desk lamp", "Kitchen", "Off · 5 min ago", "Hallway motion", "Late tile", "1 more check OK"]
+    readonly property var expectedTexts: ["12.4 °C", "Outside", "Outside humidity", "Desk climate", "45%", "Fan speed", "1000 rpm", "Heating", "Lights", "Weak batteries", "Hall sensor battery", "8 %", "Front door battery", "Living room", "heating", "Desk lamp", "Kitchen", "Hallway motion", "unavailable · 5 min ago", "Late tile", "1 more check OK"]
 
     FullRepresentation {
         id: view
