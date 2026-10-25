@@ -17,8 +17,10 @@ export function EntityUpdate(config = {}, update = {}, entity = {}, options = {}
     this.unit = this.attributes.unit_of_measurement || ''
     this.device_class = this.attributes.device_class || ''
     if (!this.icon) this.icon = fallbackIcon(config.domain, this.device_class, this.active)
+    // rgb_color may come back from the ListModel as an array-like object (not an Array) when
+    // an update only carries other attributes, e.g. a new brightness
     const rgb = this.attributes.rgb_color
-    this.light_color = Array.isArray(rgb) && rgb.length === 3 ? `#${rgb.map(c => (+c).toString(16).padStart(2, '0')).join('')}` : ''
+    this.light_color = rgb && rgb.length === 3 ? `#${[rgb[0], rgb[1], rgb[2]].map(c => Math.round(+c).toString(16).padStart(2, '0')).join('')}` : ''
     const b = this.attributes.brightness
     this.brightness_pct = b === undefined || b === null ? -1 : Math.round(b / 2.55)
     // thermostats (climate)

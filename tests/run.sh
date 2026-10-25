@@ -28,6 +28,7 @@ run syntax bash -c "\"$QMLLINT\" --bare -I contents/ui contents/ui/*.qml content
 run i18n-static python3 tests/check_i18n.py
 run i18n-engine timeout 30 "$QML" tests/i18n.qml
 run themes timeout 30 "$QML" tests/themes.qml
+run entity-model timeout 30 "$QML" tests/model.qml
 run entity-search timeout 30 "$QML" tests/search.qml
 run battery-watch timeout 30 "$QML" tests/battery.qml
 run settings-pages timeout 30 "$QML" tests/pages.qml
