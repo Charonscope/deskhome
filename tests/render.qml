@@ -76,6 +76,11 @@ ApplicationWindow {
         property bool tileBackgrounds: true
         property bool connectionLost: !ha.ready
         property string connectionMessage: tr("conn.lost", "14:05")
+        // two weak batteries below a threshold of 20 %
+        property var batteries: ({ enabled: true, total: 12, threshold: 20, low: [
+            { entity_id: "sensor.hall_battery", name: "Hall sensor battery", level: 8 },
+            { entity_id: "sensor.door_battery", name: "Front door battery", level: 17 }
+        ] })
     }
 
     QtObject {
@@ -136,7 +141,7 @@ ApplicationWindow {
     }
 
     readonly property var valueTexts: ["12.4 °C", "23.7 °C", "45%"]
-    readonly property var expectedTexts: ["12.4 °C", "Outside", "Outside humidity", "Desk climate", "45%", "Heating", "Lights", "Living room", "heating", "Desk lamp", "Kitchen", "Hallway motion", "Late tile", "1 more check OK"]
+    readonly property var expectedTexts: ["12.4 °C", "Outside", "Outside humidity", "Desk climate", "45%", "Heating", "Lights", "Weak batteries", "Hall sensor battery", "8 %", "Front door battery", "Living room", "heating", "Desk lamp", "Kitchen", "Hallway motion", "Late tile", "1 more check OK"]
 
     FullRepresentation {
         id: view

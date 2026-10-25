@@ -116,6 +116,13 @@ PlasmoidItem {
         language: root.lang
     }
 
+    BatteryWatch {
+        id: batteries
+        client: root.ha
+        threshold: plasmoid.configuration.batteryThreshold
+    }
+    readonly property alias batteries: batteries
+
     Notifications {
         id: notifications
     }

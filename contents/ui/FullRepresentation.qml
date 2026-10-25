@@ -82,6 +82,12 @@ PlasmaExtras.Representation {
 
                 // How many "only when abnormal" tiles are currently ok (and therefore hidden)
                 property int hiddenOkCount: 0
+                // weak batteries (BatteryWatch); all fine counts as one more passed check
+                readonly property var weakBatteries: root.batteries?.low ?? []
+                readonly property bool batteriesOk: !!root.batteries?.enabled && root.batteries.total > 0 && !weakBatteries.length
+                readonly property int okCount: hiddenOkCount + (batteriesOk ? 1 : 0)
+                readonly property int batteryRowHeight: Math.ceil(Kirigami.Units.gridUnit * 1.2 * root.labelGrow)
+                property var batteryPosition: ({ x: 0, y: 0, width: 0, height: 0 })
                 function recountHidden() {
                     let n = 0
                     for (let i = 0; i < store.itemModel.count; i++) {
@@ -132,7 +138,15 @@ PlasmaExtras.Representation {
                         const height = (e.kind === "sensor" || e.kind === "combo") && e.history_hours > 0 || e.kind === "thermostat" ? tileHeight : compactTileHeight
                         result.push(put(span, height))
                     }
-                    if (hiddenOkCount > 0) okPosition = put(Math.min(2, columns), compactTileHeight)
+                    if (weakBatteries.length) {
+                        if (column > 0) {
+                            y += rowHeight + spacing
+                            column = 0
+                            rowHeight = 0
+                        }
+                        batteryPosition = put(columns, Kirigami.Units.smallSpacing * 2 + batteryRowHeight * (weakBatteries.length + 1))
+                    }
+                    if (okCount > 0) okPosition = put(Math.min(2, columns), compactTileHeight)
                     positions = result
                     headings = headingList
                     contentHeight = column === 0 && rowHeight === 0 ? 0 : y + rowHeight
@@ -143,7 +157,8 @@ PlasmaExtras.Representation {
                 onTileHeightChanged: schedulePlace()
                 onCompactTileHeightChanged: schedulePlace()
                 onSpacingChanged: schedulePlace()
-                onHiddenOkCountChanged: schedulePlace()
+                onOkCountChanged: schedulePlace()
+                onWeakBatteriesChanged: schedulePlace()
                 Component.onCompleted: {
                     recountHidden()
                     place()
@@ -216,6 +231,73 @@ PlasmaExtras.Representation {
                     }
                 }
 
+                // Weak batteries, lowest first; a click opens the history in Home Assistant
+                Rectangle {
+                    visible: opacity > 0
+                    opacity: tileGrid.weakBatteries.length ? 1 : 0
+                    Behavior on opacity {
+                        enabled: root.animationDuration > 0
+                        NumberAnimation { duration: root.animationDuration }
+                    }
+                    x: tileGrid.batteryPosition.x
+                    y: tileGrid.batteryPosition.y
+                    width: tileGrid.batteryPosition.width
+                    height: tileGrid.batteryPosition.height
+                    radius: root.look.tileRadius
+                    color: root.tileFillColor
+                    border.width: root.look.levelBorder ? 1.5 : 0
+                    border.color: root.warnColor
+                    Column {
+                        anchors.fill: parent
+                        anchors.margins: Kirigami.Units.smallSpacing
+                        RowLayout {
+                            width: parent.width
+                            height: tileGrid.batteryRowHeight
+                            spacing: Kirigami.Units.smallSpacing
+                            DynamicIcon {
+                                name: "mdi:battery-alert"
+                                color: root.warnColor
+                                Layout.preferredWidth: Kirigami.Units.iconSizes.small * root.labelGrow
+                                Layout.preferredHeight: Kirigami.Units.iconSizes.small * root.labelGrow
+                            }
+                            PlasmaComponents3.Label {
+                                text: root.tr("battery.title")
+                                font.pointSize: root.smallPt
+                                font.weight: Font.DemiBold
+                                color: root.labelColor
+                                Layout.fillWidth: true
+                            }
+                        }
+                        Repeater {
+                            model: tileGrid.weakBatteries
+                            delegate: MouseArea {
+                                width: parent.width
+                                height: tileGrid.batteryRowHeight
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: Qt.openUrlExternally(`${root.url}/history?entity_id=${encodeURIComponent(modelData.entity_id)}`)
+                                RowLayout {
+                                    anchors.fill: parent
+                                    spacing: Kirigami.Units.smallSpacing
+                                    PlasmaComponents3.Label {
+                                        text: modelData.name
+                                        elide: Text.ElideRight
+                                        font.pointSize: root.defaultPt
+                                        color: root.labelColor
+                                        Layout.fillWidth: true
+                                    }
+                                    PlasmaComponents3.Label {
+                                        text: Math.round(modelData.level) + " %"
+                                        font.pointSize: root.defaultPt
+                                        font.weight: Font.Bold
+                                        // half the threshold or less is critical
+                                        color: modelData.level <= root.batteries.threshold / 2 ? root.critColor : root.warnColor
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
                 Repeater {
                     model: tileGrid.headings
                     delegate: Item {
@@ -251,7 +333,7 @@ PlasmaExtras.Representation {
 
                 Rectangle {
                     visible: opacity > 0
-                    opacity: tileGrid.hiddenOkCount > 0 ? 1 : 0
+                    opacity: tileGrid.okCount > 0 ? 1 : 0
                     Behavior on opacity {
                         enabled: root.animationDuration > 0
                         NumberAnimation { duration: root.animationDuration }
@@ -275,7 +357,7 @@ PlasmaExtras.Representation {
                             Layout.preferredHeight: Kirigami.Units.iconSizes.medium
                         }
                         PlasmaComponents3.Label {
-                            text: tileGrid.hiddenOkCount === 1 ? root.tr("ok.one") : root.tr("ok.many", tileGrid.hiddenOkCount)
+                            text: tileGrid.okCount === 1 ? root.tr("ok.one") : root.tr("ok.many", tileGrid.okCount)
                             font.pointSize: root.defaultPt
                             color: root.okColor
                             wrapMode: Text.WordWrap
