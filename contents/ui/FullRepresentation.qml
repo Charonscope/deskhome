@@ -158,7 +158,14 @@ PlasmaExtras.Representation {
                     contentHeight = column === 0 && rowHeight === 0 ? 0 : y + rowHeight
                 }
 
-                function schedulePlace() { Qt.callLater(place) }
+                // a timer instead of Qt.callLater: it dies with the view, so no placement runs
+                // on a view that was already destroyed (the grid is rebuilt when tiles change)
+                function schedulePlace() { placeTimer.restart() }
+                Timer {
+                    id: placeTimer
+                    interval: 0
+                    onTriggered: tileGrid.place()
+                }
                 onWidthChanged: schedulePlace()
                 onTileHeightChanged: schedulePlace()
                 onCompactTileHeightChanged: schedulePlace()

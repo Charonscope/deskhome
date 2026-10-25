@@ -149,7 +149,7 @@ KCM.ScrollViewKCM {
                 icon.name: 'view-list-tree'
                 text: tr("area.add")
                 enabled: !!entityAreas.areas.length
-                onClicked: areaDialogComponent.createObject(page).open()
+                onClicked: openAreaDialog()
             }
             Button {
                 icon.name: 'application-menu'
@@ -322,6 +322,10 @@ KCM.ScrollViewKCM {
             signal itemAccepted(int index, var item)
             readonly property bool acceptable: !!itemForm.item?.entity_id
             padding: Kirigami.Units.largeSpacing
+            // fixed size: sized by its content, the dialog and its form kept resizing each other
+            // (binding loop on y); the content scrolls when it is taller
+            preferredWidth: Kirigami.Units.gridUnit * 32
+            preferredHeight: Kirigami.Units.gridUnit * 30
             standardButtons: Kirigami.Dialog.Ok | Kirigami.Dialog.Cancel
             onRejected: close()
             onAccepted: itemAccepted(index, item) || close()
@@ -402,6 +406,10 @@ KCM.ScrollViewKCM {
                 }
             }
         }
+    }
+
+    function openAreaDialog() {
+        areaDialogComponent.createObject(page).open()
     }
 
     function openDialog(data, index = -1) {

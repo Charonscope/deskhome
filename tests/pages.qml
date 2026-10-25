@@ -4,6 +4,8 @@
 import QtQuick
 import QtQuick.Controls
 
+import "../contents/code/model.mjs" as Model
+
 ApplicationWindow {
     id: window
     visible: true
@@ -39,9 +41,18 @@ ApplicationWindow {
             onStatusChanged: {
                 if (status !== Loader.Ready && status !== Loader.Error) return
                 const ok = status === Loader.Ready
+                // open the tile dialogs too (they are only created on demand)
+                if (ok && window.pages[index][0] === "ConfigItems.qml") Qt.callLater(() => {
+                    // the page loads services from HA before a dialog can be opened; use the fake ones
+                    item.services = window.services
+                    item.openDialog(new Model.ConfigEntity({ entity_id: "sensor.test" }))
+                    item.entityAreas = { areas: [{ area_id: "a", name: "Area", entities: [] }], areaOf: {} }
+                    item.openAreaDialog()
+                })
                 console.log((ok ? "PASS " : "FAIL ") + window.pages[index][0])
                 if (!ok) window.failed++
-                if (++window.done === window.pages.length) Qt.exit(window.failed ? 1 : 0)
+                // a moment later, so warnings from the opened dialogs end up in the log
+                if (++window.done === window.pages.length) exitTimer.start()
             }
         }
     }
@@ -53,6 +64,12 @@ ApplicationWindow {
         console.log((w ? "PASS " : "FAIL ") + "TileEditWindow.qml" + (w ? "" : ": " + c.errorString()))
         if (!w) window.failed++
         else w.destroy()
+    }
+
+    Timer {
+        id: exitTimer
+        interval: 1000
+        onTriggered: Qt.exit(window.failed ? 1 : 0)
     }
 
     Timer {

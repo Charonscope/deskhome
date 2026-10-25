@@ -12,7 +12,7 @@ mkdir -p "$OUT"
 status=0
 
 # QML messages that mean something in the widget is broken
-BROKEN='already taken|ReferenceError|TypeError|is not a type|Type [A-Za-z]+ unavailable|Non-existent attached object|Cannot assign|Unable to assign|is not installed|Syntax error|Expected token'
+BROKEN='already taken|ReferenceError|TypeError|is not a type|Type [A-Za-z]+ unavailable|Non-existent attached object|Cannot assign|Unable to assign|is not installed|Syntax error|Expected token|Binding loop'
 
 run() {
     local name=$1; shift
