@@ -36,7 +36,7 @@ jobs:
     steps:
       - name: Install Qt and KDE QML modules
         run: |
-          pacman -Syu --noconfirm --needed git python ttf-dejavu qt6-declarative qt6-websockets \
+          pacman -Syu --noconfirm --needed git python ttf-dejavu kiconthemes qt6-declarative qt6-websockets \
             kirigami kcmutils libplasma plasma5support ksvg kdeclarative kitemmodels knotifications
 
       - uses: actions/checkout@v4

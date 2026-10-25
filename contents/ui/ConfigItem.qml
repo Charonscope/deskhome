@@ -4,6 +4,7 @@ import QtQuick.Layouts
 
 import org.kde.kirigami as Kirigami
 import org.kde.kquickcontrols as KQControls
+import org.kde.iconthemes as KIconThemes
 
 import "components"
 import "../code/formatter.mjs" as Formatter
@@ -100,6 +101,43 @@ Kirigami.FormLayout {
             name: iconName.text || iconName.placeholderText
             height: iconName.height
             width: height
+        }
+        // pick from the bundled Material Design icons …
+        ToolButton {
+            icon.name: "view-list-icons"
+            text: tr("icon.pick")
+            display: AbstractButton.IconOnly
+            ToolTip.text: text
+            ToolTip.visible: hovered
+            onClicked: {
+                iconPicker.current = iconName.text
+                iconPicker.open()
+            }
+        }
+        // … or from the system icon theme (KDE's own icon dialog, created on first use)
+        ToolButton {
+            icon.name: "preferences-desktop-icons"
+            text: tr("icon.pickSystem")
+            display: AbstractButton.IconOnly
+            ToolTip.text: text
+            ToolTip.visible: hovered
+            onClicked: {
+                systemIcons.active = true
+                systemIcons.item.open()
+            }
+        }
+        IconPicker {
+            id: iconPicker
+            onPicked: icon => iconName.text = icon
+        }
+        Loader {
+            id: systemIcons
+            active: false
+            sourceComponent: KIconThemes.IconDialog {
+                onIconNameChanged: name => {
+                    if (name) iconName.text = "plasma:" + name
+                }
+            }
         }
     }
 

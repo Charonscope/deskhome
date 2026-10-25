@@ -32,6 +32,7 @@ run entity-model timeout 30 "$QML" tests/model.qml
 run entity-search timeout 30 "$QML" tests/search.qml
 run battery-watch timeout 30 "$QML" tests/battery.qml
 run settings-pages timeout 30 "$QML" tests/pages.qml
+run icon-picker timeout 30 "$QML" tests/iconpicker.qml
 run render-connected timeout 30 "$QML" tests/render.qml -- "$OUT/connected.png" ok
 run render-disconnected timeout 30 "$QML" tests/render.qml -- "$OUT/disconnected.png" lost
 run render-large-values timeout 30 "$QML" tests/render.qml -- "$OUT/large-values.png" big
