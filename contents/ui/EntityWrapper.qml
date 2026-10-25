@@ -141,7 +141,8 @@ MouseArea {
             }
         },
         Loader {
-            active: model.active && !!scroll_action?.service && (scroll_action.domain !== 'light' || model.brightness_pct >= 0)
+            // thermostat tiles handle the wheel themselves (a configured scroll action would send twice)
+            active: model.active && model.kind !== "thermostat" && !!scroll_action?.service && (scroll_action.domain !== 'light' || model.brightness_pct >= 0)
             anchors.fill: parent
             parent: socket.background || socket
             sourceComponent: Component {

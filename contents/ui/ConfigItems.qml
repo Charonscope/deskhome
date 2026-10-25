@@ -7,6 +7,7 @@ import org.kde.kcmutils as KCM
 
 import "../code/model.mjs" as Model
 import "../code/i18n.mjs" as I18n
+import "../code/backup.mjs" as Backup
 import "components"
 import "."
 
@@ -25,28 +26,10 @@ KCM.ScrollViewKCM {
     property bool infoIsError: false
 
     // Everything that belongs to the appearance and into a full backup
-    readonly property var lookKeys: [
-        "flat", "activeFrame", "compactEntity", "compactScaleIconsToFit", "compactIconSpacing", "itemDisplayDefault",
-        "tileOpacity", "tileCustomColor", "tileColor", "tileRadius", "tileBorder", "levelBorder",
-        "tileScale", "tileSpacing", "labelScale", "valueScale", "showMinMax", "showTrend",
-        "graphHeight", "graphLineWidth", "graphFill", "graphCustomColor", "graphColor",
-        "colorSource", "haTheme", "valueCustomColor", "valueColor", "labelCustomColor", "labelColor", "animations"
-    ]
+    readonly property var lookKeys: Backup.LOOK_KEYS
 
     function backupData() {
-        const look = {}
-        for (const k of lookKeys) {
-            const v = plasmoid.configuration[k]
-            look[k] = typeof v === "object" ? v.toString() : v
-        }
-        return JSON.stringify({
-            format: "deskhome",
-            version: 1,
-            exported: new Date().toISOString(),
-            url: plasmoid.configuration.url,
-            items: JSON.parse(cfg_items || "[]"),
-            look
-        }, null, 2)
+        return Backup.backupData(plasmoid.configuration, JSON.parse(cfg_items || "[]"))
     }
 
     // Accepts old .hapi files (tile list only) and full backups
@@ -135,7 +118,8 @@ KCM.ScrollViewKCM {
             Button {
                 icon.name: 'list-add'
                 text: tr("items.add")
-                onClicked: openDialog(new Model.ConfigEntity())
+                // new tiles start with the chosen default display (panel and/or full view)
+                onClicked: openDialog(new Model.ConfigEntity({ display: cfg_itemDisplayDefault || DisplayFilterModel.Full }))
                 Layout.fillWidth: true
             }
             Button {

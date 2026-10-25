@@ -7,6 +7,8 @@ import org.kde.kirigami as Kirigami
 import "."
 import "../code/defaults.mjs" as Defaults
 import "../code/i18n.mjs" as I18n
+import "../code/backup.mjs" as Backup
+import "components"
 
 PlasmoidItem {
     id: root
@@ -125,6 +127,13 @@ PlasmoidItem {
     function saveTileConfigs(items) {
         // same format as the settings page: empty values are left out
         plasmoid.configuration.items = JSON.stringify(items, (_, value) => value || (value === 0 ? 0 : undefined))
+        // keep the automatic backup file current, as the settings dialog does when saving
+        if (plasmoid.configuration.autoBackupFile) {
+            backupFile.write(plasmoid.configuration.autoBackupFile, Backup.backupData(plasmoid.configuration, JSON.parse(plasmoid.configuration.items)))
+        }
+    }
+    File {
+        id: backupFile
     }
     function updateTile(index, changes) {
         const items = tileConfigs()
