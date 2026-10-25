@@ -22,6 +22,8 @@ Window {
     property var entityAreas: ({ areas: [], areaOf: {} })
     property var services: ({ getNames: () => [], getService: () => null })
     property bool loading: true
+    // for the tests: height of the form inside the scroll area
+    readonly property real formHeight: scroll.contentHeight
 
     readonly property var item: new Model.ConfigEntity(config)
     function tr(key, ...args) { return I18n.tr(plasmoid.configuration.language, key, ...args) }
@@ -66,18 +68,25 @@ Window {
             text: window.tr("menu.editOffline")
         }
 
+        // the content size is set explicitly: with more than one child the ScrollView cannot
+        // determine it and then does not scroll at all (the form was cut off at the bottom)
         ScrollView {
+            id: scroll
             Layout.fillWidth: true
             Layout.fillHeight: true
             contentWidth: availableWidth
+            contentHeight: form.implicitHeight
             Loader {
-                width: parent.width
+                id: form
+                width: scroll.availableWidth
                 active: !window.loading
                 sourceComponent: ConfigItem {
                     item: window.item
                 }
             }
+
             BusyIndicator {
+                parent: scroll
                 anchors.centerIn: parent
                 visible: window.loading
             }

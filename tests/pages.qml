@@ -62,8 +62,17 @@ ApplicationWindow {
         const c = Qt.createComponent(Qt.resolvedUrl("../contents/ui/TileEditWindow.qml"))
         const w = c.status === Component.Ready ? c.createObject(window, { index: 0, config: { entity_id: "sensor.test", name: "Test" } }) : null
         console.log((w ? "PASS " : "FAIL ") + "TileEditWindow.qml" + (w ? "" : ": " + c.errorString()))
-        if (!w) window.failed++
-        else w.destroy()
+        if (!w) {
+            window.failed++
+            return
+        }
+        // the form must have a height, otherwise the window cannot scroll (1.3.0)
+        Qt.callLater(() => {
+            const ok = (w.formHeight ?? 0) > 100
+            console.log((ok ? "PASS " : "FAIL ") + "TileEditWindow scrolls (form height " + w.formHeight + ")")
+            if (!ok) window.failed++
+            w.destroy()
+        })
     }
 
     Timer {
