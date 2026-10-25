@@ -35,7 +35,7 @@ MouseArea {
                 Rectangle {
                     readonly property bool levelFrame: root.look.levelBorder && (model.level ?? 0) > 0
                     // with own tile backgrounds "active" is drawn here, matching the tile radius
-                    readonly property bool activeFrame: root.tileBackgrounds && !!model.active
+                    readonly property bool activeFrame: root.tileBackgrounds && !!root.look.activeFrame && !!model.active
                     anchors.fill: parent
                     radius: root.look.tileRadius
                     color: root.tileFillColor

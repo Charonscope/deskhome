@@ -23,7 +23,7 @@ ApplicationWindow {
         property var configuration: ({
             url: "http://ha.test:8123", language: "en", flat: true,
             tileOpacity: 78, tileCustomColor: false, tileColor: "#2e3440", tileRadius: 8, tileBorder: true,
-            levelBorder: true, tileScale: 100, tileSpacing: 6, labelScale: 100, valueScale: 100,
+            levelBorder: true, activeFrame: true, tileScale: 100, tileSpacing: 6, labelScale: 100, valueScale: 100,
             showMinMax: true, showTrend: true, graphHeight: 42, graphLineWidth: 1.5, graphFill: true,
             graphCustomColor: false, graphColor: "#88c0d0"
         })

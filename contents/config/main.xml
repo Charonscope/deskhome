@@ -24,6 +24,9 @@
   </group>
   <group name="Look">
     <entry name="flat" type="bool">
+      <default>true</default>
+    </entry>
+    <entry name="activeFrame" type="bool">
       <default>false</default>
     </entry>
     <entry name="compactEntity" type="string">

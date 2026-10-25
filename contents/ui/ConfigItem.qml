@@ -32,9 +32,13 @@ Kirigami.FormLayout {
         readonly property int steps: 7
         Kirigami.FormData.label: tr("item.precision")
         visible: !isNaN(+source.state) && !attributeSelector.enabled
+        // undefined = automatic (about three significant digits), -1 = exactly as HA sends it
         model: [{
-            text: tr("item.precisionRaw", source.state),
+            text: tr("item.precisionAuto", Formatter.formatIfNumber(source.state, Formatter.getDefaultPrecision(String(source.state ?? "")))),
             value: undefined
+        }, {
+            text: tr("item.precisionRaw", source.state),
+            value: -1
         }, ...Array.from({ length: steps }, (_, i) => ({
             text: Formatter.formatIfNumber(source.state, i),
             value: i
@@ -43,7 +47,6 @@ Kirigami.FormLayout {
         valueRole: "value"
         onActivated: item.value_number_precision = currentValue
         initialValue: item.value_number_precision
-        Component.onCompleted: parent.onSourceChanged.connect(() => visible && selectByValue(Formatter.getDefaultPrecision(source.state)))
     }
 
     CheckableFormControl {

@@ -19,7 +19,6 @@ PlasmoidItem {
     toolTipSubText: connectionLost ? connectionMessage : ""
     
     readonly property string url: plasmoid.configuration.url
-    // Without a widget background every tile gets its own, so only the tiles are visible
     readonly property var look: plasmoid.configuration
     readonly property string lang: I18n.resolve(plasmoid.configuration.language)
     function tr(key, ...args) { return I18n.tr(lang, key, ...args) }
@@ -31,7 +30,9 @@ PlasmoidItem {
     readonly property real labelGrow: Math.max(1, labelScale)
     readonly property real defaultPt: Kirigami.Theme.defaultFont.pointSize * labelScale
     readonly property real smallPt: Kirigami.Theme.smallFont.pointSize * labelScale
-    readonly property bool tileBackgrounds: !(Plasmoid.effectiveBackgroundHints & (PlasmaCore.Types.StandardBackground | PlasmaCore.Types.TranslucentBackground))
+    // Own tile style (default): DeskHome draws the tiles itself, so opacity, color, radius
+    // and borders apply. Otherwise Plasma's button frames are used (fixed corners).
+    readonly property bool tileBackgrounds: look.flat
     property Client ha
 
     // Connection banner: only after a short grace period, so a normal start or a brief

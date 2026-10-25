@@ -26,7 +26,7 @@ KCM.ScrollViewKCM {
 
     // Everything that belongs to the appearance and into a full backup
     readonly property var lookKeys: [
-        "flat", "compactEntity", "compactScaleIconsToFit", "compactIconSpacing", "itemDisplayDefault",
+        "flat", "activeFrame", "compactEntity", "compactScaleIconsToFit", "compactIconSpacing", "itemDisplayDefault",
         "tileOpacity", "tileCustomColor", "tileColor", "tileRadius", "tileBorder", "levelBorder",
         "tileScale", "tileSpacing", "labelScale", "valueScale", "showMinMax", "showTrend",
         "graphHeight", "graphLineWidth", "graphFill", "graphCustomColor", "graphColor"

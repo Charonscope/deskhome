@@ -10,6 +10,7 @@ import "../code/i18n.mjs" as I18n
 
 KCM.SimpleKCM {
     property alias cfg_flat: flat.checked
+    property alias cfg_activeFrame: activeFrame.checked
     property alias cfg_compactScaleIconsToFit: compactScaleIconsToFit.checked
     property string cfg_compactEntity
     property int cfg_compactIconSpacing
@@ -60,8 +61,23 @@ KCM.SimpleKCM {
             Kirigami.FormData.label: tr("look.tiles")
         }
 
+        CheckBox {
+            id: flat
+            Kirigami.FormData.label: tr("look.frame")
+            text: tr("look.flat")
+        }
+
+        Label {
+            text: tr("look.bgHint")
+            wrapMode: Text.WordWrap
+            opacity: 0.7
+            Layout.maximumWidth: Kirigami.Units.gridUnit * 20
+        }
+
+
         ValueSlider {
             id: tileOpacity
+            enabled: flat.checked
             Kirigami.FormData.label: tr("look.opacity")
             from: 0
             to: 100
@@ -70,6 +86,7 @@ KCM.SimpleKCM {
         }
 
         RowLayout {
+            enabled: flat.checked
             Kirigami.FormData.label: tr("look.bgColor")
             CheckBox {
                 id: tileCustomColor
@@ -84,6 +101,7 @@ KCM.SimpleKCM {
 
         ValueSlider {
             id: tileRadius
+            enabled: flat.checked
             Kirigami.FormData.label: tr("look.radius")
             from: 0
             to: 24
@@ -93,13 +111,21 @@ KCM.SimpleKCM {
 
         CheckBox {
             id: tileBorder
+            enabled: flat.checked
             Kirigami.FormData.label: tr("look.border")
             text: tr("look.borderThin")
         }
 
         CheckBox {
             id: levelBorder
+            enabled: flat.checked
             text: tr("look.levelBorder")
+        }
+
+        CheckBox {
+            id: activeFrame
+            enabled: flat.checked
+            text: tr("look.activeFrame")
         }
 
         ValueSlider {
@@ -118,19 +144,6 @@ KCM.SimpleKCM {
             to: 24
             stepSize: 1
             suffix: " px"
-        }
-
-        CheckBox {
-            id: flat
-            Kirigami.FormData.label: tr("look.frame")
-            text: tr("look.flat")
-        }
-
-        Label {
-            text: tr("look.bgHint")
-            wrapMode: Text.WordWrap
-            opacity: 0.7
-            Layout.maximumWidth: Kirigami.Units.gridUnit * 20
         }
 
         Item {
