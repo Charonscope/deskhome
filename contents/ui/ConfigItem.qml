@@ -79,6 +79,13 @@ Kirigami.FormLayout {
         Kirigami.FormData.label: tr("item.name")
     }
 
+    TextField {
+        text: item.heading || ''
+        placeholderText: tr("item.headingPlaceholder")
+        onTextChanged: item.heading = text.trim() || undefined
+        Kirigami.FormData.label: tr("item.heading")
+    }
+
     Row {
         Kirigami.FormData.label: tr("item.icon")
         spacing: Kirigami.Units.smallSpacing

@@ -65,6 +65,8 @@ const STRINGS = Object.freeze({
     // Single tile
     "item.entity": ["Entity:", "Entity:"],
     "item.entitySearch": ["Name, Bereich oder Entity-ID suchen …", "Search name, area or entity id …"],
+    "item.heading": ["Überschrift davor:", "Heading above:"],
+    "item.headingPlaceholder": ["z. B. Balkon – beginnt eine neue Zeile", "e.g. Balcony – starts a new row"],
     "item.precision": ["Nachkommastellen:", "Precision:"],
     "item.precisionAuto": ["Automatisch (%1)", "Automatic (%1)"],
     "item.precisionRaw": ["%1 (unverändert)", "%1 (raw)"],

@@ -58,6 +58,8 @@ export function Entity(config = {}, data = {}, options = {}) {
     this.history_hours = historyHoursOf(config)
     this.hide_when_ok = !!config.hide_when_ok
     this.second_entity_id = config.second_entity_id || ''
+    // heading shown above this tile, starting a new row
+    this.heading = config.heading || ''
     this.value2 = ''
     this.num2 = NaN
 }
@@ -105,6 +107,7 @@ export function ConfigEntity(config = {}) {
     this.ok_states = config.ok_states
     this.hide_when_ok = config.hide_when_ok
     this.second_entity_id = config.second_entity_id
+    this.heading = config.heading
 }
 
 function addActionProperty(o, name) {

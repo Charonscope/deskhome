@@ -67,6 +67,7 @@ PlasmaExtras.Representation {
                 readonly property int minTileWidth: Kirigami.Units.gridUnit * 9 * root.tileScale * (1 + (root.labelGrow - 1) * 0.5)
                 readonly property int tileHeight: Kirigami.Units.gridUnit * 4 * root.tileScale * (1 + (root.labelGrow - 1) * 0.6)
                 readonly property int compactTileHeight: Kirigami.Units.gridUnit * 2.5 * root.tileScale * root.labelGrow
+                readonly property int headingHeight: Math.ceil(Kirigami.Units.gridUnit * 1.6 * root.labelGrow)
                 readonly property int spacing: root.look.tileSpacing
                 width: scroll.availableWidth
                 implicitHeight: contentHeight
@@ -93,15 +94,14 @@ PlasmaExtras.Representation {
                 // Geometry of every visible tile ({x, y, width, height}) plus the summary tile
                 property var positions: []
                 property var okPosition: ({ x: 0, y: 0, width: 0, height: 0 })
+                // headings above tiles: { text, x, y, width, height }
+                property var headings: []
                 property real contentHeight: 0
-
-                function entryOf(row) {
-                    return store.itemModel.get(visibleTiles.mapToSource(visibleTiles.index(row, 0)).row) || {}
-                }
 
                 function place() {
                     const result = []
-                    let column = 0, y = 0, rowHeight = 0
+                    const headingList = []
+                    let column = 0, y = 0, rowHeight = 0, previousRow = -1
                     const put = (span, height) => {
                         if (column + span > columns) {
                             y += rowHeight + spacing
@@ -114,7 +114,19 @@ PlasmaExtras.Representation {
                         return p
                     }
                     for (let i = 0; i < visibleTiles.count; i++) {
-                        const e = entryOf(i)
+                        const row = visibleTiles.mapToSource(visibleTiles.index(i, 0)).row
+                        const e = store.itemModel.get(row) || {}
+                        // a heading of a hidden tile moves on to the next visible one
+                        let heading = ""
+                        for (let r = previousRow + 1; r <= row; r++) heading = store.itemModel.get(r)?.heading || heading
+                        previousRow = row
+                        if (heading) {
+                            if (column > 0 || rowHeight > 0) y += rowHeight + spacing
+                            headingList.push({ text: heading, x: 0, y: y, width: width, height: headingHeight })
+                            y += headingHeight
+                            column = 0
+                            rowHeight = 0
+                        }
                         const span = Math.min(Math.round((e.colspan || 1) * 2), columns)
                         // only sensors with a graph need the full height
                         const height = (e.kind === "sensor" || e.kind === "combo") && e.history_hours > 0 || e.kind === "thermostat" ? tileHeight : compactTileHeight
@@ -122,6 +134,7 @@ PlasmaExtras.Representation {
                     }
                     if (hiddenOkCount > 0) okPosition = put(Math.min(2, columns), compactTileHeight)
                     positions = result
+                    headings = headingList
                     contentHeight = column === 0 && rowHeight === 0 ? 0 : y + rowHeight
                 }
 
@@ -199,6 +212,39 @@ PlasmaExtras.Representation {
                                 }
                                 return "EntityDelegateTile.qml"
                             }
+                        }
+                    }
+                }
+
+                Repeater {
+                    model: tileGrid.headings
+                    delegate: Item {
+                        x: modelData.x
+                        y: modelData.y
+                        width: modelData.width
+                        height: modelData.height
+                        PlasmaComponents3.Label {
+                            id: headingLabel
+                            anchors.left: parent.left
+                            anchors.leftMargin: Kirigami.Units.smallSpacing
+                            anchors.bottom: headingLine.top
+                            anchors.bottomMargin: 2
+                            text: modelData.text
+                            font.pointSize: root.defaultPt * 1.1
+                            font.weight: Font.DemiBold
+                            color: root.labelColor
+                            elide: Text.ElideRight
+                            width: parent.width - Kirigami.Units.smallSpacing
+                        }
+                        Rectangle {
+                            id: headingLine
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            anchors.bottom: parent.bottom
+                            anchors.bottomMargin: Kirigami.Units.smallSpacing
+                            height: 1
+                            color: root.labelColor
+                            opacity: 0.25
                         }
                     }
                 }
