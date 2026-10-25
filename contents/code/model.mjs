@@ -19,6 +19,19 @@ export function EntityUpdate(config = {}, update = {}, entity = {}, options = {}
     this.light_color = Array.isArray(rgb) && rgb.length === 3 ? `#${rgb.map(c => (+c).toString(16).padStart(2, '0')).join('')}` : ''
     const b = this.attributes.brightness
     this.brightness_pct = b === undefined || b === null ? -1 : Math.round(b / 2.55)
+    // thermostats (climate)
+    const a = this.attributes
+    this.current_temp = numberOr(a.current_temperature, NaN)
+    this.target_temp = numberOr(a.temperature, NaN)
+    this.temp_min = numberOr(a.min_temp, 7)
+    this.temp_max = numberOr(a.max_temp, 35)
+    this.temp_step = numberOr(a.target_temp_step, 0.5)
+    this.current_humidity = numberOr(a.current_humidity, NaN)
+    this.hvac_action = a.hvac_action || ''
+}
+
+function numberOr(v, fallback) {
+    return v === undefined || v === null || v === '' || isNaN(+v) ? fallback : +v
 }
 
 // Second value of a combo tile (e.g. humidity next to temperature)

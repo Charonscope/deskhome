@@ -123,6 +123,7 @@ Kirigami.FormLayout {
             { value: "combo", text: tr("item.type.combo") },
             { value: "switch", text: tr("item.type.switch") },
             { value: "status", text: tr("item.type.status") },
+            { value: "thermostat", text: tr("item.type.thermostat") },
             { value: "simple", text: tr("item.type.simple") }
         ]
         Component.onCompleted: currentIndex = Math.max(0, indexOfValue(item.tile || "auto"))

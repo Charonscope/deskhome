@@ -10,6 +10,7 @@ export function tileKind(config = {}, state = "") {
     const domain = config.domain
     if (TOGGLEABLE.includes(domain)) return "switch"
     if (domain === "binary_sensor") return "status"
+    if (domain === "climate") return "thermostat"
     if (NUMERIC_DOMAINS.includes(domain) && state !== "" && !isNaN(+state)) return "sensor"
     if (NUMERIC_DOMAINS.includes(domain) && (state === "unavailable" || state === "unknown")) return "sensor"
     return "simple"
@@ -41,7 +42,7 @@ const CLASS_ICONS = Object.freeze({
 })
 const DOMAIN_ICONS = Object.freeze({
     light: "lightbulb", switch: "toggle-switch", fan: "fan", input_boolean: "toggle-switch",
-    cover: "blinds", sensor: "eye", binary_sensor: "check-circle"
+    cover: "blinds", climate: "thermostat", sensor: "eye", binary_sensor: "check-circle"
 })
 
 // HA sends no icon attribute for many entities (the frontend derives it from device_class)

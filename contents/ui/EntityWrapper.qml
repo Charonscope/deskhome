@@ -10,7 +10,8 @@ import "tiles"
 MouseArea {
     id: control
     clip: true
-    enabled: !!actions.length
+    // thermostats have no click action but take the scroll wheel
+    enabled: !!actions.length || model.kind === "thermostat"
     hoverEnabled: true
     property bool flat: true
     property bool showBackground: false
@@ -87,7 +88,7 @@ MouseArea {
     PlasmaCore.ToolTipArea {
         id: tooltip
         anchors.fill: parent
-        subText: actions.map(c => c.item.tip).join("\n")
+        subText: actions.map(c => c.item.tip).concat(model.kind === "thermostat" ? [root.tr("tip.thermostat")] : []).join("\n")
     }
 
     function format(underscoredText) {
