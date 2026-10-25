@@ -56,6 +56,29 @@ BaseObject {
         return commandAsync({ type: "frontend/get_translations", category, language, integration })
     }
 
+    // Areas from the registries: { areas: [{ area_id, name }], areaOf: { entity_id: area name } }.
+    // An entity without its own area takes the area of its device.
+    function getAreas() {
+        return Promise.all([
+            commandAsync({ type: "config/area_registry/list" }),
+            commandAsync({ type: "config/device_registry/list" }).catch(() => []),
+            commandAsync({ type: "config/entity_registry/list_for_display" })
+        ]).then(([areas, devices, display]) => {
+            const areaName = {}
+            for (const a of areas) areaName[a.area_id] = a.name
+            const deviceArea = {}
+            for (const d of devices) deviceArea[d.id] = d.area_id
+            const areaOf = {}
+            for (const e of display.entities || []) {
+                const id = e.ai || deviceArea[e.di]
+                if (id && areaName[id]) areaOf[e.ei] = areaName[id]
+            }
+            const sorted = areas.map(a => ({ area_id: a.area_id, name: a.name }))
+            sorted.sort((a, b) => a.name.localeCompare(b.name))
+            return { areas: sorted, areaOf }
+        })
+    }
+
     function getThemes() {
         return commandAsync({ type: "frontend/get_themes" })
     }

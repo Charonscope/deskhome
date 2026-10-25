@@ -20,6 +20,8 @@ KCM.ScrollViewKCM {
     property ListModel items: ListModel { dynamicRoles: true }
     property var services: ({})
     property var entities: ({})
+    // { areas, areaOf } from Client.getAreas(); optional, the search also works without
+    property var entityAreas: ({ areas: [], areaOf: {} })
     property bool busy: true
     property Client ha
     property string infoMessage
@@ -216,6 +218,7 @@ KCM.ScrollViewKCM {
         return Promise.all([ha.getStates(), ha.getServices()])
             .then(([e, s]) => {
                 entities = arrayToObject(e, 'entity_id')
+                ha.getAreas().then(a => entityAreas = a, () => {})
                 services = s
                 busy = false
             }).catch(() => busy = false)

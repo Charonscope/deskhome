@@ -19,6 +19,7 @@ Window {
 
     // looked up by ConfigItem
     property var entities: ({})
+    property var entityAreas: ({ areas: [], areaOf: {} })
     property var services: ({ getNames: () => [], getService: () => null })
     property bool loading: true
 
@@ -42,6 +43,7 @@ Window {
             const byId = {}
             for (const e of states) byId[e.entity_id] = e
             entities = byId
+            ha.getAreas().then(a => entityAreas = a, () => {})
             services = s
             loading = false
         }, () => loading = false)

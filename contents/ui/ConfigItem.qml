@@ -15,16 +15,26 @@ Kirigami.FormLayout {
     property var item
     readonly property var source: item.entity_id && entities[item.entity_id] || {}
     readonly property list<string> itemServiceNames: services.getNames(item.domain)
+    // Suggestions with display name and area, so entities can be found without knowing their id
+    function entityChoices(filter) {
+        const areaOf = entityAreas?.areaOf || {}
+        return Object.keys(entities).filter(id => !filter || filter(id)).sort().map(id => ({
+            value: id,
+            title: entities[id].attributes?.friendly_name || id,
+            subtitle: areaOf[id] ? `${id} · ${areaOf[id]}` : id
+        }))
+    }
 
     TextField {
         Kirigami.FormData.label: tr("item.entity")
         text: item.entity_id
+        placeholderText: tr("item.entitySearch")
         onEditingFinished: {
             item.entity_id = text
             itemChanged()
         }
         Autocompletion {
-            model: Object.keys(entities).sort()
+            model: form.entityChoices()
         }
     }
 
@@ -142,7 +152,7 @@ Kirigami.FormLayout {
         placeholderText: "sensor.…"
         onTextChanged: item.second_entity_id = text.trim() || undefined
         Autocompletion {
-            model: Object.keys(entities).filter(e => e.startsWith("sensor.") || e.startsWith("number.") || e.startsWith("input_number.")).sort()
+            model: form.entityChoices(e => e.startsWith("sensor.") || e.startsWith("number.") || e.startsWith("input_number."))
         }
     }
 

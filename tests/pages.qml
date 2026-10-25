@@ -21,6 +21,7 @@ ApplicationWindow {
     // used by ConfigItem when it is shown inside the tile list
     property var services: ({ getNames: () => [], getService: () => ({ filterFields: () => [], findField: () => null }) })
     property var entities: ({})
+    property var entityAreas: ({ areas: [], areaOf: {} })
 
     readonly property var pages: [
         ["ConfigGeneral.qml", { cfg_url: "http://ha.test:8123", cfg_language: "de" }],
