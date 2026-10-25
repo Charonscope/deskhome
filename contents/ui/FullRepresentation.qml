@@ -13,17 +13,45 @@ import QtQuick.Window
 import "components"
 
 PlasmaExtras.Representation {
-    // Shown only while the connection is lost; the tiles are dimmed because their values are stale
-    Kirigami.InlineMessage {
-        id: connectionBanner
+    Column {
+        id: banners
         anchors {
             top: parent.top
             left: parent.left
             right: parent.right
         }
-        visible: root.connectionLost
-        type: ha?.authFailed ? Kirigami.MessageType.Error : Kirigami.MessageType.Warning
-        text: root.connectionMessage
+        spacing: Kirigami.Units.smallSpacing
+
+        // Shown only while the connection is lost; the tiles are dimmed because their values are stale
+        Kirigami.InlineMessage {
+            id: connectionBanner
+            width: parent.width
+            visible: root.connectionLost
+            type: ha?.authFailed ? Kirigami.MessageType.Error : Kirigami.MessageType.Warning
+            text: root.connectionMessage
+        }
+
+        // A newer DeskHome release exists (UpdateCheck); closing it hides this version
+        Kirigami.InlineMessage {
+            width: parent.width
+            visible: !!root.updateHintVisible
+            type: Kirigami.MessageType.Information
+            text: root.tr("update.available", root.updates?.latest ?? "")
+            showCloseButton: true
+            onVisibleChanged: if (!visible && root.updateHintVisible) root.dismissUpdate()
+            actions: [
+                Kirigami.Action {
+                    text: root.tr("update.changelog")
+                    icon.name: "documentinfo"
+                    onTriggered: Qt.openUrlExternally(root.updates.releaseUrl || plasmoid.metaData.website + "/releases")
+                },
+                Kirigami.Action {
+                    text: root.tr("update.store")
+                    icon.name: "plasmadiscover"
+                    onTriggered: Qt.openUrlExternally("https://store.kde.org/p/2380223/")
+                }
+            ]
+        }
     }
 
     Loader {
@@ -31,8 +59,8 @@ PlasmaExtras.Representation {
         sourceComponent: gridComponent
         active: store.initialized && root.expanded
         anchors {
-            top: connectionBanner.visible ? connectionBanner.bottom : parent.top
-            topMargin: connectionBanner.visible ? Kirigami.Units.smallSpacing : 0
+            top: banners.height > 0 ? banners.bottom : parent.top
+            topMargin: banners.height > 0 ? Kirigami.Units.smallSpacing : 0
             left: parent.left
             right: parent.right
             bottom: parent.bottom

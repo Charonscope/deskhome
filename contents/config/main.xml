@@ -9,6 +9,12 @@
     <entry name="url" type="string">
       <default></default>
     </entry>
+    <entry name="checkUpdates" type="bool">
+      <default>true</default>
+    </entry>
+    <entry name="dismissedUpdate" type="string">
+      <default></default>
+    </entry>
     <entry name="language" type="string">
       <default>auto</default>
     </entry>

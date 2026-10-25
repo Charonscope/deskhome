@@ -5,6 +5,7 @@ import QtQuick
 
 import "../contents/code/i18n.mjs" as I18n
 import "../contents/code/timeago.mjs" as TimeAgo
+import "../contents/code/version.mjs" as Version
 
 QtObject {
     function check(name, actual, expected) {
@@ -27,7 +28,12 @@ QtObject {
             check("ago minutes de", TimeAgo.ago("de", 0 + 1, 1 + 5 * 60000), "vor 5 min"),
             check("ago hours en", TimeAgo.ago("en", 1, 1 + 3 * 3600000 + 59000), "3 h ago"),
             check("ago days de", TimeAgo.ago("de", 1, 1 + 2 * 86400000), "vor 2 T."),
-            check("ago unknown time", TimeAgo.ago("de", 0, 5000), "")
+            check("ago unknown time", TimeAgo.ago("de", 0, 5000), ""),
+            check("newer patch", Version.isNewer("v1.3.1", "1.3.0"), true),
+            check("newer minor, numeric", Version.isNewer("1.10.0", "1.9.3"), true),
+            check("same version", Version.isNewer("v1.3.0", "1.3.0"), false),
+            check("older", Version.isNewer("1.2.9", "1.3.0"), false),
+            check("unknown never newer", Version.isNewer("latest", "1.3.0"), false)
         ]
         Qt.exit(results.every(r => r) ? 0 : 1)
     }

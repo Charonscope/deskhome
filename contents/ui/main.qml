@@ -133,6 +133,16 @@ PlasmoidItem {
         language: root.lang
     }
 
+    UpdateCheck {
+        id: updates
+        enabled: plasmoid.configuration.checkUpdates
+        current: plasmoid.metaData.version
+    }
+    readonly property alias updates: updates
+    // a closed hint stays closed until an even newer version appears
+    readonly property bool updateHintVisible: updates.available && plasmoid.configuration.dismissedUpdate !== updates.latest
+    function dismissUpdate() { plasmoid.configuration.dismissedUpdate = updates.latest }
+
     BatteryWatch {
         id: batteries
         client: root.ha

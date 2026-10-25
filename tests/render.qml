@@ -86,6 +86,10 @@ ApplicationWindow {
         // two weak batteries below a threshold of 20 %
         property double now: new Date(2026, 9, 25, 12, 0).getTime()
         function ago(ms) { return look.showLastChanged && ms ? Math.round((now - ms) / 60000) + " min ago" : "" }
+        // "theme" also shows the update hint
+        property bool updateHintVisible: window.args[1] === "theme"
+        property var updates: ({ latest: "9.9.9", releaseUrl: "" })
+        function dismissUpdate() {}
         property var batteries: ({ enabled: true, total: 12, threshold: 20, low: [
             { entity_id: "sensor.hall_battery", name: "Hall sensor battery", level: 8 },
             { entity_id: "sensor.door_battery", name: "Front door battery", level: 17 },
@@ -168,6 +172,7 @@ ApplicationWindow {
         onTriggered: {
             if (window.args[2] === "dump") window.dump(view, 0)
             const problems = window.verify()
+            if (window.args[1] === "theme" && !window.textShown("DeskHome 9.9.9 is available.")) problems.push("update hint not shown")
             if (!window.sawCounting) problems.push("changed value did not count to the new one")
             // own tile colors and the switch state text
             const colors = {}
@@ -203,6 +208,16 @@ ApplicationWindow {
             for (const p of problems) console.log("FAIL " + p)
             view.grabToImage(r => { r.saveToFile(window.args[0]); console.log("saved " + window.args[0]); Qt.exit(problems.length ? 1 : 0) })
         }
+    }
+
+    function textShown(text) {
+        let found = false
+        const walk = item => {
+            if (item.text === text && item.visible) found = true
+            for (let i = 0; i < item.children.length; i++) walk(item.children[i])
+        }
+        walk(view)
+        return found
     }
 
     // Every expected tile text must be visible and lie fully inside the view

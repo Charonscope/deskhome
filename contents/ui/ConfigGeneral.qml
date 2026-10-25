@@ -10,6 +10,7 @@ import "../code/i18n.mjs" as I18n
 KCM.SimpleKCM {
     property string cfg_url
     property string cfg_language
+    property bool cfg_checkUpdates
 
     // Preview: texts on this page follow the selection immediately
     function tr(key, ...args) { return I18n.tr(cfg_language, key, ...args) }
@@ -68,6 +69,13 @@ KCM.SimpleKCM {
             ]
             Component.onCompleted: currentIndex = Math.max(0, indexOfValue(cfg_language || "auto"))
             onActivated: cfg_language = currentValue
+        }
+
+        CheckBox {
+            Kirigami.FormData.label: tr("general.updates")
+            text: tr("general.updatesText")
+            checked: cfg_checkUpdates
+            onToggled: cfg_checkUpdates = checked
         }
 
         Item {

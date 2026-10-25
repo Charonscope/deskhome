@@ -16,6 +16,11 @@ const STRINGS = Object.freeze({
     // General
     "general.language": ["Sprache:", "Language:"],
     "general.languageAuto": ["Automatisch (System)", "Automatic (system)"],
+    "update.available": ["DeskHome %1 ist verfügbar.", "DeskHome %1 is available."],
+    "update.changelog": ["Was ist neu", "What's new"],
+    "update.store": ["KDE Store", "KDE Store"],
+    "general.updates": ["Updates:", "Updates:"],
+    "general.updatesText": ["Einmal täglich bei GitHub nach neuen Versionen sehen", "Check GitHub for new versions once a day"],
     "general.api": ["Verbindung", "Connection"],
     "general.url": ["Home-Assistant-Adresse:", "Home Assistant URL:"],
     "general.urlHint": ["Adresse mit Protokoll und Port angeben, zum Beispiel:%1", "Make sure the URL includes the protocol and port. For example:%1"],
