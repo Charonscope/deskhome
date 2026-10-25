@@ -8,6 +8,8 @@ import org.kde.plasma.components as PlasmaComponents3
 
 import org.kde.kirigami as Kirigami
 
+import QtQuick.Dialogs
+
 import "components"
 
 PlasmaExtras.Representation {
@@ -156,6 +158,8 @@ PlasmaExtras.Representation {
                     }
                     delegate: EntityWrapper {
                         id: wrapper
+                        sourceIndex: visibleTiles.mapToSource(visibleTiles.index(index, 0)).row
+                        onContextMenuRequested: (x, y) => tileMenu.openFor(wrapper, sourceIndex, model.entity_id, model.name, model.colspan, x, y)
                         readonly property var geometry: tileGrid.positions[index]
                         visible: !!geometry
                         x: geometry?.x ?? 0
@@ -234,6 +238,104 @@ PlasmaExtras.Representation {
                     }
                 }
             }
+        }
+    }
+
+    // Right-click menu of a tile; created when first needed (it is a native menu)
+    QtObject {
+        id: tileMenu
+        property var menu: null
+        function openFor(visualParent, index, entityId, name, colspan, x, y) {
+            if (!menu) menu = tileMenuComponent.createObject(tileMenu)
+            menu.index = index
+            menu.entityId = entityId
+            menu.name = name
+            menu.colspan = colspan
+            menu.visualParent = visualParent
+            menu.open(x, y)
+        }
+    }
+
+    Component {
+        id: tileMenuComponent
+        PlasmaExtras.Menu {
+            id: menu
+            property int index: -1
+            property string entityId
+            property string name
+            property real colspan: 1
+            // locked widgets (Plasma "Lock widgets") cannot be changed
+            readonly property bool editable: !plasmoid.immutable
+
+            PlasmaExtras.MenuItem {
+                text: root.tr("menu.edit")
+                icon: "document-edit"
+                enabled: menu.editable
+                onClicked: root.editTile(menu.index)
+            }
+            PlasmaExtras.MenuItem {
+                text: root.tr("menu.width")
+                section: true
+            }
+            PlasmaExtras.MenuItem {
+                text: root.tr("item.widthHalf")
+                checkable: true
+                checked: menu.colspan === 0.5
+                enabled: menu.editable
+                onClicked: root.updateTile(menu.index, { colspan: 0.5 })
+            }
+            PlasmaExtras.MenuItem {
+                text: root.tr("menu.width1")
+                checkable: true
+                checked: menu.colspan === 1
+                enabled: menu.editable
+                onClicked: root.updateTile(menu.index, { colspan: undefined })
+            }
+            PlasmaExtras.MenuItem {
+                text: root.tr("menu.width2")
+                checkable: true
+                checked: menu.colspan === 2
+                enabled: menu.editable
+                onClicked: root.updateTile(menu.index, { colspan: 2 })
+            }
+            PlasmaExtras.MenuItem {
+                separator: true
+            }
+            PlasmaExtras.MenuItem {
+                text: root.tr("menu.history")
+                icon: "view-history"
+                enabled: !!root.url
+                onClicked: Qt.openUrlExternally(`${root.url}/history?entity_id=${encodeURIComponent(menu.entityId)}`)
+            }
+            PlasmaExtras.MenuItem {
+                text: root.tr("menu.remove")
+                icon: "edit-delete"
+                enabled: menu.editable
+                onClicked: {
+                    removeDialog.index = menu.index
+                    removeDialog.text = root.tr("menu.removeQuestion", menu.name || menu.entityId)
+                    removeDialog.open()
+                }
+            }
+            PlasmaExtras.MenuItem {
+                separator: true
+            }
+            PlasmaExtras.MenuItem {
+                text: root.tr("menu.configure")
+                icon: "configure"
+                enabled: menu.editable
+                onClicked: plasmoid.internalAction("configure").trigger()
+            }
+        }
+    }
+
+    MessageDialog {
+        id: removeDialog
+        property int index: -1
+        title: root.tr("menu.removeTitle")
+        buttons: MessageDialog.Yes | MessageDialog.No
+        onButtonClicked: (button, role) => {
+            if (button === MessageDialog.Yes) root.removeTile(index)
         }
     }
 

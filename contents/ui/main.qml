@@ -118,6 +118,45 @@ PlasmoidItem {
         id: notifications
     }
 
+    // Changes from the tiles' right-click menu go straight into the tile list
+    function tileConfigs() {
+        return JSON.parse(plasmoid.configuration.items || "[]")
+    }
+    function saveTileConfigs(items) {
+        // same format as the settings page: empty values are left out
+        plasmoid.configuration.items = JSON.stringify(items, (_, value) => value || (value === 0 ? 0 : undefined))
+    }
+    function updateTile(index, changes) {
+        const items = tileConfigs()
+        if (!items[index]) return
+        items[index] = Object.assign({}, items[index], changes)
+        saveTileConfigs(items)
+    }
+    function removeTile(index) {
+        const items = tileConfigs()
+        if (!items[index]) return
+        items.splice(index, 1)
+        saveTileConfigs(items)
+    }
+    function editTile(index) {
+        const config = tileConfigs()[index]
+        if (!config) return
+        const component = Qt.createComponent("TileEditWindow.qml")
+        if (component.status === Component.Error) {
+            console.warn(component.errorString())
+            return
+        }
+        const window = component.createObject(root, { index, config, ha })
+        window.accepted.connect((i, changed) => {
+            const items = tileConfigs()
+            items[i] = changed
+            saveTileConfigs(items)
+        })
+        window.closing.connect(() => window.destroy())
+        window.show()
+        window.requestActivate()
+    }
+
     function initClient(url) {
         ha = url ? ClientFactory.getClient(root, url) : null
         store.setClient(ha)

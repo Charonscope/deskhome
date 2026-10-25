@@ -45,6 +45,15 @@ ApplicationWindow {
         }
     }
 
+    // The tile editor (right-click menu) is a separate window, not a page
+    Component.onCompleted: {
+        const c = Qt.createComponent(Qt.resolvedUrl("../contents/ui/TileEditWindow.qml"))
+        const w = c.status === Component.Ready ? c.createObject(window, { index: 0, config: { entity_id: "sensor.test", name: "Test" } }) : null
+        console.log((w ? "PASS " : "FAIL ") + "TileEditWindow.qml" + (w ? "" : ": " + c.errorString()))
+        if (!w) window.failed++
+        else w.destroy()
+    }
+
     Timer {
         interval: 15000
         running: true

@@ -11,8 +11,16 @@ MouseArea {
     id: control
     clip: true
     // thermostats have no click action but take the scroll wheel
-    enabled: !!actions.length || model.kind === "thermostat"
-    hoverEnabled: true
+    readonly property bool interactive: !!actions.length || model.kind === "thermostat"
+    // row in the tile list (store.items); tiles with one get the right-click menu
+    property int sourceIndex: -1
+    signal contextMenuRequested(real x, real y)
+    enabled: interactive || sourceIndex >= 0
+    hoverEnabled: interactive
+    acceptedButtons: sourceIndex >= 0 ? Qt.LeftButton | Qt.RightButton : Qt.LeftButton
+    onClicked: mouse => {
+        if (mouse.button === Qt.RightButton) contextMenuRequested(mouse.x, mouse.y)
+    }
     property bool flat: true
     property bool showBackground: false
     property alias tooltipTitle: tooltip.mainText
@@ -112,7 +120,8 @@ MouseArea {
                 Connections {
                     readonly property string tip: root.tr("tip.click", format(default_action.service))
                     target: control
-                    function onClicked() {
+                    function onClicked(mouse) {
+                        if (mouse.button !== Qt.LeftButton) return
                         callService(default_action)
                     }
                 }
@@ -124,7 +133,8 @@ MouseArea {
                 Connections {
                     readonly property string tip: root.tr("tip.dclick", format(dclick_action.service))
                     target: control
-                    function onDoubleClicked() {
+                    function onDoubleClicked(mouse) {
+                        if (mouse.button !== Qt.LeftButton) return
                         callService(dclick_action)
                     }
                 }
