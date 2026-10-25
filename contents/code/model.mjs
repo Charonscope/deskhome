@@ -66,6 +66,11 @@ export function Entity(config = {}, data = {}, options = {}) {
     this.second_entity_id = config.second_entity_id || ''
     // heading shown above this tile, starting a new row
     this.heading = config.heading || ''
+    // own colors of this tile ('' = the global colors)
+    this.value_color = config.value_color || ''
+    this.label_color = config.label_color || ''
+    this.second_color = config.second_color || ''
+    this.graph_color = config.graph_color || ''
     this.value2 = ''
     this.num2 = NaN
 }
@@ -114,6 +119,10 @@ export function ConfigEntity(config = {}) {
     this.hide_when_ok = config.hide_when_ok
     this.second_entity_id = config.second_entity_id
     this.heading = config.heading
+    this.value_color = config.value_color
+    this.label_color = config.label_color
+    this.second_color = config.second_color
+    this.graph_color = config.graph_color
 }
 
 function addActionProperty(o, name) {

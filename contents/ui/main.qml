@@ -42,6 +42,13 @@ PlasmoidItem {
     readonly property alias labelOpacity: palette.labelOpacity
     readonly property alias graphLineColor: palette.graph
     function levelColor(level, okColor) { return palette.levelColor(level, okColor) }
+    readonly property alias secondColor: palette.second
+    readonly property alias valueWeight: palette.valueWeight
+    function tileValueColor(e) { return palette.tileValue(e) }
+    function tileLabelColor(e) { return palette.tileLabel(e) }
+    function tileLabelOpacity(e) { return palette.tileLabelOpacity(e) }
+    function tileGraphColor(e) { return palette.tileGraph(e) }
+    function tileSecondColor(e) { return palette.tileSecond(e) }
 
     // Home Assistant themes are loaded only when they are the color source
     function loadThemes() {

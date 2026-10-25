@@ -15,7 +15,7 @@ Item {
     readonly property real windowMs: model.history_hours * 3600000
     readonly property bool showHistory: model.history_hours > 0
     readonly property var points: { store.historyRevision; return store.history(model.entity_id) }
-    readonly property color levelColor: root.levelColor(model.level)
+    readonly property color levelColor: root.levelColor(model.level, root.tileValueColor(model))
     // revision as an argument because points is always the same (growing) array
     readonly property var stats: computeStats(points, model.num, store.historyRevision)
 
@@ -47,7 +47,7 @@ Item {
         windowMs: tile.windowMs
         revision: store.historyRevision
         currentValue: model.num
-        color: model.level ? tile.levelColor : root.graphLineColor
+        color: model.level ? tile.levelColor : root.tileGraphColor(model)
     }
 
     ColumnLayout {
@@ -70,8 +70,8 @@ Item {
             PlasmaComponents3.Label {
                 text: model.name
                 elide: Text.ElideRight
-                color: root.labelColor
-                opacity: root.labelOpacity
+                color: root.tileLabelColor(model)
+                opacity: root.tileLabelOpacity(model)
                 font.pointSize: root.smallPt
                 Layout.fillWidth: true
             }
@@ -79,15 +79,15 @@ Item {
                 visible: showHistory && root.look.showMinMax && isFinite(stats.min)
                 text: `↓${fmt(stats.min)}  ↑${fmt(stats.max)}`
                 font.pointSize: root.smallPt
-                color: root.labelColor
-                opacity: root.labelOpacity * 0.9
+                color: root.tileLabelColor(model)
+                opacity: root.tileLabelOpacity(model) * 0.9
             }
             PlasmaComponents3.Label {
                 text: stats.trend
                 visible: !!text && showHistory && root.look.showTrend
                 font.pointSize: root.defaultPt
-                color: root.labelColor
-                opacity: root.labelOpacity
+                color: root.tileLabelColor(model)
+                opacity: root.tileLabelOpacity(model)
             }
         }
 
@@ -100,7 +100,7 @@ Item {
                 value: model.value
                 color: tile.levelColor
                 font.pixelSize: Kirigami.Units.gridUnit * (showHistory ? 1.3 : 1.8) * root.tileScale * root.look.valueScale / 100
-                font.weight: Font.Bold
+                font.weight: root.valueWeight
                 // too wide for the tile: smaller font rather than a cut-off value
                 fontSizeMode: Text.HorizontalFit
                 minimumPixelSize: Math.round(font.pixelSize * 0.5)
@@ -111,8 +111,8 @@ Item {
                 text: root.ago(model.last_changed)
                 visible: !!text
                 font.pointSize: root.smallPt
-                color: root.labelColor
-                opacity: root.labelOpacity * 0.8
+                color: root.tileLabelColor(model)
+                opacity: root.tileLabelOpacity(model) * 0.8
                 Layout.alignment: Qt.AlignBottom
             }
         }

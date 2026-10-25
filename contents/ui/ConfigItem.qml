@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 
 import org.kde.kirigami as Kirigami
+import org.kde.kquickcontrols as KQControls
 
 import "components"
 import "../code/formatter.mjs" as Formatter
@@ -241,6 +242,54 @@ Kirigami.FormLayout {
         Kirigami.FormData.label: tr("item.hideWhenOk")
         checked: !!item.hide_when_ok
         onCheckedChanged: item.hide_when_ok = checked || undefined
+    }
+
+    // Own colors of this tile; unticked = the global colors from Appearance
+    Item {
+        Kirigami.FormData.isSection: true
+        Kirigami.FormData.label: tr("item.colors")
+    }
+
+    component ColorOverride: RowLayout {
+        property string key
+        CheckBox {
+            id: own
+            text: tr("look.customColor")
+            checked: !!item[key]
+            onToggled: item[key] = checked ? button.color.toString() : undefined
+        }
+        KQControls.ColorButton {
+            id: button
+            enabled: own.checked
+            showAlphaChannel: false
+            color: item[key] || Kirigami.Theme.textColor
+            onColorChanged: if (own.checked) item[key] = color.toString()
+        }
+    }
+
+    ColorOverride {
+        key: "value_color"
+        Kirigami.FormData.label: tr("look.valueColor")
+    }
+    ColorOverride {
+        key: "label_color"
+        Kirigami.FormData.label: tr("look.labelColor")
+    }
+    ColorOverride {
+        key: "second_color"
+        visible: form.tileType === "combo"
+        Kirigami.FormData.label: tr("look.secondColor")
+    }
+    ColorOverride {
+        key: "graph_color"
+        Kirigami.FormData.label: tr("look.lineColor")
+    }
+    Label {
+        text: tr("item.colorsHint")
+        wrapMode: Text.WordWrap
+        opacity: 0.7
+        font: Kirigami.Theme.smallFont
+        Layout.maximumWidth: Kirigami.Units.gridUnit * 18
     }
 
     component ServiceSelector: CheckableFormControl {

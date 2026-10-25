@@ -29,7 +29,7 @@ ApplicationWindow {
             // "theme": colors from a (fake) Home Assistant theme plus an own label color
             colorSource: window.args[1] === "theme" ? "ha" : "plasma", haTheme: "",
             valueCustomColor: false, valueColor: "#ffffff",
-            labelCustomColor: window.args[1] === "theme", labelColor: "#ffd27f", animations: true, showLastChanged: true
+            labelCustomColor: window.args[1] === "theme", labelColor: "#ffd27f", animations: true, showLastChanged: true, valueWeight: 600, showSwitchState: window.args[1] !== "theme", secondCustomColor: false, secondColor: "#66bb6a"
         })
     }
 
@@ -67,6 +67,13 @@ ApplicationWindow {
         readonly property alias labelOpacity: palette.labelOpacity
         readonly property alias graphLineColor: palette.graph
         function levelColor(level, okColor) { return palette.levelColor(level, okColor) }
+        readonly property alias secondColor: palette.second
+        readonly property alias valueWeight: palette.valueWeight
+        function tileValueColor(e) { return palette.tileValue(e) }
+        function tileLabelColor(e) { return palette.tileLabel(e) }
+        function tileLabelOpacity(e) { return palette.tileLabelOpacity(e) }
+        function tileGraphColor(e) { return palette.tileGraph(e) }
+        function tileSecondColor(e) { return palette.tileSecond(e) }
         property real tileScale: 1
         property int animationDuration: 200
         property real labelScale: 1
@@ -98,11 +105,13 @@ ApplicationWindow {
         function history(id) { return id.startsWith("sensor.") ? points : [] }
         property ListModel itemModel: ListModel {
             Component.onCompleted: {
-                const base = { attributes: {}, default_action: {}, dclick_action: {}, scroll_action: {}, display: 1, hide_when_ok: false, light_color: "", brightness_pct: -1, device_class: "", unit: "", attribute: "", second_entity_id: "", value2: "", num2: NaN, current_temp: NaN, target_temp: NaN, temp_min: 7, temp_max: 35, temp_step: 0.5, current_humidity: NaN, hvac_action: "", heading: "", last_changed: 0, fan_pct: -1 }
+                const base = { attributes: {}, default_action: {}, dclick_action: {}, scroll_action: {}, display: 1, hide_when_ok: false, light_color: "", brightness_pct: -1, device_class: "", unit: "", attribute: "", second_entity_id: "", value2: "", num2: NaN, current_temp: NaN, target_temp: NaN, temp_min: 7, temp_max: 35, temp_step: 0.5, current_humidity: NaN, hvac_action: "", heading: "", last_changed: 0, fan_pct: -1, value_color: "", label_color: "", second_color: "", graph_color: "" }
                 const add = o => append(Object.assign({}, base, o))
                 add({ entity_id: "sensor.outside", name: "Outside", kind: "sensor", value: "9.6 °C", num: 9.6, state: "9.6", level: 0, icon: "mdi:thermometer", colspan: 1, history_hours: 24, domain: "sensor", active: false })
                 add({ entity_id: "sensor.humidity", name: "Outside humidity", kind: "sensor", value: "63%", num: 63, state: "63", level: 0, icon: "mdi:water-percent", colspan: 1, history_hours: 24, domain: "sensor", active: false })
-                add({ entity_id: "sensor.desk_temp", name: "Desk climate", kind: "combo", value: "23.7 °C", num: 23.7, state: "23.7", level: 0, icon: "mdi:thermometer", colspan: 1, history_hours: 24, domain: "sensor", active: false, second_entity_id: "sensor.desk_humidity", value2: "45%", num2: 45 })
+                add({ entity_id: "sensor.desk_temp", name: "Desk climate", kind: "combo", value: "23.7 °C", num: 23.7, state: "23.7", level: 0, icon: "mdi:thermometer", colspan: 1, history_hours: 24, domain: "sensor", active: false, second_entity_id: "sensor.desk_humidity", value2: "45%", num2: 45, second_color: "#ff8800" })
+                // simple tile with its own value color
+                add({ entity_id: "sensor.battery_home", name: "Home battery", kind: "simple", value: "41%", num: 41, state: "41", level: 0, icon: "mdi:battery", colspan: 1, history_hours: 0, domain: "sensor", active: false, value_color: "#ff0000" })
                 add({ entity_id: "sensor.fan_rpm", name: "Fan speed", kind: "sensor", value: "1000 rpm", num: 1000, unit: "rpm", state: "1000", level: 0, icon: "mdi:fan", colspan: 1, history_hours: 0, domain: "sensor", active: false })
                 add({ entity_id: "climate.living", heading: "Heating", name: "Living room", kind: "thermostat", value: "Auto", num: NaN, state: "auto", level: 0, icon: "mdi:thermostat", colspan: 1, history_hours: 0, domain: "climate", active: false, current_temp: 21.9, target_temp: 21, current_humidity: 52, hvac_action: "heating" })
                 add({ entity_id: "light.desk", heading: "Lights", name: "Desk lamp", kind: "switch", value: "on", num: NaN, state: "on", level: 0, icon: "mdi:lightbulb", colspan: 0.5, history_hours: 0, domain: "light", active: true, brightness_pct: 60, light_color: "#ffcc66" })
@@ -145,7 +154,7 @@ ApplicationWindow {
     }
 
     readonly property var valueTexts: ["12.4 °C", "23.7 °C", "45%", "1000 rpm"]
-    readonly property var expectedTexts: ["12.4 °C", "Outside", "Outside humidity", "Desk climate", "45%", "Fan speed", "1000 rpm", "Heating", "Lights", "Weak batteries", "Hall sensor battery", "8 %", "Front door battery", "Radiator battery", "low", "Living room", "heating", "Desk lamp", "Kitchen", "Hallway motion", "unavailable · 5 min ago", "Late tile", "1 more check OK"]
+    readonly property var expectedTexts: ["12.4 °C", "Outside", "Outside humidity", "Desk climate", "45%", "Home battery", "41%", "Fan speed", "1000 rpm", "Heating", "Lights", "Weak batteries", "Hall sensor battery", "8 %", "Front door battery", "Radiator battery", "low", "Living room", "heating", "Desk lamp", "Kitchen", "Hallway motion", "unavailable · 5 min ago", "Late tile", "1 more check OK"]
 
     FullRepresentation {
         id: view
@@ -160,6 +169,21 @@ ApplicationWindow {
             if (window.args[2] === "dump") window.dump(view, 0)
             const problems = window.verify()
             if (!window.sawCounting) problems.push("changed value did not count to the new one")
+            // own tile colors and the switch state text
+            const colors = {}
+            const states = []
+            const walkColors = item => {
+                if (item.text !== undefined && item.visible) {
+                    colors[item.text] = String(item.color)
+                    if (item.text === "Off" || item.text === "On · 60 %") states.push(item.text)
+                }
+                for (let i = 0; i < item.children.length; i++) walkColors(item.children[i])
+            }
+            walkColors(view)
+            if (colors["41%"] !== "#ff0000") problems.push("simple tile ignores its own value color: " + colors["41%"])
+            if (colors["45%"] !== "#ff8800") problems.push("combo tile ignores its own second color: " + colors["45%"])
+            const statesShown = window.args[1] !== "theme"
+            if (statesShown !== (states.length > 0)) problems.push("switch state text " + (statesShown ? "missing" : "not hidden") + ": " + JSON.stringify(states))
             // animations: the rpm icon turns, history lines have drawn in completely
             const anim = { spinning: 0, turned: 0, lines: 0, revealed: 0 }
             const walkAnim = item => {

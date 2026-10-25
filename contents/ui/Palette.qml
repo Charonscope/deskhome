@@ -27,6 +27,19 @@ QtObject {
     // the default label color is the text color, dimmed; a chosen one is shown as it is
     readonly property real labelOpacity: look.labelCustomColor || ha.label ? 1 : 0.8
     readonly property color graph: look.graphCustomColor ? look.graphColor : accent
+    // second value of combo tiles: by default the accent turned a quarter back on the color wheel
+    readonly property color second: look.secondCustomColor ? look.secondColor
+        : Qt.hsla((accent.hslHue + 0.75) % 1, Math.max(0.45, accent.hslSaturation),
+                  Math.min(0.65, Math.max(0.5, accent.hslLightness)), 1)
+    // font weight of the large values (400 normal, 600 semi-bold, 700 bold)
+    readonly property int valueWeight: look.valueWeight || Font.Bold
+
+    // A tile's own colors (set in its settings) win over the global ones; empty = global
+    function tileValue(e) { return e?.value_color || value }
+    function tileLabel(e) { return e?.label_color || label }
+    function tileLabelOpacity(e) { return e?.label_color ? 1 : labelOpacity }
+    function tileGraph(e) { return e?.graph_color || graph }
+    function tileSecond(e) { return e?.second_color || second }
 
     function levelColor(level, okColor) {
         switch (level) {

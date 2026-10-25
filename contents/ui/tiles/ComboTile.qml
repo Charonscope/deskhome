@@ -16,12 +16,10 @@ Item {
     readonly property bool showHistory: model.history_hours > 0
     readonly property var points: { store.historyRevision; return store.history(model.entity_id) }
     readonly property var points2: { store.historyRevision; return store.history(model.second_entity_id) }
-    readonly property color levelColor: root.levelColor(model.level)
-    readonly property color firstLineColor: model.level ? levelColor : root.graphLineColor
-    // accent for the second value: the highlight color turned a quarter back on the color wheel (blue -> green)
-    readonly property color secondColor: Qt.hsla((root.accentColor.hslHue + 0.75) % 1,
-                                                 Math.max(0.45, root.accentColor.hslSaturation),
-                                                 Math.min(0.65, Math.max(0.5, root.accentColor.hslLightness)), 1)
+    readonly property color levelColor: root.levelColor(model.level, root.tileValueColor(model))
+    readonly property color firstLineColor: model.level ? levelColor : root.tileGraphColor(model)
+    // second value and its line: the tile's own color or the global one (Appearance → Colors)
+    readonly property color secondColor: root.tileSecondColor(model)
     // revision as an argument because the point arrays are always the same (growing) arrays
     readonly property var stats: Stats.computeStats(points, model.num, windowMs, store.historyRevision)
     readonly property var stats2: Stats.computeStats(points2, model.num2, windowMs, store.historyRevision)
@@ -79,16 +77,16 @@ Item {
             PlasmaComponents3.Label {
                 text: model.name
                 elide: Text.ElideRight
-                color: root.labelColor
-                opacity: root.labelOpacity
+                color: root.tileLabelColor(model)
+                opacity: root.tileLabelOpacity(model)
                 font.pointSize: root.smallPt
                 Layout.fillWidth: true
             }
             PlasmaComponents3.Label {
                 text: tile.stats.trend
                 visible: !!text && showHistory && root.look.showTrend
-                color: root.labelColor
-                opacity: root.labelOpacity
+                color: root.tileLabelColor(model)
+                opacity: root.tileLabelOpacity(model)
                 font.pointSize: root.defaultPt
             }
             PlasmaComponents3.Label {
@@ -114,14 +112,14 @@ Item {
                 id: firstMetrics
                 font.family: firstValue.font.family
                 font.pixelSize: valueRow.basePx
-                font.weight: Font.Bold
+                font.weight: root.valueWeight
                 text: model.value
             }
             TextMetrics {
                 id: secondMetrics
                 font.family: firstValue.font.family
                 font.pixelSize: valueRow.basePx
-                font.weight: Font.Bold
+                font.weight: root.valueWeight
                 text: model.value2
             }
             CountingLabel {
@@ -129,13 +127,13 @@ Item {
                 value: model.value
                 color: tile.levelColor
                 font.pixelSize: valueRow.basePx * valueRow.fit
-                font.weight: Font.Bold
+                font.weight: root.valueWeight
             }
             CountingLabel {
                 value: model.value2
                 color: tile.secondColor
                 font.pixelSize: valueRow.basePx * valueRow.fit
-                font.weight: Font.Bold
+                font.weight: root.valueWeight
                 elide: Text.ElideRight
                 Layout.fillWidth: true
             }

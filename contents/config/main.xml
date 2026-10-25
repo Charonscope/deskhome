@@ -69,6 +69,18 @@
     <entry name="labelColor" type="Color">
       <default>#cccccc</default>
     </entry>
+    <entry name="valueWeight" type="int">
+      <default>700</default>
+    </entry>
+    <entry name="showSwitchState" type="bool">
+      <default>true</default>
+    </entry>
+    <entry name="secondCustomColor" type="bool">
+      <default>false</default>
+    </entry>
+    <entry name="secondColor" type="Color">
+      <default>#66bb6a</default>
+    </entry>
     <entry name="showLastChanged" type="bool">
       <default>false</default>
     </entry>

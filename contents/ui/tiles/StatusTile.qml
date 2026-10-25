@@ -74,7 +74,7 @@ Item {
                 wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                 maximumLineCount: model.level ? 1 : 2
                 font.pointSize: root.defaultPt
-                color: root.labelColor
+                color: root.tileLabelColor(model)
                 Layout.fillWidth: true
             }
             PlasmaComponents3.Label {
@@ -82,8 +82,8 @@ Item {
                 text: root.ago(model.last_changed) ? model.value + " · " + root.ago(model.last_changed) : model.value
                 elide: Text.ElideRight
                 font.pointSize: root.smallPt
-                color: model.level ? tile.dotColor : root.labelColor
-                opacity: model.level ? 1 : root.labelOpacity * 0.9
+                color: model.level ? tile.dotColor : root.tileLabelColor(model)
+                opacity: model.level ? 1 : root.tileLabelOpacity(model) * 0.9
                 Layout.fillWidth: true
             }
         }

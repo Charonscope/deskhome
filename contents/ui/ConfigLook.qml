@@ -42,6 +42,10 @@ KCM.SimpleKCM {
     property alias cfg_labelColor: labelColor.color
     property alias cfg_animations: animations.checked
     property alias cfg_showLastChanged: showLastChanged.checked
+    property alias cfg_showSwitchState: showSwitchState.checked
+    property alias cfg_secondCustomColor: secondCustomColor.checked
+    property alias cfg_secondColor: secondColor.color
+    property int cfg_valueWeight
 
     // HA theme names for the selection; loaded from the shared connection
     property Client ha
@@ -208,6 +212,19 @@ KCM.SimpleKCM {
         }
 
         RowLayout {
+            Kirigami.FormData.label: tr("look.secondColor")
+            CheckBox {
+                id: secondCustomColor
+                text: tr("look.customColor")
+            }
+            KQControls.ColorButton {
+                id: secondColor
+                enabled: secondCustomColor.checked
+                showAlphaChannel: false
+            }
+        }
+
+        RowLayout {
             Kirigami.FormData.label: tr("look.labelColor")
             CheckBox {
                 id: labelCustomColor
@@ -293,6 +310,19 @@ KCM.SimpleKCM {
             suffix: " %"
         }
 
+        ComboBox {
+            Kirigami.FormData.label: tr("look.valueWeight")
+            model: [
+                { value: 400, text: tr("look.weightNormal") },
+                { value: 600, text: tr("look.weightSemi") },
+                { value: 700, text: tr("look.weightBold") }
+            ]
+            textRole: "text"
+            valueRole: "value"
+            Component.onCompleted: currentIndex = Math.max(0, indexOfValue(cfg_valueWeight || 700))
+            onActivated: cfg_valueWeight = currentValue
+        }
+
         CheckBox {
             id: showMinMax
             Kirigami.FormData.label: tr("look.show")
@@ -307,6 +337,11 @@ KCM.SimpleKCM {
         CheckBox {
             id: showLastChanged
             text: tr("look.lastChanged")
+        }
+
+        CheckBox {
+            id: showSwitchState
+            text: tr("look.switchState")
         }
 
         Item {

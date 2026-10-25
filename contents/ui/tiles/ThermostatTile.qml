@@ -77,15 +77,15 @@ Item {
             PlasmaComponents3.Label {
                 text: model.name
                 elide: Text.ElideRight
-                color: root.labelColor
-                opacity: root.labelOpacity
+                color: root.tileLabelColor(model)
+                opacity: root.tileLabelOpacity(model)
                 font.pointSize: root.smallPt
                 Layout.fillWidth: true
             }
             PlasmaComponents3.Label {
                 text: tile.heating ? root.tr("thermo.heating") : model.value
-                color: tile.heating ? root.warnColor : root.labelColor
-                opacity: tile.heating ? 1 : root.labelOpacity * 0.75
+                color: tile.heating ? root.warnColor : root.tileLabelColor(model)
+                opacity: tile.heating ? 1 : root.tileLabelOpacity(model) * 0.75
                 font.pointSize: root.smallPt
                 elide: Text.ElideRight
                 Layout.maximumWidth: tile.width * 0.4
@@ -98,15 +98,15 @@ Item {
             Layout.leftMargin: headerIcon.item?.size ? (headerIcon.width - headerIcon.item.size.width) / 2 : 0
             CountingLabel {
                 value: tile.format(model.current_temp, 1)
-                color: root.levelColor(model.level)
+                color: root.levelColor(model.level, root.tileValueColor(model))
                 font.pixelSize: Kirigami.Units.gridUnit * 1.3 * root.tileScale * root.look.valueScale / 100
-                font.weight: Font.Bold
+                font.weight: root.valueWeight
             }
             PlasmaComponents3.Label {
                 visible: !isNaN(model.current_humidity)
                 text: Number(model.current_humidity).toLocaleString(Qt.locale(), "f", 0) + " %"
-                color: root.labelColor
-                opacity: root.labelOpacity * 0.75
+                color: root.tileLabelColor(model)
+                opacity: root.tileLabelOpacity(model) * 0.75
                 font.pointSize: root.defaultPt
                 Layout.alignment: Qt.AlignBottom
                 Layout.bottomMargin: 2
@@ -120,8 +120,8 @@ Item {
         PlasmaComponents3.Label {
             visible: !isNaN(tile.target)
             text: root.tr("thermo.target", tile.format(tile.target, tile.targetDecimals))
-            color: holdTimer.running ? root.accentColor : root.labelColor
-            opacity: holdTimer.running ? 1 : root.labelOpacity
+            color: holdTimer.running ? root.accentColor : root.tileLabelColor(model)
+            opacity: holdTimer.running ? 1 : root.tileLabelOpacity(model)
             font.pointSize: root.defaultPt
             font.weight: holdTimer.running ? Font.Bold : Font.Normal
             Layout.leftMargin: headerIcon.item?.size ? (headerIcon.width - headerIcon.item.size.width) / 2 : 0

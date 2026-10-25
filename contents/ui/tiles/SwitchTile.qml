@@ -52,18 +52,19 @@ Item {
                 elide: Text.ElideRight
                 wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                 maximumLineCount: model.level === 2 ? 1 : 2
-                font.weight: Font.Bold
+                font.weight: root.valueWeight
                 font.pointSize: root.defaultPt
-                color: root.labelColor
+                color: root.tileLabelColor(model)
                 Layout.fillWidth: true
             }
             PlasmaComponents3.Label {
-                visible: nameLabel.lineCount < 2 || model.level === 2
+                // the on/off text can be hidden (Appearance); errors always stay visible
+                visible: (nameLabel.lineCount < 2 && root.look.showSwitchState !== false) || model.level === 2
                 text: root.ago(model.last_changed) ? tile.stateText + " · " + root.ago(model.last_changed) : tile.stateText
                 elide: Text.ElideRight
-                opacity: model.level === 2 ? 1 : root.labelOpacity * 0.9
+                opacity: model.level === 2 ? 1 : root.tileLabelOpacity(model) * 0.9
                 font.pointSize: root.smallPt
-                color: model.level === 2 ? root.critColor : root.labelColor
+                color: model.level === 2 ? root.critColor : root.tileLabelColor(model)
                 Layout.fillWidth: true
             }
         }
