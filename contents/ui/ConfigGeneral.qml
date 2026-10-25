@@ -62,7 +62,9 @@ KCM.SimpleKCM {
             model: [
                 { value: "auto", text: tr("general.languageAuto") },
                 { value: "de", text: "Deutsch" },
-                { value: "en", text: "English" }
+                { value: "en", text: "English" },
+                { value: "es", text: "Español" },
+                { value: "fr", text: "Français" }
             ]
             Component.onCompleted: currentIndex = Math.max(0, indexOfValue(cfg_language || "auto"))
             onActivated: cfg_language = currentValue

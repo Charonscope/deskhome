@@ -2,7 +2,8 @@
 """Static checks for contents/code/i18n.mjs:
 - every key used via tr("...") in the code exists,
 - every entry has a German and an English text,
-- both texts use the same placeholders (%1, %2, ...).
+- both texts use the same placeholders (%1, %2, ...),
+- the Spanish and French files have every key, no extra ones and the same placeholders.
 """
 import pathlib
 import re
@@ -38,6 +39,20 @@ for path in (root / "contents").rglob("*"):
 
 for key in sorted(used - set(entries)):
     failures.append(f"{key}: used in the code but missing in i18n.mjs")
+
+for lang in ("es", "fr"):
+    other = {}
+    text = (root / f"contents/code/i18n-{lang}.mjs").read_text(encoding="utf-8")
+    for m in re.finditer(r'^\s*"([\w.]+)":\s*"((?:[^"\\]|\\.)*)",?\s*$', text, re.M):
+        other[m.group(1)] = m.group(2)
+    for key in sorted(set(entries) - set(other)):
+        failures.append(f"{lang}: {key} missing")
+    for key in sorted(set(other) - set(entries)):
+        failures.append(f"{lang}: {key} unknown key")
+    for key in set(entries) & set(other):
+        en = "".join(entries[key][len(entries[key]) // 2:])
+        if sorted(set(re.findall(r"%\d", en))) != sorted(set(re.findall(r"%\d", other[key]))):
+            failures.append(f"{lang}: {key} placeholders differ from English")
 
 for f in failures:
     print("FAIL " + f)

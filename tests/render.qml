@@ -143,8 +143,8 @@ ApplicationWindow {
         }
     }
 
-    readonly property var valueTexts: ["12.4 °C", "23.7 °C", "45%"]
-    readonly property var expectedTexts: ["12.4 °C", "Outside", "Outside humidity", "Desk climate", "45%", "Fan speed", "Heating", "Lights", "Weak batteries", "Hall sensor battery", "8 %", "Front door battery", "Living room", "heating", "Desk lamp", "Kitchen", "Off · 5 min ago", "Hallway motion", "Late tile", "1 more check OK"]
+    readonly property var valueTexts: ["12.4 °C", "23.7 °C", "45%", "1000 rpm"]
+    readonly property var expectedTexts: ["12.4 °C", "Outside", "Outside humidity", "Desk climate", "45%", "Fan speed", "1000 rpm", "Heating", "Lights", "Weak batteries", "Hall sensor battery", "8 %", "Front door battery", "Living room", "heating", "Desk lamp", "Kitchen", "Off · 5 min ago", "Hallway motion", "Late tile", "1 more check OK"]
 
     FullRepresentation {
         id: view
@@ -188,7 +188,12 @@ ApplicationWindow {
                 const p = item.mapToItem(view, 0, 0)
                 const inside = p.x >= 0 && p.y >= 0 && p.x + item.width <= view.width + 1 && item.width > 0
                 // names may be shortened (full name in the tooltip), values must be shown completely
-                found[item.text] = !inside ? "outside" : item.truncated && window.valueTexts.includes(item.text) ? "truncated" : "ok"
+                // values must also fit vertically into their tile
+                let tile = item.parent
+                while (tile && tile.sourceIndex === undefined) tile = tile.parent
+                const t = tile ? tile.mapToItem(view, 0, 0) : null
+                const cutVertically = !!t && window.valueTexts.includes(item.text) && p.y + item.height > t.y + tile.height + 1
+                found[item.text] = !inside ? "outside" : (item.truncated || cutVertically) && window.valueTexts.includes(item.text) ? "truncated" : "ok"
             }
             for (let i = 0; i < item.children.length; i++) walk(item.children[i])
         }

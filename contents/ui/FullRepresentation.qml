@@ -67,6 +67,10 @@ PlasmaExtras.Representation {
                 readonly property int minTileWidth: Kirigami.Units.gridUnit * 9 * root.tileScale * (1 + (root.labelGrow - 1) * 0.5)
                 readonly property int tileHeight: Kirigami.Units.gridUnit * 4 * root.tileScale * (1 + (root.labelGrow - 1) * 0.6)
                 readonly property int compactTileHeight: Kirigami.Units.gridUnit * 2.5 * root.tileScale * root.labelGrow
+                // sensors without a graph: header plus the large value (font 1.8 grid units)
+                readonly property int valueTileHeight: Math.ceil(Kirigami.Units.smallSpacing * 2
+                    + Kirigami.Units.iconSizes.small * root.labelGrow
+                    + Kirigami.Units.gridUnit * 1.8 * root.tileScale * root.look.valueScale / 100 * 1.4)
                 readonly property int headingHeight: Math.ceil(Kirigami.Units.gridUnit * 1.6 * root.labelGrow)
                 readonly property int spacing: root.look.tileSpacing
                 width: scroll.availableWidth
@@ -135,7 +139,9 @@ PlasmaExtras.Representation {
                         }
                         const span = Math.min(Math.round((e.colspan || 1) * 2), columns)
                         // only sensors with a graph need the full height
-                        const height = (e.kind === "sensor" || e.kind === "combo") && e.history_hours > 0 || e.kind === "thermostat" ? tileHeight : compactTileHeight
+                        const height = (e.kind === "sensor" || e.kind === "combo") && e.history_hours > 0 || e.kind === "thermostat" ? tileHeight
+                            : e.kind === "sensor" || e.kind === "combo" ? Math.max(compactTileHeight, valueTileHeight)
+                            : compactTileHeight
                         result.push(put(span, height))
                     }
                     if (weakBatteries.length) {
@@ -156,6 +162,7 @@ PlasmaExtras.Representation {
                 onWidthChanged: schedulePlace()
                 onTileHeightChanged: schedulePlace()
                 onCompactTileHeightChanged: schedulePlace()
+                onValueTileHeightChanged: schedulePlace()
                 onSpacingChanged: schedulePlace()
                 onOkCountChanged: schedulePlace()
                 onWeakBatteriesChanged: schedulePlace()

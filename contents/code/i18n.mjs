@@ -1,5 +1,12 @@
-// Own translations (German/English), selectable in the settings under "General".
+// Own translations, selectable in the settings under "General".
 // Entries: key -> [German, English]; %1, %2 … are replaced by arguments.
+// Spanish and French live in their own files (key -> text); a missing text falls back to English.
+import { STRINGS as ES } from "i18n-es.mjs"
+import { STRINGS as FR } from "i18n-fr.mjs"
+
+export const LANGUAGES = Object.freeze(["de", "en", "es", "fr"])
+const OTHER = Object.freeze({ es: ES, fr: FR })
+
 const STRINGS = Object.freeze({
     // Settings categories
     "cat.general": ["Allgemein", "General"],
@@ -205,15 +212,17 @@ const STRINGS = Object.freeze({
     "configure": ["Einrichten …", "Configure…"]
 })
 
-// "auto" follows the system language: German, otherwise English
+// "auto" follows the system language if DeskHome has it, otherwise English
 export function resolve(language) {
-    if (language === "de" || language === "en") return language
-    return Qt.locale().name.startsWith("de") ? "de" : "en"
+    if (LANGUAGES.includes(language)) return language
+    const system = Qt.locale().name.substring(0, 2)
+    return LANGUAGES.includes(system) ? system : "en"
 }
 
 export function tr(language, key, ...args) {
+    const lang = resolve(language)
     const entry = STRINGS[key]
-    let text = entry ? entry[resolve(language) === "de" ? 0 : 1] : key
+    let text = !entry ? key : lang === "de" ? entry[0] : (OTHER[lang]?.[key] ?? entry[1])
     // deliberately no forEach arrow function: the QML engine loses the assignment to "text" in it
     for (let i = 0; i < args.length; i++) text = text.replace("%" + (i + 1), args[i])
     return text
