@@ -125,6 +125,12 @@ KCM.ScrollViewKCM {
                 Layout.fillWidth: true
             }
             Button {
+                icon.name: 'view-list-tree'
+                text: tr("area.add")
+                enabled: !!entityAreas.areas.length
+                onClicked: areaDialogComponent.createObject(page).open()
+            }
+            Button {
                 icon.name: 'application-menu'
                 down: backupMenu.visible
                 onClicked: backupMenu.visible = !backupMenu.visible
@@ -303,6 +309,76 @@ KCM.ScrollViewKCM {
             ConfigItem {
                 id: itemForm
                 item: dialog.item
+            }
+        }
+    }
+
+    // Adds the tiles of a whole area at once; tiles that already exist are not added twice
+    Component {
+        id: areaDialogComponent
+        Kirigami.Dialog {
+            id: areaDialog
+            title: page.tr("area.title")
+            padding: Kirigami.Units.largeSpacing
+            preferredWidth: Kirigami.Units.gridUnit * 28
+            preferredHeight: Kirigami.Units.gridUnit * 26
+            standardButtons: Kirigami.Dialog.Ok | Kirigami.Dialog.Cancel
+            onClosed: destroy()
+
+            readonly property var supported: ["sensor", "binary_sensor", "light", "switch", "fan", "climate", "input_boolean", "cover", "number", "input_number", "counter"]
+            readonly property var existing: {
+                const ids = new Set()
+                for (let i = 0; i < items.count; i++) ids.add(items.get(i).entity_id)
+                return ids
+            }
+            property var area: entityAreas.areas[0] || null
+            readonly property var candidates: (area?.entities || []).filter(id => supported.includes(id.split(".")[0]) && !!entities[id])
+            // entity_id -> checked
+            property var chosen: ({})
+            onCandidatesChanged: {
+                const c = {}
+                for (const id of candidates) c[id] = !existing.has(id)
+                chosen = c
+            }
+            readonly property int chosenCount: candidates.filter(id => chosen[id]).length
+
+            Component.onCompleted: standardButton(Kirigami.Dialog.Ok).enabled = Qt.binding(() => chosenCount > 0)
+            onAccepted: {
+                for (const id of candidates) {
+                    if (chosen[id]) items.append(new Model.ConfigEntity({ entity_id: id, display: cfg_itemDisplayDefault || DisplayFilterModel.Full }))
+                }
+                save()
+                infoIsError = false
+                infoMessage = page.tr("area.added", chosenCount, area.name)
+            }
+
+            ColumnLayout {
+                spacing: Kirigami.Units.smallSpacing
+                ComboBox {
+                    Layout.fillWidth: true
+                    model: entityAreas.areas.map(a => `${a.name} (${a.entities.filter(id => areaDialog.supported.includes(id.split(".")[0]) && !!entities[id]).length})`)
+                    onActivated: index => areaDialog.area = entityAreas.areas[index]
+                }
+                Label {
+                    visible: !areaDialog.candidates.length
+                    text: page.tr("area.empty")
+                    opacity: 0.7
+                }
+                Repeater {
+                    model: areaDialog.candidates
+                    delegate: CheckBox {
+                        readonly property var entity: entities[modelData]
+                        Layout.fillWidth: true
+                        checked: !!areaDialog.chosen[modelData]
+                        text: (entity?.attributes?.friendly_name || modelData)
+                            + (areaDialog.existing.has(modelData) ? "  " + page.tr("area.exists") : "")
+                        onToggled: {
+                            const c = Object.assign({}, areaDialog.chosen)
+                            c[modelData] = checked
+                            areaDialog.chosen = c
+                        }
+                    }
+                }
             }
         }
     }

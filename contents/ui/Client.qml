@@ -56,8 +56,9 @@ BaseObject {
         return commandAsync({ type: "frontend/get_translations", category, language, integration })
     }
 
-    // Areas from the registries: { areas: [{ area_id, name }], areaOf: { entity_id: area name } }.
-    // An entity without its own area takes the area of its device.
+    // Areas from the registries: { areas: [{ area_id, name, entities }], areaOf: { entity_id: area name } }.
+    // An entity without its own area takes the area of its device. An area's entity list leaves
+    // out hidden entities and configuration/diagnostic ones (they rarely belong on a tile).
     function getAreas() {
         return Promise.all([
             commandAsync({ type: "config/area_registry/list" }),
@@ -69,11 +70,15 @@ BaseObject {
             const deviceArea = {}
             for (const d of devices) deviceArea[d.id] = d.area_id
             const areaOf = {}
+            const inArea = {}
             for (const e of display.entities || []) {
                 const id = e.ai || deviceArea[e.di]
-                if (id && areaName[id]) areaOf[e.ei] = areaName[id]
+                if (!id || !areaName[id]) continue
+                areaOf[e.ei] = areaName[id]
+                if (e.hb || e.ec !== undefined && e.ec !== null) continue
+                ;(inArea[id] = inArea[id] || []).push(e.ei)
             }
-            const sorted = areas.map(a => ({ area_id: a.area_id, name: a.name }))
+            const sorted = areas.map(a => ({ area_id: a.area_id, name: a.name, entities: (inArea[a.area_id] || []).sort() }))
             sorted.sort((a, b) => a.name.localeCompare(b.name))
             return { areas: sorted, areaOf }
         })
