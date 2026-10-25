@@ -1,5 +1,5 @@
 // Renders the widget's tile view outside Plasma with fake data and saves a PNG.
-// Usage: QT_QPA_PLATFORM=offscreen qml tests/render.qml -- <out.png> [lost|ok]
+// Usage: QT_QPA_PLATFORM=offscreen qml tests/render.qml -- <out.png> [ok|lost|theme|big] [dump]
 import QtQuick
 import QtQuick.Controls
 
@@ -23,7 +23,7 @@ ApplicationWindow {
         property var configuration: ({
             url: "http://ha.test:8123", language: "en", flat: true,
             tileOpacity: 78, tileCustomColor: false, tileColor: "#2e3440", tileRadius: 8, tileBorder: true,
-            levelBorder: true, activeFrame: true, tileScale: 100, tileSpacing: 6, labelScale: 100, valueScale: 100,
+            levelBorder: true, activeFrame: true, tileScale: 100, tileSpacing: 6, labelScale: 100, valueScale: window.args[1] === "big" ? 150 : 100,
             showMinMax: true, showTrend: true, graphHeight: 42, graphLineWidth: 1.5, graphFill: true,
             graphCustomColor: false, graphColor: "#88c0d0",
             // "theme": colors from a (fake) Home Assistant theme plus an own label color
@@ -135,6 +135,7 @@ ApplicationWindow {
         }
     }
 
+    readonly property var valueTexts: ["12.4 °C", "23.7 °C", "45%"]
     readonly property var expectedTexts: ["12.4 °C", "Outside", "Outside humidity", "Desk climate", "45%", "Living room", "heating", "Desk lamp", "Kitchen", "Hallway motion", "Late tile", "1 more check OK"]
 
     FullRepresentation {
@@ -161,7 +162,9 @@ ApplicationWindow {
         const walk = item => {
             if (item.text !== undefined && item.visible && item.opacity > 0 && window.expectedTexts.includes(item.text)) {
                 const p = item.mapToItem(view, 0, 0)
-                found[item.text] = p.x >= 0 && p.y >= 0 && p.x + item.width <= view.width + 1 && item.width > 0
+                const inside = p.x >= 0 && p.y >= 0 && p.x + item.width <= view.width + 1 && item.width > 0
+                // names may be shortened (full name in the tooltip), values must be shown completely
+                found[item.text] = !inside ? "outside" : item.truncated && window.valueTexts.includes(item.text) ? "truncated" : "ok"
             }
             for (let i = 0; i < item.children.length; i++) walk(item.children[i])
         }
@@ -169,7 +172,8 @@ ApplicationWindow {
         const problems = []
         for (const t of window.expectedTexts) {
             if (!(t in found)) problems.push("tile text not shown: " + t)
-            else if (!found[t]) problems.push("tile outside the view: " + t)
+            else if (found[t] === "outside") problems.push("tile outside the view: " + t)
+            else if (found[t] === "truncated") problems.push("tile text cut off: " + t)
         }
         return problems
     }

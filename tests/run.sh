@@ -31,6 +31,7 @@ run themes timeout 30 "$QML" tests/themes.qml
 run settings-pages timeout 30 "$QML" tests/pages.qml
 run render-connected timeout 30 "$QML" tests/render.qml -- "$OUT/connected.png" ok
 run render-disconnected timeout 30 "$QML" tests/render.qml -- "$OUT/disconnected.png" lost
+run render-large-values timeout 30 "$QML" tests/render.qml -- "$OUT/large-values.png" big
 run render-ha-theme timeout 30 "$QML" tests/render.qml -- "$OUT/ha-theme.png" theme
 
 echo "Logs and renders: $OUT"
