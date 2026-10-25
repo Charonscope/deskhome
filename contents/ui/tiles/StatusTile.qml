@@ -13,6 +13,10 @@ Item {
     readonly property color dotColor: root.levelColor(model.level, root.okColor)
     // half tiles: only the status dot, no extra icon
     readonly property bool narrow: width < Kirigami.Units.gridUnit * 7 * root.labelGrow
+    // a motion sensor that fires sends a short wave out of its dot
+    readonly property bool motion: ["motion", "occupancy", "presence"].includes(model.device_class)
+    readonly property bool on: !!model.active
+    onOnChanged: if (on && motion && root.animationDuration > 0) wave.restart()
 
     RowLayout {
         anchors.fill: parent
@@ -24,6 +28,22 @@ Item {
             height: width
             radius: width / 2
             color: tile.dotColor
+            Rectangle {
+                id: waveRing
+                anchors.centerIn: parent
+                width: parent.width
+                height: width
+                radius: width / 2
+                color: "transparent"
+                border.width: 2
+                border.color: tile.dotColor
+                opacity: 0
+                ParallelAnimation {
+                    id: wave
+                    NumberAnimation { target: waveRing; property: "scale"; from: 1; to: 3.2; duration: 900; easing.type: Easing.OutCubic }
+                    NumberAnimation { target: waveRing; property: "opacity"; from: 0.9; to: 0; duration: 900; easing.type: Easing.OutCubic }
+                }
+            }
             Behavior on color {
                 enabled: root.animationDuration > 0
                 ColorAnimation { duration: root.animationDuration }

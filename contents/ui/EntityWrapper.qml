@@ -62,6 +62,25 @@ MouseArea {
                     }
                 }
 
+                // A critical tile pulses slowly at its border, so it is noticed from the corner of the eye
+                Rectangle {
+                    id: alarmPulse
+                    readonly property bool pulsing: model.level === 2 && root.animationDuration > 0
+                    anchors.fill: parent
+                    radius: root.look.tileRadius
+                    color: "transparent"
+                    border.width: 2.5
+                    border.color: root.critColor
+                    visible: pulsing
+                    opacity: 0
+                    SequentialAnimation on opacity {
+                        running: alarmPulse.pulsing
+                        loops: Animation.Infinite
+                        NumberAnimation { to: 0.9; duration: 1200; easing.type: Easing.InOutSine }
+                        NumberAnimation { to: 0; duration: 1200; easing.type: Easing.InOutSine }
+                    }
+                }
+
                 // Hover for own tile backgrounds; the Plasma button frames below have their own,
                 // smaller corner radius and would stick out of rounded tiles
                 Rectangle {

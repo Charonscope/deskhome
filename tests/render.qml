@@ -97,11 +97,12 @@ ApplicationWindow {
         function history(id) { return id.startsWith("sensor.") ? points : [] }
         property ListModel itemModel: ListModel {
             Component.onCompleted: {
-                const base = { attributes: {}, default_action: {}, dclick_action: {}, scroll_action: {}, display: 1, hide_when_ok: false, light_color: "", brightness_pct: -1, device_class: "", unit: "", attribute: "", second_entity_id: "", value2: "", num2: NaN, current_temp: NaN, target_temp: NaN, temp_min: 7, temp_max: 35, temp_step: 0.5, current_humidity: NaN, hvac_action: "", heading: "", last_changed: 0 }
+                const base = { attributes: {}, default_action: {}, dclick_action: {}, scroll_action: {}, display: 1, hide_when_ok: false, light_color: "", brightness_pct: -1, device_class: "", unit: "", attribute: "", second_entity_id: "", value2: "", num2: NaN, current_temp: NaN, target_temp: NaN, temp_min: 7, temp_max: 35, temp_step: 0.5, current_humidity: NaN, hvac_action: "", heading: "", last_changed: 0, fan_pct: -1 }
                 const add = o => append(Object.assign({}, base, o))
                 add({ entity_id: "sensor.outside", name: "Outside", kind: "sensor", value: "9.6 °C", num: 9.6, state: "9.6", level: 0, icon: "mdi:thermometer", colspan: 1, history_hours: 24, domain: "sensor", active: false })
                 add({ entity_id: "sensor.humidity", name: "Outside humidity", kind: "sensor", value: "63%", num: 63, state: "63", level: 0, icon: "mdi:water-percent", colspan: 1, history_hours: 24, domain: "sensor", active: false })
                 add({ entity_id: "sensor.desk_temp", name: "Desk climate", kind: "combo", value: "23.7 °C", num: 23.7, state: "23.7", level: 0, icon: "mdi:thermometer", colspan: 1, history_hours: 24, domain: "sensor", active: false, second_entity_id: "sensor.desk_humidity", value2: "45%", num2: 45 })
+                add({ entity_id: "sensor.fan_rpm", name: "Fan speed", kind: "sensor", value: "1000 rpm", num: 1000, unit: "rpm", state: "1000", level: 0, icon: "mdi:fan", colspan: 1, history_hours: 0, domain: "sensor", active: false })
                 add({ entity_id: "climate.living", heading: "Heating", name: "Living room", kind: "thermostat", value: "Auto", num: NaN, state: "auto", level: 0, icon: "mdi:thermostat", colspan: 1, history_hours: 0, domain: "climate", active: false, current_temp: 21.9, target_temp: 21, current_humidity: 52, hvac_action: "heating" })
                 add({ entity_id: "light.desk", heading: "Lights", name: "Desk lamp", kind: "switch", value: "on", num: NaN, state: "on", level: 0, icon: "mdi:lightbulb", colspan: 0.5, history_hours: 0, domain: "light", active: true, brightness_pct: 60, light_color: "#ffcc66" })
                 add({ entity_id: "light.kitchen", last_changed: new Date(2026, 9, 25, 11, 55).getTime(), name: "Kitchen", kind: "switch", value: "off", num: NaN, state: "off", level: 0, icon: "mdi:lightbulb-outline", colspan: 0.5, history_hours: 0, domain: "light", active: false })
@@ -143,7 +144,7 @@ ApplicationWindow {
     }
 
     readonly property var valueTexts: ["12.4 °C", "23.7 °C", "45%"]
-    readonly property var expectedTexts: ["12.4 °C", "Outside", "Outside humidity", "Desk climate", "45%", "Heating", "Lights", "Weak batteries", "Hall sensor battery", "8 %", "Front door battery", "Living room", "heating", "Desk lamp", "Kitchen", "Off · 5 min ago", "Hallway motion", "Late tile", "1 more check OK"]
+    readonly property var expectedTexts: ["12.4 °C", "Outside", "Outside humidity", "Desk climate", "45%", "Fan speed", "Heating", "Lights", "Weak batteries", "Hall sensor battery", "8 %", "Front door battery", "Living room", "heating", "Desk lamp", "Kitchen", "Off · 5 min ago", "Hallway motion", "Late tile", "1 more check OK"]
 
     FullRepresentation {
         id: view
@@ -158,6 +159,22 @@ ApplicationWindow {
             if (window.args[2] === "dump") window.dump(view, 0)
             const problems = window.verify()
             if (!window.sawCounting) problems.push("changed value did not count to the new one")
+            // animations: the rpm icon turns, history lines have drawn in completely
+            const anim = { spinning: 0, turned: 0, lines: 0, revealed: 0 }
+            const walkAnim = item => {
+                if (item.period !== undefined && item.spinning !== undefined && item.spinning) {
+                    anim.spinning++
+                    if (item.rotation > 0) anim.turned++
+                }
+                if (item.reveal !== undefined && item.points !== undefined && item.points.length) {
+                    anim.lines++
+                    if (item.reveal === 1) anim.revealed++
+                }
+                for (let i = 0; i < item.children.length; i++) walkAnim(item.children[i])
+            }
+            walkAnim(view)
+            if (anim.spinning !== 1 || anim.turned !== 1) problems.push("fan icon does not turn: " + JSON.stringify(anim))
+            if (!anim.lines || anim.revealed !== anim.lines) problems.push("history lines not drawn in: " + JSON.stringify(anim))
             for (const p of problems) console.log("FAIL " + p)
             view.grabToImage(r => { r.saveToFile(window.args[0]); console.log("saved " + window.args[0]); Qt.exit(problems.length ? 1 : 0) })
         }

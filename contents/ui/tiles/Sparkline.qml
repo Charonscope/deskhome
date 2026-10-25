@@ -14,9 +14,35 @@ Canvas {
     property bool fill: true
     // Radius of the bottom corners, so line and area do not run over the tile corners
     property real cornerRadius: 0
+    // share of the line drawn (0..1): the line draws in from the left when it first appears
+    property real reveal: 1
+    property bool _revealed: false
+    function startReveal() {
+        if (_revealed || !points?.length) return
+        _revealed = true
+        if (root.animationDuration <= 0) return
+        reveal = 0
+        revealAnimation.start()
+    }
+    NumberAnimation {
+        id: revealAnimation
+        target: spark
+        property: "reveal"
+        to: 1
+        duration: root.animationDuration * 4
+        easing.type: Easing.OutCubic
+    }
+    onRevealChanged: requestPaint()
+    Component.onCompleted: startReveal()
 
-    onRevisionChanged: requestPaint()
-    onPointsChanged: requestPaint()
+    onRevisionChanged: {
+        startReveal()
+        requestPaint()
+    }
+    onPointsChanged: {
+        startReveal()
+        requestPaint()
+    }
     onColorChanged: requestPaint()
     onLineWidthChanged: requestPaint()
     onFillChanged: requestPaint()
@@ -52,6 +78,11 @@ Canvas {
         ctx.arcTo(0, height, 0, height - r, r)
         ctx.closePath()
         ctx.clip()
+        if (reveal < 1) {
+            ctx.beginPath()
+            ctx.rect(0, 0, width * reveal, height)
+            ctx.clip()
+        }
 
         // Minimum scale height: 5 % of the value, otherwise measurement noise
         // (e.g. fan 1008–1020 rpm) is blown up to the full tile height

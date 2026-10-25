@@ -29,9 +29,9 @@ Item {
         anchors.margins: Kirigami.Units.smallSpacing
         spacing: Kirigami.Units.smallSpacing
 
-        DynamicIcon {
-
-            animationDuration: root.animationDuration
+        SpinningIcon {
+            // a running fan turns, faster with higher speed
+            period: model.domain === "fan" && tile.on ? (model.fan_pct > 0 ? 4000 - model.fan_pct * 30 : 2000) : 0
             name: model.icon
             color: tile.iconColor
             opacity: wrapper.pending ? 0.5 : 1

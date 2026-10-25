@@ -30,6 +30,8 @@ export function EntityUpdate(config = {}, update = {}, entity = {}, options = {}
     this.temp_step = numberOr(a.target_temp_step, 0.5)
     this.current_humidity = numberOr(a.current_humidity, NaN)
     this.hvac_action = a.hvac_action || ''
+    // fans: speed in percent (-1 = unknown)
+    this.fan_pct = numberOr(a.percentage, -1)
 }
 
 function numberOr(v, fallback) {
