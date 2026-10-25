@@ -109,19 +109,23 @@ Item {
             readonly property real basePx: Kirigami.Units.gridUnit * (showHistory ? 1.3 : 1.8) * root.tileScale * root.look.valueScale / 100
             readonly property real needed: (firstMetrics.advanceWidth + secondMetrics.advanceWidth) * 1.05 + spacing
             readonly property real fit: needed > 0 ? Math.min(1, Math.max(0.5, (width - spacing) / (needed - spacing))) : 1
+            // measured with the labels' own font family (it differs from the application font)
             TextMetrics {
                 id: firstMetrics
+                font.family: firstValue.font.family
                 font.pixelSize: valueRow.basePx
                 font.weight: Font.Bold
                 text: model.value
             }
             TextMetrics {
                 id: secondMetrics
+                font.family: firstValue.font.family
                 font.pixelSize: valueRow.basePx
                 font.weight: Font.Bold
                 text: model.value2
             }
             CountingLabel {
+                id: firstValue
                 value: model.value
                 color: tile.levelColor
                 font.pixelSize: valueRow.basePx * valueRow.fit

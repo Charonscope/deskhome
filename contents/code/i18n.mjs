@@ -176,6 +176,8 @@ const STRINGS = Object.freeze({
     "menu.remove": ["Kachel entfernen …", "Remove tile …"],
     "menu.removeTitle": ["Kachel entfernen", "Remove tile"],
     "menu.removeQuestion": ["„%1“ aus DeskHome entfernen? In Home Assistant bleibt alles unverändert.", "Remove “%1” from DeskHome? Nothing changes in Home Assistant."],
+    "menu.removeYes": ["Entfernen", "Remove"],
+    "menu.removeNo": ["Abbrechen", "Cancel"],
     "menu.configure": ["Alle Kacheln einrichten …", "Set up all tiles …"],
     "tip.show": ["Kacheln anzeigen", "Show entities"],
     "tip.hide": ["Kacheln ausblenden", "Hide entities"],

@@ -95,6 +95,9 @@ Item {
             color: tile.levelColor
             font.pixelSize: Kirigami.Units.gridUnit * (showHistory ? 1.3 : 1.8) * root.tileScale * root.look.valueScale / 100
             font.weight: Font.Bold
+            // too wide for the tile: smaller font rather than a cut-off value
+            fontSizeMode: Text.HorizontalFit
+            minimumPixelSize: Math.round(font.pixelSize * 0.5)
             elide: Text.ElideRight
             Layout.fillWidth: true
             // aligned with the visible left edge of the icon (the SVG has an inner margin)

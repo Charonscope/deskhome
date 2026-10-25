@@ -8,7 +8,7 @@ import org.kde.plasma.components as PlasmaComponents3
 
 import org.kde.kirigami as Kirigami
 
-import QtQuick.Dialogs
+import QtQuick.Window
 
 import "components"
 
@@ -312,9 +312,13 @@ PlasmaExtras.Representation {
                 icon: "edit-delete"
                 enabled: menu.editable
                 onClicked: {
-                    removeDialog.index = menu.index
-                    removeDialog.text = root.tr("menu.removeQuestion", menu.name || menu.entityId)
-                    removeDialog.open()
+                    const w = removeWindowComponent.createObject(root, {
+                        index: menu.index,
+                        question: root.tr("menu.removeQuestion", menu.name || menu.entityId)
+                    })
+                    w.closing.connect(() => w.destroy())
+                    w.show()
+                    w.requestActivate()
                 }
             }
             PlasmaExtras.MenuItem {
@@ -329,13 +333,65 @@ PlasmaExtras.Representation {
         }
     }
 
-    MessageDialog {
-        id: removeDialog
-        property int index: -1
-        title: root.tr("menu.removeTitle")
-        buttons: MessageDialog.Yes | MessageDialog.No
-        onButtonClicked: (button, role) => {
-            if (button === MessageDialog.Yes) root.removeTile(index)
+    // Own confirmation window: Qt's MessageDialog shows every button twice under KDE
+    Component {
+        id: removeWindowComponent
+        Window {
+            id: removeWindow
+            property int index: -1
+            property string question
+            title: root.tr("menu.removeTitle")
+            flags: Qt.Dialog
+            modality: Qt.ApplicationModal
+            color: Kirigami.Theme.backgroundColor
+            width: Kirigami.Units.gridUnit * 24
+            height: content.implicitHeight + Kirigami.Units.largeSpacing * 2
+            minimumWidth: width
+            minimumHeight: height
+
+            Shortcut {
+                sequences: [StandardKey.Cancel]
+                onActivated: removeWindow.close()
+            }
+
+            ColumnLayout {
+                id: content
+                anchors.fill: parent
+                anchors.margins: Kirigami.Units.largeSpacing
+                spacing: Kirigami.Units.largeSpacing
+                RowLayout {
+                    spacing: Kirigami.Units.largeSpacing
+                    Kirigami.Icon {
+                        source: "dialog-warning"
+                        Layout.preferredWidth: Kirigami.Units.iconSizes.large
+                        Layout.preferredHeight: Kirigami.Units.iconSizes.large
+                        Layout.alignment: Qt.AlignTop
+                    }
+                    Label {
+                        text: removeWindow.question
+                        wrapMode: Text.WordWrap
+                        Layout.fillWidth: true
+                    }
+                }
+                DialogButtonBox {
+                    Layout.fillWidth: true
+                    Button {
+                        text: root.tr("menu.removeYes")
+                        icon.name: "edit-delete"
+                        DialogButtonBox.buttonRole: DialogButtonBox.AcceptRole
+                    }
+                    Button {
+                        text: root.tr("menu.removeNo")
+                        icon.name: "dialog-cancel"
+                        DialogButtonBox.buttonRole: DialogButtonBox.RejectRole
+                    }
+                    onAccepted: {
+                        root.removeTile(removeWindow.index)
+                        removeWindow.close()
+                    }
+                    onRejected: removeWindow.close()
+                }
+            }
         }
     }
 
