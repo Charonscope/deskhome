@@ -66,13 +66,24 @@ ApplicationWindow {
             window.failed++
             return
         }
-        // the form must have a height, otherwise the window cannot scroll (1.3.0)
-        Qt.callLater(() => {
+        // the form must have a height, otherwise the window cannot scroll (1.3.0);
+        // older Kirigami (Plasma 6.3) only lays out the form once the window is shown
+        w.visible = true
+        formCheck.editWindow = w
+        formCheck.start()
+    }
+
+    Timer {
+        id: formCheck
+        property var editWindow
+        interval: 300
+        onTriggered: {
+            const w = editWindow
             const ok = (w.formHeight ?? 0) > 100
             console.log((ok ? "PASS " : "FAIL ") + "TileEditWindow scrolls (form height " + w.formHeight + ")")
             if (!ok) window.failed++
             w.destroy()
-        })
+        }
     }
 
     Timer {

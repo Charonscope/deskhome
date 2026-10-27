@@ -14,12 +14,18 @@ status=0
 # QML messages that mean something in the widget is broken
 BROKEN='already taken|ReferenceError|TypeError|is not a type|Type [A-Za-z]+ unavailable|Non-existent attached object|Cannot assign|Unable to assign|is not installed|Syntax error|Expected token|Binding loop'
 
+# DESKHOME_TEST_IGNORE: regex for messages that only come from the test setup on a given
+# platform (e.g. KDE modules that rely on plasmashell's global i18nc on Plasma 6.3)
+relevant() {
+    if [ -n "${DESKHOME_TEST_IGNORE:-}" ]; then grep -Ev "$DESKHOME_TEST_IGNORE" "$1"; else cat "$1"; fi
+}
+
 run() {
     local name=$1; shift
-    if "$@" >"$OUT/$name.log" 2>&1 && ! grep -Eq "$BROKEN" "$OUT/$name.log"; then
+    if "$@" >"$OUT/$name.log" 2>&1 && ! relevant "$OUT/$name.log" | grep -Eq "$BROKEN"; then
         echo "PASS $name"
     else
-        echo "FAIL $name"; grep -E "FAIL|$BROKEN" "$OUT/$name.log" | sed 's/^/     /' | head -20
+        echo "FAIL $name"; relevant "$OUT/$name.log" | grep -E "FAIL|$BROKEN" | sed 's/^/     /' | head -20
         status=1
     fi
 }

@@ -55,8 +55,46 @@ jobs:
           name: test-output
           path: test-output
 
+  # Same tests on an older Plasma (Debian 13: Plasma 6.3, Qt 6.8), so "Plasma 6" in the store
+  # description holds for distributions that are not on the latest release
+  test-debian:
+    runs-on: ubuntu-latest
+    container: debian:trixie
+    steps:
+      - name: Install Qt and KDE QML modules
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          apt-get update -qq
+          apt-get install -y -qq --no-install-recommends git python3 fonts-dejavu-core qml-qt6 qt6-declarative-dev-tools \
+            qt6-qpa-plugins qml6-module-qtquick qml6-module-qtquick-controls qml6-module-qtquick-layouts \
+            qml6-module-qtquick-window qml6-module-qtquick-effects qml6-module-qtquick-dialogs \
+            qml6-module-qtquick-templates qml6-module-qtqml-workerscript qml6-module-qtqml-models \
+            qml6-module-qtcore qml6-module-qtwebsockets qml6-module-org-kde-kirigami qml6-module-org-kde-kcmutils \
+            qml6-module-org-kde-ksvg qml6-module-org-kde-kquickcontrols qml6-module-org-kde-kitemmodels \
+            qml6-module-org-kde-notifications qml6-module-org-kde-iconthemes \
+            qml6-module-org-kde-plasma-plasma5support libplasma6 plasma-desktoptheme
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref }}
+
+      - name: Run tests
+        env:
+          DESKHOME_TEST_OUT: test-output
+          # Plasma 6.3 provides org.kde.plasma.plasmoid and the global i18nc only inside plasmashell
+          DESKHOME_TEST_IGNORE: 'kquickcontrols/ColorButton.qml:[0-9]+: ReferenceError: i18nc is not defined'
+        run: QML_IMPORT_PATH="$PWD/tests/compat" tests/run.sh
+
+      - name: Keep test logs and renders
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-output-debian
+          path: test-output
+
   release:
-    needs: test
+    needs: [test, test-debian]
     if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     env:
