@@ -72,6 +72,8 @@ To update an existing installation use `-u` instead of `-i`.
 5. Paste the token into the *Token* field and click *Apply*.
 6. Under *Tiles*, add the entities you want to see – search by name or area, or add a whole area at once. Click *Apply*.
 
+**All tile types and settings, with examples: [Creating tiles](docs/tiles.md).**
+
 ## Troubleshooting
 
 **The widget stays empty / no tiles appear**
@@ -181,6 +183,8 @@ Für ein Update `-u` statt `-i` verwenden.
 4. Token anlegen: in Home Assistant auf den Benutzernamen klicken (Profil) → *Sicherheit* → *Langlebige Zugangstoken* → *Token erstellen*. Sofort kopieren – er wird nur einmal angezeigt.
 5. Token ins Feld *Token* einfügen und *Anwenden* klicken.
 6. Unter *Kacheln* die gewünschten Entities hinzufügen – Suche nach Name oder Bereich, oder gleich einen ganzen Bereich übernehmen. *Anwenden* klicken.
+
+**Alle Kachel-Typen und Einstellungen mit Beispielen: [Kacheln anlegen](docs/kacheln.md).**
 
 ## Fehlersuche
 
