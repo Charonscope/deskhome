@@ -14,6 +14,9 @@ BaseObject {
     readonly property alias hasFullRepresenationItems: _.hasFullRepresenationItems
     // Incremented on every history change so tiles repaint
     property int historyRevision: 0
+    // history kept beyond each tile's window (the "yesterday" line)
+    property int extraHistoryHours: 0
+    onExtraHistoryHoursChanged: Qt.callLater(() => { if (_.client?.ready) _.fetchHistory() })
 
     // callLater: only after dependent bindings (e.g. historyHoursByEntityId) are re-evaluated,
     // and several triggers in quick succession result in a single subscription
@@ -98,7 +101,7 @@ BaseObject {
         function fetchHistory() {
             const ids = Object.keys(historyHoursByEntityId)
             if (!ids.length) return
-            const hours = Math.max(...Object.values(historyHoursByEntityId))
+            const hours = Math.max(...Object.values(historyHoursByEntityId)) + extraHistoryHours
             const start = new Date(Date.now() - hours * 3600000)
             client.getHistory(ids, start).then(result => {
                 const h = {}
@@ -122,7 +125,7 @@ BaseObject {
         function pruneHistory() {
             const now = Date.now()
             for (const id in histories) {
-                const from = now - (historyHoursByEntityId[id] || 0) * 3600000
+                const from = now - ((historyHoursByEntityId[id] || 0) + extraHistoryHours) * 3600000
                 const points = histories[id]
                 // keep one point before the window start so the line begins at the left edge
                 let cut = 0

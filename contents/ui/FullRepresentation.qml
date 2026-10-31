@@ -11,6 +11,7 @@ import org.kde.kirigami as Kirigami
 import QtQuick.Window
 
 import "components"
+import "../code/timeago.mjs" as TimeAgo
 
 PlasmaExtras.Representation {
     Column {
@@ -117,9 +118,21 @@ PlasmaExtras.Representation {
                 // weak batteries (BatteryWatch); all fine counts as one more passed check
                 readonly property var weakBatteries: root.batteries?.low ?? []
                 readonly property bool batteriesOk: !!root.batteries?.enabled && root.batteries.total > 0 && !weakBatteries.length
-                readonly property int okCount: hiddenOkCount + (batteriesOk ? 1 : 0)
+                // devices gone / sensors hanging (ProblemWatch); a clean check counts as passed
+                readonly property var problemList: root.problems?.problems ?? []
+                // long lists are cut; a click on "… more" shows all
+                readonly property int problemRowsShown: 8
+                property bool problemsExpanded: false
+                readonly property var problemRows: problemsExpanded ? problemList : problemList.slice(0, problemRowsShown)
+                readonly property int problemsHidden: problemList.length - problemRows.length
+                readonly property bool problemsOk: !!root.problems?.enabled && !!root.problems?.checked && !problemList.length
+                // Home Assistant's notifications, repairs and updates (HaMessages)
+                readonly property bool showHaMessages: !!root.haMessages?.showCounts && root.haMessages.total > 0
+                readonly property int okCount: hiddenOkCount + (batteriesOk ? 1 : 0) + (problemsOk ? 1 : 0)
                 readonly property int batteryRowHeight: Math.ceil(Kirigami.Units.gridUnit * 1.2 * root.labelGrow)
                 property var batteryPosition: ({ x: 0, y: 0, width: 0, height: 0 })
+                property var problemPosition: ({ x: 0, y: 0, width: 0, height: 0 })
+                property var haPosition: ({ x: 0, y: 0, width: 0, height: 0 })
                 function recountHidden() {
                     let n = 0
                     for (let i = 0; i < store.itemModel.count; i++) {
@@ -180,6 +193,16 @@ PlasmaExtras.Representation {
                         }
                         batteryPosition = put(columns, Kirigami.Units.smallSpacing * 2 + batteryRowHeight * (weakBatteries.length + 1))
                     }
+                    if (problemList.length) {
+                        if (column > 0) {
+                            y += rowHeight + spacing
+                            column = 0
+                            rowHeight = 0
+                        }
+                        const rows = problemRows.length + 1 + (problemList.length > problemRowsShown ? 1 : 0)
+                        problemPosition = put(columns, Kirigami.Units.smallSpacing * 2 + batteryRowHeight * rows)
+                    }
+                    if (showHaMessages) haPosition = put(Math.min(4, columns), compactTileHeight)
                     if (okCount > 0) okPosition = put(Math.min(2, columns), compactTileHeight)
                     positions = result
                     headings = headingList
@@ -201,6 +224,9 @@ PlasmaExtras.Representation {
                 onSpacingChanged: schedulePlace()
                 onOkCountChanged: schedulePlace()
                 onWeakBatteriesChanged: schedulePlace()
+                onProblemListChanged: schedulePlace()
+                onProblemsExpandedChanged: schedulePlace()
+                onShowHaMessagesChanged: schedulePlace()
                 Component.onCompleted: {
                     recountHidden()
                     place()
@@ -229,7 +255,7 @@ PlasmaExtras.Representation {
                     delegate: EntityWrapper {
                         id: wrapper
                         sourceIndex: visibleTiles.mapToSource(visibleTiles.index(index, 0)).row
-                        onContextMenuRequested: (x, y) => tileMenu.openFor(wrapper, sourceIndex, model.entity_id, model.name, model.colspan, x, y)
+                        onContextMenuRequested: (x, y) => tileMenu.openFor(wrapper, sourceIndex, model.entity_id, model.name, model.colspan, model.level, x, y)
                         readonly property var geometry: tileGrid.positions[index]
                         visible: !!geometry
                         x: geometry?.x ?? 0
@@ -261,7 +287,7 @@ PlasmaExtras.Representation {
                             id: tileContent
                             anchors.fill: parent
                             // "blinks on warning/critical": the content fades in and out
-                            readonly property bool blinking: !!model.blink && model.level > 0 && !!root.look.animations
+                            readonly property bool blinking: !!model.blink && model.level > 0 && !!root.look.animations && !wrapper.quiet
                             onBlinkingChanged: if (!blinking) opacity = 1
                             SequentialAnimation on opacity {
                                 running: tileContent.blinking
@@ -351,6 +377,149 @@ PlasmaExtras.Representation {
                     }
                 }
 
+                // Devices that are gone and sensors that hang (ProblemWatch). A click opens the
+                // device (or the history) in Home Assistant, a right-click ignores the entry for good.
+                Rectangle {
+                    visible: opacity > 0
+                    opacity: tileGrid.problemList.length ? 1 : 0
+                    Behavior on opacity {
+                        enabled: root.animationDuration > 0
+                        NumberAnimation { duration: root.animationDuration }
+                    }
+                    x: tileGrid.problemPosition.x
+                    y: tileGrid.problemPosition.y
+                    width: tileGrid.problemPosition.width
+                    height: tileGrid.problemPosition.height
+                    radius: root.look.tileRadius
+                    color: root.tileFillColor
+                    border.width: root.look.levelBorder ? 1.5 : 0
+                    border.color: root.critColor
+                    Column {
+                        anchors.fill: parent
+                        anchors.margins: Kirigami.Units.smallSpacing
+                        RowLayout {
+                            width: parent.width
+                            height: tileGrid.batteryRowHeight
+                            spacing: Kirigami.Units.smallSpacing
+                            DynamicIcon {
+                                name: "mdi:lan-disconnect"
+                                color: root.critColor
+                                Layout.preferredWidth: Kirigami.Units.iconSizes.small * root.labelGrow
+                                Layout.preferredHeight: Kirigami.Units.iconSizes.small * root.labelGrow
+                            }
+                            PlasmaComponents3.Label {
+                                text: root.tr("problems.title")
+                                font.pointSize: root.smallPt
+                                font.weight: Font.DemiBold
+                                color: root.labelColor
+                                Layout.fillWidth: true
+                            }
+                        }
+                        Repeater {
+                            model: tileGrid.problemRows
+                            delegate: MouseArea {
+                                width: parent.width
+                                height: tileGrid.batteryRowHeight
+                                cursorShape: Qt.PointingHandCursor
+                                acceptedButtons: Qt.LeftButton | Qt.RightButton
+                                hoverEnabled: true
+                                onClicked: mouse => {
+                                    if (mouse.button === Qt.RightButton) root.ignoreProblem(modelData.entity_ids)
+                                    else Qt.openUrlExternally(modelData.device_id
+                                        ? `${root.url}/config/devices/device/${modelData.device_id}`
+                                        : `${root.url}/history?entity_id=${encodeURIComponent(modelData.entity_ids[0])}`)
+                                }
+                                PlasmaCore.ToolTipArea {
+                                    anchors.fill: parent
+                                    mainText: modelData.name
+                                    subText: modelData.entity_ids.join("\n") + "\n\n" + root.tr("problems.tip")
+                                }
+                                RowLayout {
+                                    anchors.fill: parent
+                                    spacing: Kirigami.Units.smallSpacing
+                                    PlasmaComponents3.Label {
+                                        text: modelData.name
+                                        elide: Text.ElideRight
+                                        font.pointSize: root.defaultPt
+                                        color: root.labelColor
+                                        Layout.fillWidth: true
+                                    }
+                                    PlasmaComponents3.Label {
+                                        text: root.tr(modelData.kind === "stuck" ? "problems.stuck" : "problems.unavailable",
+                                                      TimeAgo.ago(root.lang, modelData.since, root.now))
+                                        font.pointSize: root.smallPt
+                                        font.weight: Font.DemiBold
+                                        color: modelData.kind === "stuck" ? root.warnColor : root.critColor
+                                    }
+                                }
+                            }
+                        }
+                        MouseArea {
+                            visible: tileGrid.problemList.length > tileGrid.problemRowsShown
+                            width: parent.width
+                            height: tileGrid.batteryRowHeight
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: tileGrid.problemsExpanded = !tileGrid.problemsExpanded
+                            PlasmaComponents3.Label {
+                                anchors.fill: parent
+                                text: tileGrid.problemsExpanded ? root.tr("problems.less") : root.tr("problems.more", tileGrid.problemsHidden)
+                                font.pointSize: root.smallPt
+                                color: root.labelColor
+                                opacity: 0.8
+                                verticalAlignment: Text.AlignVCenter
+                            }
+                        }
+                    }
+                }
+
+                // Home Assistant's notifications, repairs and updates; each count opens its page
+                Rectangle {
+                    visible: opacity > 0
+                    opacity: tileGrid.showHaMessages ? 1 : 0
+                    Behavior on opacity {
+                        enabled: root.animationDuration > 0
+                        NumberAnimation { duration: root.animationDuration }
+                    }
+                    x: tileGrid.haPosition.x
+                    y: tileGrid.haPosition.y
+                    width: tileGrid.haPosition.width
+                    height: tileGrid.haPosition.height
+                    radius: root.look.tileRadius
+                    color: root.tileFillColor
+                    RowLayout {
+                        anchors.fill: parent
+                        anchors.margins: Kirigami.Units.smallSpacing
+                        spacing: Kirigami.Units.largeSpacing
+                        DynamicIcon {
+                            name: "mdi:home-assistant"
+                            color: root.accentColor
+                            Layout.preferredWidth: Kirigami.Units.iconSizes.medium
+                            Layout.preferredHeight: Kirigami.Units.iconSizes.medium
+                        }
+                        Repeater {
+                            model: [
+                                { count: root.haMessages?.notificationCount ?? 0, key: "ha.notifications", path: "" },
+                                { count: root.haMessages?.repairCount ?? 0, key: "ha.repairs", path: "/config/repairs" },
+                                { count: root.haMessages?.updateCount ?? 0, key: "ha.updates", path: "/config/updates" }
+                            ].filter(m => m.count > 0)
+                            delegate: PlasmaComponents3.Label {
+                                text: root.tr(modelData.key, modelData.count)
+                                font.pointSize: root.defaultPt
+                                color: root.labelColor
+                                font.underline: countArea.containsMouse
+                                MouseArea {
+                                    id: countArea
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: Qt.openUrlExternally(root.url + modelData.path)
+                                }
+                            }
+                        }
+                        Item { Layout.fillWidth: true }
+                    }
+                }
+
                 Repeater {
                     model: tileGrid.headings
                     delegate: Item {
@@ -426,12 +595,13 @@ PlasmaExtras.Representation {
     QtObject {
         id: tileMenu
         property var menu: null
-        function openFor(visualParent, index, entityId, name, colspan, x, y) {
+        function openFor(visualParent, index, entityId, name, colspan, level, x, y) {
             if (!menu) menu = tileMenuComponent.createObject(tileMenu)
             menu.index = index
             menu.entityId = entityId
             menu.name = name
             menu.colspan = colspan
+            menu.level = level ?? 0
             menu.visualParent = visualParent
             menu.open(x, y)
         }
@@ -445,9 +615,18 @@ PlasmaExtras.Representation {
             property string entityId
             property string name
             property real colspan: 1
+            property int level: 0
+            readonly property bool acknowledged: { root.acknowledged; return root.isAcknowledged(entityId) }
             // locked widgets (Plasma "Lock widgets") cannot be changed
             readonly property bool editable: !plasmoid.immutable
 
+            // only while the tile warns: quiet it until it was OK again
+            PlasmaExtras.MenuItem {
+                visible: menu.level > 0 || menu.acknowledged
+                text: menu.acknowledged ? root.tr("menu.unacknowledge") : root.tr("menu.acknowledge")
+                icon: menu.acknowledged ? "notifications" : "checkmark"
+                onClicked: root.setAcknowledged(menu.entityId, !menu.acknowledged)
+            }
             PlasmaExtras.MenuItem {
                 text: root.tr("menu.edit")
                 icon: "document-edit"

@@ -33,6 +33,14 @@ BaseObject {
         return () => unsubscribe(id)
     }
 
+    // Any subscription command (e.g. persistent_notification/subscribe); returns a cancel function
+    function subscribeMessage(message, callback) {
+        if (!_.authenticated) return
+        const id = command(message)
+        _.subscriptions.set(id, callback)
+        return () => unsubscribe(id)
+    }
+
     function unsubscribe(id) {
         if (!_.subscriptions.has(id)) return Promise.resolve()
         _.subscriptions.delete(id)
@@ -82,6 +90,29 @@ BaseObject {
             sorted.sort((a, b) => a.name.localeCompare(b.name))
             return { areas: sorted, areaOf }
         })
+    }
+
+    // Registry data the problem list needs: { entities: { entity_id: { device_id, hidden, category } },
+    // deviceNames: { device_id: name } }
+    function getRegistry() {
+        return Promise.all([
+            commandAsync({ type: "config/device_registry/list" }).catch(() => []),
+            commandAsync({ type: "config/entity_registry/list_for_display" })
+        ]).then(([devices, display]) => {
+            const deviceNames = {}
+            for (const d of devices) deviceNames[d.id] = d.name_by_user || d.name || ""
+            const entities = {}
+            for (const e of display.entities || []) {
+                entities[e.ei] = { device_id: e.di || "", hidden: !!e.hb, category: e.ec !== undefined && e.ec !== null }
+            }
+            return { entities, deviceNames }
+        })
+    }
+
+    // Open repairs (Settings → Repairs) that are neither ignored nor dismissed; needs an admin token
+    function getRepairs() {
+        return commandAsync({ type: "repairs/list_issues" })
+            .then(r => (r.issues || []).filter(i => !i.ignored && !i.dismissed_version))
     }
 
     function getThemes() {

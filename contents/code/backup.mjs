@@ -6,7 +6,8 @@ export const LOOK_KEYS = Object.freeze([
     "graphHeight", "graphLineWidth", "graphFill", "graphCustomColor", "graphColor",
     "colorSource", "haTheme", "valueCustomColor", "valueColor", "labelCustomColor", "labelColor", "animations",
     "batteryThreshold", "showLastChanged", "valueWeight", "showSwitchState", "secondCustomColor", "secondColor",
-    "readOnly", "levelCustomColors", "customOkColor", "customWarnColor", "customCritColor"
+    "readOnly", "levelCustomColors", "customOkColor", "customWarnColor", "customCritColor",
+    "problemUnavailableMinutes", "problemStuckHours", "problemIgnore", "haCounts", "haPopups", "graphYesterday"
 ])
 
 // Older copies of the automatic backup: "backup.json" -> "backup.1.json" … (newest first)

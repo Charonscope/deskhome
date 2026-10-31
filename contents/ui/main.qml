@@ -80,7 +80,8 @@ PlasmoidItem {
     Timer {
         interval: 30000
         repeat: true
-        running: !!root.look.showLastChanged
+        // also for the problem list ("unavailable · 3 h ago")
+        running: !!root.look.showLastChanged || problemWatch.enabled
         onTriggered: root.now = Date.now()
     }
     function ago(ms) { return look.showLastChanged ? TimeAgo.ago(lang, ms, now) : "" }
@@ -140,6 +141,8 @@ PlasmoidItem {
         id: store
         items: Defaults.applyItemDefaults(JSON.parse(plasmoid.configuration.items))
         language: root.lang
+        // the "yesterday" line needs one more day of history
+        extraHistoryHours: plasmoid.configuration.graphYesterday ? 24 : 0
     }
 
     UpdateCheck {
@@ -158,6 +161,56 @@ PlasmoidItem {
         threshold: plasmoid.configuration.batteryThreshold
     }
     readonly property alias batteries: batteries
+
+    ProblemWatch {
+        id: problemWatch
+        client: root.ha
+        unavailableMinutes: plasmoid.configuration.problemUnavailableMinutes
+        stuckHours: plasmoid.configuration.problemStuckHours
+        ignore: plasmoid.configuration.problemIgnore
+    }
+    readonly property alias problems: problemWatch
+    // right-click on a problem: never list these entities again
+    function ignoreProblem(entityIds) {
+        const list = (plasmoid.configuration.problemIgnore || "").split(/[\s,;]+/).filter(p => p)
+        for (const id of entityIds) if (!list.includes(id)) list.push(id)
+        plasmoid.configuration.problemIgnore = list.join(", ")
+    }
+
+    HaMessages {
+        id: haMessages
+        client: root.ha
+        showCounts: plasmoid.configuration.haCounts
+        popups: plasmoid.configuration.haPopups
+        notify: (title, message) => notifications.createNotification(message, title)
+    }
+    readonly property alias haMessages: haMessages
+
+    // "Seen": a tile in warning/critical stays quiet (no border, pulse or blinking) until its
+    // value has been OK again; kept across restarts
+    readonly property var acknowledged: { try { return JSON.parse(plasmoid.configuration.acknowledged || "[]") } catch (e) { return [] } }
+    function isAcknowledged(entityId) { return acknowledged.includes(entityId) }
+    function setAcknowledged(entityId, on) {
+        const list = acknowledged.filter(id => id !== entityId)
+        if (on) list.push(entityId)
+        plasmoid.configuration.acknowledged = JSON.stringify(list)
+    }
+    function releaseAcknowledged() {
+        if (!acknowledged.length) return
+        const stillBad = acknowledged.filter(id => {
+            for (let i = 0; i < store.itemModel.count; i++) {
+                const e = store.itemModel.get(i)
+                if (e.entity_id === id) return e.level > 0
+            }
+            // tile removed: forget it
+            return false
+        })
+        if (stillBad.length !== acknowledged.length) plasmoid.configuration.acknowledged = JSON.stringify(stillBad)
+    }
+    Connections {
+        target: store.itemModel
+        function onDataChanged() { if (store.initialized) root.releaseAcknowledged() }
+    }
 
     Notifications {
         id: notifications

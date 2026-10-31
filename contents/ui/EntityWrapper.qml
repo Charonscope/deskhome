@@ -15,6 +15,8 @@ MouseArea {
     readonly property bool opensHistory: sourceIndex >= 0 && !default_action?.service
         && ["sensor", "combo", "status"].includes(model.kind) && !!root.url
     readonly property bool interactive: !!actions.length || model.kind === "thermostat" && !readOnly || opensHistory
+    // "Seen" in the right-click menu: no border, pulse or blinking until the value was OK again
+    readonly property bool quiet: { root.acknowledged; return root.isAcknowledged(model.entity_id) }
     // display only (all tiles or this one): no click, double click or scroll actions
     readonly property bool readOnly: !!root.look.readOnly || !!model.read_only
     // row in the tile list (store.items); tiles with one get the right-click menu
@@ -48,7 +50,7 @@ MouseArea {
                 width: control.width
 
                 Rectangle {
-                    readonly property bool levelFrame: root.look.levelBorder && (model.level ?? 0) > 0
+                    readonly property bool levelFrame: root.look.levelBorder && (model.level ?? 0) > 0 && !control.quiet
                     // with own tile backgrounds "active" is drawn here, matching the tile radius
                     readonly property bool activeFrame: root.tileBackgrounds && !!root.look.activeFrame && !!model.active
                     anchors.fill: parent
@@ -67,7 +69,7 @@ MouseArea {
                 // A critical tile pulses slowly at its border, so it is noticed from the corner of the eye
                 Rectangle {
                     id: alarmPulse
-                    readonly property bool pulsing: model.level === 2 && root.animationDuration > 0
+                    readonly property bool pulsing: model.level === 2 && root.animationDuration > 0 && !control.quiet
                     anchors.fill: parent
                     radius: root.look.tileRadius
                     color: "transparent"

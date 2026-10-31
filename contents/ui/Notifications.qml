@@ -16,7 +16,7 @@ BaseObject {
         }
     }
 
-    function createNotification(text) {        
-        notificationComponent.createObject(root, { text })?.sendEvent()
+    function createNotification(text, title) {
+        notificationComponent.createObject(root, title ? { text, title } : { text })?.sendEvent()
     }
 }

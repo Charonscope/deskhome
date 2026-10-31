@@ -14,6 +14,8 @@ Canvas {
     property bool fill: true
     // logarithmic scale: small values keep their detail next to large peaks (e.g. power)
     property bool logarithmic: false
+    // yesterday's line at the same time of day, faint behind today's (needs 24 h more history)
+    property bool yesterday: false
     // Radius of the bottom corners, so line and area do not run over the tile corners
     property real cornerRadius: 0
     // share of the line drawn (0..1): the line draws in from the left when it first appears
@@ -49,6 +51,7 @@ Canvas {
     onLineWidthChanged: requestPaint()
     onFillChanged: requestPaint()
     onLogarithmicChanged: requestPaint()
+    onYesterdayChanged: requestPaint()
     onCornerRadiusChanged: requestPaint()
     onWidthChanged: requestPaint()
     onHeightChanged: requestPaint()
@@ -65,17 +68,23 @@ Canvas {
         const last = !isNaN(currentValue) ? currentValue : data.length ? data[data.length - 1][1] : NaN
         if (!isNaN(last)) data.push([now, last])
         if (data.length < 2) return
-        if (logarithmic) {
-            // symmetric log10(1 + |v|), so 0 and negative values still work; new pairs,
-            // the points themselves belong to the store's history
-            for (let i = 0; i < data.length; i++) {
-                const v = data[i][1]
-                data[i] = [data[i][0], Math.sign(v) * Math.log10(1 + Math.abs(v))]
-            }
+        // the same window one day earlier, moved forward by a day
+        const day = 86400000
+        const old = []
+        if (yesterday) {
+            const oldBefore = points.filter(p => p[0] < from - day).pop()
+            if (oldBefore) old.push([from, oldBefore[1]])
+            for (const p of points) if (p[0] >= from - day && p[0] <= now - day) old.push([p[0] + day, p[1]])
+        }
+        const transform = v => logarithmic ? Math.sign(v) * Math.log10(1 + Math.abs(v)) : v
+        // logarithmic: symmetric log10(1 + |v|), so 0 and negative values still work; always new
+        // pairs, the points themselves belong to the store's history
+        for (const list of [data, old]) {
+            for (let i = 0; i < list.length; i++) list[i] = [list[i][0], transform(list[i][1])]
         }
 
         let min = Infinity, max = -Infinity
-        for (const p of data) {
+        for (const p of data.concat(old)) {
             if (p[1] < min) min = p[1]
             if (p[1] > max) max = p[1]
         }
@@ -104,6 +113,16 @@ Canvas {
         const half = lineWidth / 2
         const x = t => half + (t - from) / windowMs * (width - lineWidth)
         const y = v => height - pad - (v - (min - span * 0.08)) / (span * 1.16) * (height - 2 * pad)
+
+        if (old.length > 1) {
+            ctx.beginPath()
+            ctx.moveTo(x(old[0][0]), y(old[0][1]))
+            for (let i = 1; i < old.length; i++) ctx.lineTo(x(old[i][0]), y(old[i][1]))
+            ctx.lineWidth = Math.max(1, lineWidth * 0.8)
+            ctx.strokeStyle = Qt.rgba(color.r, color.g, color.b, 0.3)
+            ctx.lineJoin = "round"
+            ctx.stroke()
+        }
 
         ctx.beginPath()
         ctx.moveTo(x(data[0][0]), y(data[0][1]))

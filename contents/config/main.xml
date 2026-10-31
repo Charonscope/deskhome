@@ -27,6 +27,22 @@
     <entry name="batteryThreshold" type="int">
       <default>0</default>
     </entry>
+    <entry name="problemUnavailableMinutes" type="int">
+      <default>0</default>
+    </entry>
+    <entry name="problemStuckHours" type="int">
+      <default>0</default>
+    </entry>
+    <entry name="problemIgnore" type="string"></entry>
+    <entry name="haCounts" type="bool">
+      <default>false</default>
+    </entry>
+    <entry name="haPopups" type="bool">
+      <default>false</default>
+    </entry>
+    <entry name="acknowledged" type="string">
+      <default>[]</default>
+    </entry>
     <entry name="readOnly" type="bool">
       <default>false</default>
     </entry>
@@ -89,6 +105,9 @@
     </entry>
     <entry name="secondColor" type="Color">
       <default>#66bb6a</default>
+    </entry>
+    <entry name="graphYesterday" type="bool">
+      <default>false</default>
     </entry>
     <entry name="levelCustomColors" type="bool">
       <default>false</default>

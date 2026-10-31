@@ -10,7 +10,7 @@ ApplicationWindow {
     id: window
     visible: true
     width: 560
-    height: 520
+    height: 720
     color: "#5a6470"
 
     readonly property var args: Qt.application.arguments.slice(Qt.application.arguments.indexOf("--") + 1)
@@ -29,7 +29,8 @@ ApplicationWindow {
             // "theme": colors from a (fake) Home Assistant theme plus an own label color
             colorSource: window.args[1] === "theme" ? "ha" : "plasma", haTheme: "",
             valueCustomColor: false, valueColor: "#ffffff",
-            labelCustomColor: window.args[1] === "theme", labelColor: "#ffd27f", animations: true, showLastChanged: true, valueWeight: 600, showSwitchState: window.args[1] !== "theme", secondCustomColor: false, secondColor: "#66bb6a"
+            labelCustomColor: window.args[1] === "theme", labelColor: "#ffd27f", animations: true, showLastChanged: true, valueWeight: 600, showSwitchState: window.args[1] !== "theme", secondCustomColor: false, secondColor: "#66bb6a",
+            graphYesterday: true
         })
     }
 
@@ -96,6 +97,17 @@ ApplicationWindow {
         property bool updateHintVisible: window.args[1] === "theme"
         property var updates: ({ latest: "9.9.9", releaseUrl: "" })
         function dismissUpdate() {}
+        // the critical hallway tile was marked "seen": no pulse, no blinking
+        property var acknowledged: ["binary_sensor.hall"]
+        function isAcknowledged(id) { return acknowledged.includes(id) }
+        function setAcknowledged() {}
+        // a device that is gone and a motion sensor that hangs
+        property var problems: ({ enabled: true, checked: true, problems: [
+            { kind: "unavailable", name: "Hue motion sensor", device_id: "abc", entity_ids: ["binary_sensor.hue_motion", "sensor.hue_temperature"], since: now - 3 * 3600000 },
+            { kind: "stuck", name: "Kitchen motion", device_id: "", entity_ids: ["binary_sensor.kitchen_motion"], since: now - 2 * 86400000 }
+        ] })
+        function ignoreProblem() {}
+        property var haMessages: ({ showCounts: true, total: 4, notificationCount: 1, repairCount: 2, updateCount: 1 })
         property var batteries: ({ enabled: true, total: 12, threshold: 20, low: [
             { entity_id: "sensor.hall_battery", name: "Hall sensor battery", level: 8 },
             { entity_id: "sensor.door_battery", name: "Front door battery", level: 17 },
@@ -109,7 +121,8 @@ ApplicationWindow {
         property int historyRevision: 1
         readonly property var points: {
             const now = Date.now(), out = []
-            for (let i = 0; i <= 48; i++) out.push([now - (48 - i) * 1800000, 8 + 3 * Math.sin(i / 7)])
+            // two days, so the "yesterday" line has data
+            for (let i = 0; i <= 96; i++) out.push([now - (96 - i) * 1800000, 8 + 3 * Math.sin(i / 7)])
             return out
         }
         function history(id) { return id.startsWith("sensor.") ? points : [] }
@@ -168,7 +181,8 @@ ApplicationWindow {
     }
 
     readonly property var valueTexts: ["12.4 °C", "23.7 °C", "45%", "1000 rpm"]
-    readonly property var expectedTexts: ["12.4 °C", "Outside", "Outside humidity", "Desk climate", "45%", "Home battery", "41%", "Fan speed", "1000 rpm", "Heating", "Lights", "Weak batteries", "Hall sensor battery", "8 %", "Front door battery", "Radiator battery", "low", "Living room", "heating", "Desk lamp", "Kitchen", "Hallway motion", "unavailable · 5 min ago", "Late tile", "1 more check OK"]
+    readonly property var expectedTexts: ["12.4 °C", "Outside", "Outside humidity", "Desk climate", "45%", "Home battery", "41%", "Fan speed", "1000 rpm", "Heating", "Lights", "Weak batteries", "Hall sensor battery", "8 %", "Front door battery", "Radiator battery", "low", "Living room", "heating", "Desk lamp", "Kitchen", "Hallway motion", "unavailable · 5 min ago", "Late tile", "1 more check OK",
+        "Problems", "Hue motion sensor", "unavailable · 3 h ago", "Kitchen motion", "stuck on “on” · 2 d ago", "Notifications: 1", "Repairs: 2", "Updates: 1"]
 
     FullRepresentation {
         id: view
@@ -224,6 +238,16 @@ ApplicationWindow {
             }
             walkAnim(view)
             if (anim.spinning !== 1 || anim.turned !== 1) problems.push("fan icon does not turn: " + JSON.stringify(anim))
+            // "seen" quiets the critical tile; the yesterday line is switched on for 24 h graphs
+            const quiet = { pulsing: 0, yesterday: 0 }
+            const walkQuiet = item => {
+                if (item.pulsing === true) quiet.pulsing++
+                if (item.yesterday === true && item.points !== undefined) quiet.yesterday++
+                for (let i = 0; i < item.children.length; i++) walkQuiet(item.children[i])
+            }
+            walkQuiet(view)
+            if (quiet.pulsing) problems.push("acknowledged tile still pulses")
+            if (!quiet.yesterday) problems.push("no history line shows yesterday")
             if (!anim.lines || anim.revealed !== anim.lines) problems.push("history lines not drawn in: " + JSON.stringify(anim))
             for (const p of problems) console.log("FAIL " + p)
             view.grabToImage(r => { r.saveToFile(window.args[0]); console.log("saved " + window.args[0]); Qt.exit(problems.length ? 1 : 0) })

@@ -32,6 +32,7 @@ KCM.SimpleKCM {
     property alias cfg_graphHeight: graphHeight.value
     property alias cfg_graphLineWidth: graphLineWidth.value
     property alias cfg_graphFill: graphFill.checked
+    property alias cfg_graphYesterday: graphYesterday.checked
     property alias cfg_graphCustomColor: graphCustomColor.checked
     property alias cfg_graphColor: graphColor.color
     property string cfg_colorSource
@@ -407,6 +408,12 @@ KCM.SimpleKCM {
             id: graphFill
             Kirigami.FormData.label: tr("look.area")
             text: tr("look.fill")
+        }
+
+        CheckBox {
+            id: graphYesterday
+            Kirigami.FormData.label: tr("look.yesterday")
+            text: tr("look.yesterdayText")
         }
 
         RowLayout {

@@ -44,6 +44,8 @@ Item {
         lineWidth: root.look.graphLineWidth
         fill: root.look.graphFill
         logarithmic: model.graph_log
+        // only for windows up to a day; with longer ones yesterday is already in the graph
+        yesterday: !!root.look.graphYesterday && model.history_hours <= 24
         points: tile.points
         windowMs: tile.windowMs
         revision: store.historyRevision
