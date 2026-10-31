@@ -252,6 +252,13 @@ Kirigami.FormLayout {
         onActivated: item.history_hours = currentValue === 24 ? undefined : currentValue
     }
 
+    CheckBox {
+        visible: sourceIsNumber
+        text: tr("item.graphLog")
+        checked: !!item.graph_log
+        onCheckedChanged: item.graph_log = checked || undefined
+    }
+
     Row {
         Kirigami.FormData.label: tr("item.warn")
         visible: sourceIsNumber
@@ -280,6 +287,31 @@ Kirigami.FormLayout {
         Kirigami.FormData.label: tr("item.hideWhenOk")
         checked: !!item.hide_when_ok
         onCheckedChanged: item.hide_when_ok = checked || undefined
+    }
+
+    // Status shown in the colors instead of (or besides) the border, e.g. a price in three colors
+    CheckBox {
+        Kirigami.FormData.label: tr("item.statusShow")
+        text: tr("item.levelOk")
+        checked: !!item.level_ok
+        onCheckedChanged: item.level_ok = checked || undefined
+    }
+    CheckBox {
+        text: tr("item.levelLabel")
+        checked: !!item.level_label
+        onCheckedChanged: item.level_label = checked || undefined
+    }
+    CheckBox {
+        text: tr("item.blink")
+        checked: !!item.blink
+        onCheckedChanged: item.blink = checked || undefined
+    }
+    Label {
+        text: tr("item.statusHint")
+        wrapMode: Text.WordWrap
+        opacity: 0.7
+        font: Kirigami.Theme.smallFont
+        Layout.maximumWidth: Kirigami.Units.gridUnit * 18
     }
 
     // Own colors of this tile; unticked = the global colors from Appearance
@@ -319,6 +351,11 @@ Kirigami.FormLayout {
         key: "second_color"
         visible: form.tileType === "combo"
         Kirigami.FormData.label: tr("look.secondColor")
+    }
+    ColorOverride {
+        key: "second_graph_color"
+        visible: form.tileType === "combo"
+        Kirigami.FormData.label: tr("item.secondLineColor")
     }
     ColorOverride {
         key: "graph_color"
@@ -376,6 +413,13 @@ Kirigami.FormLayout {
 
     function assignAction(action, part) {
         item[action] = Object.assign({}, item[action], part)
+    }
+
+    CheckBox {
+        Kirigami.FormData.label: tr("item.readOnly")
+        text: tr("item.readOnlyText")
+        checked: !!item.read_only
+        onCheckedChanged: item.read_only = checked || undefined
     }
 
     ServiceSelector {

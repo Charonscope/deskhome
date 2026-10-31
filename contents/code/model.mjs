@@ -74,6 +74,17 @@ export function Entity(config = {}, data = {}, options = {}) {
     this.bg_color = config.bg_color || ''
     // own background opacity in % (-1 = the global one)
     this.bg_opacity = config.bg_opacity === undefined || config.bg_opacity === null || config.bg_opacity === '' ? -1 : +config.bg_opacity
+    // line of the second value (combo tile); '' = same color as the second value
+    this.second_graph_color = config.second_graph_color || ''
+    // no click or scroll actions (display only)
+    this.read_only = !!config.read_only
+    // value in the OK color while it is in range; label in the status color too
+    this.level_ok = !!config.level_ok
+    this.level_label = !!config.level_label
+    // the tile blinks on warning/critical
+    this.blink = !!config.blink
+    // history graph on a logarithmic scale
+    this.graph_log = !!config.graph_log
     this.value2 = ''
     this.num2 = NaN
 }
@@ -128,6 +139,12 @@ export function ConfigEntity(config = {}) {
     this.graph_color = config.graph_color
     this.bg_color = config.bg_color
     this.bg_opacity = config.bg_opacity
+    this.second_graph_color = config.second_graph_color
+    this.read_only = config.read_only
+    this.level_ok = config.level_ok
+    this.level_label = config.level_label
+    this.blink = config.blink
+    this.graph_log = config.graph_log
 }
 
 function addActionProperty(o, name) {

@@ -49,6 +49,8 @@ PlasmoidItem {
     function tileLabelOpacity(e) { return palette.tileLabelOpacity(e) }
     function tileGraphColor(e) { return palette.tileGraph(e) }
     function tileSecondColor(e) { return palette.tileSecond(e) }
+    function tileSecondGraphColor(e) { return palette.tileSecondGraph(e) }
+    function tileLevelValueColor(e) { return palette.tileLevelValue(e) }
     // a tile's own background color and opacity (own tile style only)
     function tileFill(e) {
         if (!tileBackgrounds) return "transparent"
@@ -170,7 +172,7 @@ PlasmoidItem {
         plasmoid.configuration.items = JSON.stringify(items, (_, value) => value || (value === 0 ? 0 : undefined))
         // keep the automatic backup file current, as the settings dialog does when saving
         if (plasmoid.configuration.autoBackupFile) {
-            backupFile.write(plasmoid.configuration.autoBackupFile, Backup.backupData(plasmoid.configuration, JSON.parse(plasmoid.configuration.items)))
+            backupFile.writeKeepingCopies(plasmoid.configuration.autoBackupFile, Backup.backupData(plasmoid.configuration, JSON.parse(plasmoid.configuration.items)))
         }
     }
     File {

@@ -46,6 +46,10 @@ KCM.SimpleKCM {
     property alias cfg_secondCustomColor: secondCustomColor.checked
     property alias cfg_secondColor: secondColor.color
     property int cfg_valueWeight
+    property alias cfg_levelCustomColors: levelCustomColors.checked
+    property alias cfg_customOkColor: customOkColor.color
+    property alias cfg_customWarnColor: customWarnColor.color
+    property alias cfg_customCritColor: customCritColor.color
 
     // HA theme names for the selection; loaded from the shared connection
     property Client ha
@@ -224,6 +228,36 @@ KCM.SimpleKCM {
             }
         }
 
+        // Own status colors instead of the theme's (OK / warning / critical)
+        RowLayout {
+            Kirigami.FormData.label: tr("look.levelColors")
+            CheckBox {
+                id: levelCustomColors
+                text: tr("look.customColor")
+            }
+            KQControls.ColorButton {
+                id: customOkColor
+                enabled: levelCustomColors.checked
+                showAlphaChannel: false
+                ToolTip.text: tr("look.levelOk")
+                ToolTip.visible: hovered
+            }
+            KQControls.ColorButton {
+                id: customWarnColor
+                enabled: levelCustomColors.checked
+                showAlphaChannel: false
+                ToolTip.text: tr("look.levelWarn")
+                ToolTip.visible: hovered
+            }
+            KQControls.ColorButton {
+                id: customCritColor
+                enabled: levelCustomColors.checked
+                showAlphaChannel: false
+                ToolTip.text: tr("look.levelCrit")
+                ToolTip.visible: hovered
+            }
+        }
+
         RowLayout {
             Kirigami.FormData.label: tr("look.labelColor")
             CheckBox {
@@ -313,6 +347,7 @@ KCM.SimpleKCM {
         ComboBox {
             Kirigami.FormData.label: tr("look.valueWeight")
             model: [
+                { value: 300, text: tr("look.weightLight") },
                 { value: 400, text: tr("look.weightNormal") },
                 { value: 600, text: tr("look.weightSemi") },
                 { value: 700, text: tr("look.weightBold") }

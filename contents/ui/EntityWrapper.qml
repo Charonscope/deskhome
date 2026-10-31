@@ -14,7 +14,9 @@ MouseArea {
     // sensors without an own click action open their history in Home Assistant
     readonly property bool opensHistory: sourceIndex >= 0 && !default_action?.service
         && ["sensor", "combo", "status"].includes(model.kind) && !!root.url
-    readonly property bool interactive: !!actions.length || model.kind === "thermostat" || opensHistory
+    readonly property bool interactive: !!actions.length || model.kind === "thermostat" && !readOnly || opensHistory
+    // display only (all tiles or this one): no click, double click or scroll actions
+    readonly property bool readOnly: !!root.look.readOnly || !!model.read_only
     // row in the tile list (store.items); tiles with one get the right-click menu
     property int sourceIndex: -1
     signal contextMenuRequested(real x, real y)
@@ -124,7 +126,7 @@ MouseArea {
         id: tooltip
         anchors.fill: parent
         subText: actions.map(c => c.item.tip)
-            .concat(model.kind === "thermostat" ? [root.tr("tip.thermostat")] : [])
+            .concat(model.kind === "thermostat" && !control.readOnly ? [root.tr("tip.thermostat")] : [])
             .concat(control.opensHistory ? [root.tr("tip.history")] : []).join("\n")
     }
 
@@ -140,7 +142,7 @@ MouseArea {
 
     readonly property list<Loader> actionLoaders: [
         Loader {
-            active: !!default_action
+            active: !!default_action && !control.readOnly
             sourceComponent: Component {
                 Connections {
                     readonly property string tip: root.tr("tip.click", format(default_action.service))
@@ -153,7 +155,7 @@ MouseArea {
             }
         },
         Loader {
-            active: !!dclick_action
+            active: !!dclick_action && !control.readOnly
             sourceComponent: Component {
                 Connections {
                     readonly property string tip: root.tr("tip.dclick", format(dclick_action.service))
@@ -167,7 +169,7 @@ MouseArea {
         },
         Loader {
             // thermostat tiles handle the wheel themselves (a configured scroll action would send twice)
-            active: model.active && model.kind !== "thermostat" && !!scroll_action?.service && (scroll_action.domain !== 'light' || model.brightness_pct >= 0)
+            active: !control.readOnly && model.active && model.kind !== "thermostat" && !!scroll_action?.service && (scroll_action.domain !== 'light' || model.brightness_pct >= 0)
             anchors.fill: parent
             parent: socket.background || socket
             sourceComponent: Component {

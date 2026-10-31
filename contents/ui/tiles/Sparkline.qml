@@ -12,6 +12,8 @@ Canvas {
     property real currentValue: NaN
     property real lineWidth: 1.5
     property bool fill: true
+    // logarithmic scale: small values keep their detail next to large peaks (e.g. power)
+    property bool logarithmic: false
     // Radius of the bottom corners, so line and area do not run over the tile corners
     property real cornerRadius: 0
     // share of the line drawn (0..1): the line draws in from the left when it first appears
@@ -46,6 +48,7 @@ Canvas {
     onColorChanged: requestPaint()
     onLineWidthChanged: requestPaint()
     onFillChanged: requestPaint()
+    onLogarithmicChanged: requestPaint()
     onCornerRadiusChanged: requestPaint()
     onWidthChanged: requestPaint()
     onHeightChanged: requestPaint()
@@ -62,6 +65,14 @@ Canvas {
         const last = !isNaN(currentValue) ? currentValue : data.length ? data[data.length - 1][1] : NaN
         if (!isNaN(last)) data.push([now, last])
         if (data.length < 2) return
+        if (logarithmic) {
+            // symmetric log10(1 + |v|), so 0 and negative values still work; new pairs,
+            // the points themselves belong to the store's history
+            for (let i = 0; i < data.length; i++) {
+                const v = data[i][1]
+                data[i] = [data[i][0], Math.sign(v) * Math.log10(1 + Math.abs(v))]
+            }
+        }
 
         let min = Infinity, max = -Infinity
         for (const p of data) {

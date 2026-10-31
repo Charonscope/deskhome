@@ -37,6 +37,7 @@ run themes timeout 30 "$QML" tests/themes.qml
 run entity-model timeout 30 "$QML" tests/model.qml
 run entity-search timeout 30 "$QML" tests/search.qml
 run battery-watch timeout 30 "$QML" tests/battery.qml
+run auto-backup bash -c "d=\$(mktemp -d) && timeout 30 \"$QML\" tests/backup.qml -- \"\$d\"; s=\$?; rm -rf \"\$d\"; exit \$s"
 run settings-pages timeout 30 "$QML" tests/pages.qml
 run icon-picker timeout 30 "$QML" tests/iconpicker.qml
 run render-connected timeout 30 "$QML" tests/render.qml -- "$OUT/connected.png" ok

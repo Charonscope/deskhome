@@ -31,7 +31,7 @@ Item {
     }
 
     WheelHandler {
-        enabled: !isNaN(model.target_temp) && !tile.off
+        enabled: !isNaN(model.target_temp) && !tile.off && !root.look.readOnly && !model.read_only
         acceptedDevices: PointerDevice.TouchPad | PointerDevice.Mouse
         orientation: Qt.Vertical
         onWheel: e => {
@@ -98,7 +98,7 @@ Item {
             Layout.leftMargin: headerIcon.item?.size ? (headerIcon.width - headerIcon.item.size.width) / 2 : 0
             CountingLabel {
                 value: tile.format(model.current_temp, 1)
-                color: root.levelColor(model.level, root.tileValueColor(model))
+                color: root.tileLevelValueColor(model)
                 font.pixelSize: Kirigami.Units.gridUnit * 1.3 * root.tileScale * root.look.valueScale / 100
                 font.weight: root.valueWeight
             }

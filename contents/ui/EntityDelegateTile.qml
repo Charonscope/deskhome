@@ -18,7 +18,7 @@ GridLayout {
     rowSpacing: 0
     anchors.margins: Kirigami.Units.smallSpacing
 
-    readonly property color valueColor: root.levelColor(model.level, root.tileValueColor(model))
+    readonly property color valueColor: root.tileLevelValueColor(model)
 
     DynamicIcon {
         name: model.icon

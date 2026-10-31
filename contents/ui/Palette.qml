@@ -19,9 +19,11 @@ QtObject {
     readonly property color text: ha.text || Kirigami.Theme.textColor
     readonly property color muted: ha.muted || Kirigami.Theme.disabledTextColor
     readonly property color background: look.tileCustomColor ? look.tileColor : (ha.background || Kirigami.Theme.backgroundColor)
-    readonly property color ok: ha.ok || Kirigami.Theme.positiveTextColor
-    readonly property color warn: ha.warn || Kirigami.Theme.neutralTextColor
-    readonly property color crit: ha.crit || Kirigami.Theme.negativeTextColor
+    // own status colors (Appearance → Colors) win over the theme
+    readonly property bool customLevels: !!look.levelCustomColors
+    readonly property color ok: customLevels ? look.customOkColor : (ha.ok || Kirigami.Theme.positiveTextColor)
+    readonly property color warn: customLevels ? look.customWarnColor : (ha.warn || Kirigami.Theme.neutralTextColor)
+    readonly property color crit: customLevels ? look.customCritColor : (ha.crit || Kirigami.Theme.negativeTextColor)
     readonly property color value: look.valueCustomColor ? look.valueColor : text
     readonly property color label: look.labelCustomColor ? look.labelColor : (ha.label || text)
     // the default label color is the text color, dimmed; a chosen one is shown as it is
@@ -36,10 +38,15 @@ QtObject {
 
     // A tile's own colors (set in its settings) win over the global ones; empty = global
     function tileValue(e) { return e?.value_color || value }
-    function tileLabel(e) { return e?.label_color || label }
-    function tileLabelOpacity(e) { return e?.label_color ? 1 : labelOpacity }
+    // the label takes the status color when the tile asks for it (OK only with "value in OK color")
+    function labelLeveled(e) { return !!e?.level_label && (e.level > 0 || !!e.level_ok) }
+    function tileLabel(e) { return labelLeveled(e) ? levelColor(e.level, ok) : (e?.label_color || label) }
+    function tileLabelOpacity(e) { return labelLeveled(e) || e?.label_color ? 1 : labelOpacity }
+    // the large value: status color, or the OK color while in range when the tile asks for it
+    function tileLevelValue(e) { return levelColor(e?.level, e?.level_ok ? ok : tileValue(e)) }
     function tileGraph(e) { return e?.graph_color || graph }
     function tileSecond(e) { return e?.second_color || second }
+    function tileSecondGraph(e) { return e?.second_graph_color || tileSecond(e) }
 
     function levelColor(level, okColor) {
         switch (level) {

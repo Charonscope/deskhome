@@ -16,7 +16,7 @@ Item {
     readonly property bool showHistory: model.history_hours > 0
     readonly property var points: { store.historyRevision; return store.history(model.entity_id) }
     readonly property var points2: { store.historyRevision; return store.history(model.second_entity_id) }
-    readonly property color levelColor: root.levelColor(model.level, root.tileValueColor(model))
+    readonly property color levelColor: root.tileLevelValueColor(model)
     readonly property color firstLineColor: model.level ? levelColor : root.tileGraphColor(model)
     // second value and its line: the tile's own color or the global one (Appearance → Colors)
     readonly property color secondColor: root.tileSecondColor(model)
@@ -38,6 +38,7 @@ Item {
         height: parent.height * root.look.graphHeight / 100
         lineWidth: root.look.graphLineWidth
         fill: root.look.graphFill
+        logarithmic: model.graph_log
         points: tile.points
         windowMs: tile.windowMs
         revision: store.historyRevision
@@ -51,11 +52,13 @@ Item {
         cornerRadius: firstLine.cornerRadius
         lineWidth: root.look.graphLineWidth
         fill: false
+        logarithmic: model.graph_log
         points: tile.points2
         windowMs: tile.windowMs
         revision: store.historyRevision
         currentValue: model.num2
-        color: tile.secondColor
+        // own line color for the second value (e.g. a blue humidity line under a neutral value)
+        color: root.tileSecondGraphColor(model)
     }
 
     ColumnLayout {

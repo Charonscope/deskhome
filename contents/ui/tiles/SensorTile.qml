@@ -15,7 +15,7 @@ Item {
     readonly property real windowMs: model.history_hours * 3600000
     readonly property bool showHistory: model.history_hours > 0
     readonly property var points: { store.historyRevision; return store.history(model.entity_id) }
-    readonly property color levelColor: root.levelColor(model.level, root.tileValueColor(model))
+    readonly property color levelColor: root.tileLevelValueColor(model)
     // revision as an argument because points is always the same (growing) array
     readonly property var stats: computeStats(points, model.num, store.historyRevision)
 
@@ -43,6 +43,7 @@ Item {
         height: parent.height * root.look.graphHeight / 100
         lineWidth: root.look.graphLineWidth
         fill: root.look.graphFill
+        logarithmic: model.graph_log
         points: tile.points
         windowMs: tile.windowMs
         revision: store.historyRevision

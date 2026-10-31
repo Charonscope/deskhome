@@ -74,6 +74,8 @@ ApplicationWindow {
         function tileLabelOpacity(e) { return palette.tileLabelOpacity(e) }
         function tileGraphColor(e) { return palette.tileGraph(e) }
         function tileSecondColor(e) { return palette.tileSecond(e) }
+        function tileSecondGraphColor(e) { return palette.tileSecondGraph(e) }
+        function tileLevelValueColor(e) { return palette.tileLevelValue(e) }
         function tileFill(e) {
             const c = Qt.color(e?.bg_color || palette.background)
             return Qt.rgba(c.r, c.g, c.b, (e?.bg_opacity >= 0 ? e.bg_opacity : 78) / 100)
@@ -113,13 +115,15 @@ ApplicationWindow {
         function history(id) { return id.startsWith("sensor.") ? points : [] }
         property ListModel itemModel: ListModel {
             Component.onCompleted: {
-                const base = { attributes: {}, default_action: {}, dclick_action: {}, scroll_action: {}, display: 1, hide_when_ok: false, light_color: "", brightness_pct: -1, device_class: "", unit: "", attribute: "", second_entity_id: "", value2: "", num2: NaN, current_temp: NaN, target_temp: NaN, temp_min: 7, temp_max: 35, temp_step: 0.5, current_humidity: NaN, hvac_action: "", heading: "", last_changed: 0, fan_pct: -1, value_color: "", label_color: "", second_color: "", graph_color: "", bg_color: "", bg_opacity: -1 }
+                const base = { attributes: {}, default_action: {}, dclick_action: {}, scroll_action: {}, display: 1, hide_when_ok: false, light_color: "", brightness_pct: -1, device_class: "", unit: "", attribute: "", second_entity_id: "", value2: "", num2: NaN, current_temp: NaN, target_temp: NaN, temp_min: 7, temp_max: 35, temp_step: 0.5, current_humidity: NaN, hvac_action: "", heading: "", last_changed: 0, fan_pct: -1, value_color: "", label_color: "", second_color: "", graph_color: "", bg_color: "", bg_opacity: -1, second_graph_color: "", read_only: false, level_ok: false, level_label: false, blink: false, graph_log: false }
                 const add = o => append(Object.assign({}, base, o))
-                add({ entity_id: "sensor.outside", name: "Outside", kind: "sensor", value: "9.6 °C", num: 9.6, state: "9.6", level: 0, icon: "mdi:thermometer", colspan: 1, history_hours: 24, domain: "sensor", active: false })
+                add({ entity_id: "sensor.outside", name: "Outside", kind: "sensor", value: "9.6 °C", num: 9.6, state: "9.6", level: 0, icon: "mdi:thermometer", colspan: 1, history_hours: 24, domain: "sensor", active: false, graph_log: true })
                 add({ entity_id: "sensor.humidity", name: "Outside humidity", kind: "sensor", value: "63%", num: 63, state: "63", level: 0, icon: "mdi:water-percent", colspan: 1, history_hours: 24, domain: "sensor", active: false })
                 add({ entity_id: "sensor.desk_temp", name: "Desk climate", kind: "combo", value: "23.7 °C", num: 23.7, state: "23.7", level: 0, icon: "mdi:thermometer", colspan: 1, history_hours: 24, domain: "sensor", active: false, second_entity_id: "sensor.desk_humidity", value2: "45%", num2: 45, second_color: "#ff8800" })
                 // simple tile with its own value color
                 add({ entity_id: "sensor.battery_home", name: "Home battery", kind: "simple", value: "41%", num: 41, state: "41", level: 0, icon: "mdi:battery", colspan: 1, history_hours: 0, domain: "sensor", active: false, value_color: "#ff0000", bg_color: "#123456", bg_opacity: 100 })
+                // value and label in the OK color while in range (three-color price), display only
+                add({ entity_id: "sensor.price", name: "Energy price", kind: "simple", value: "0.21 €", num: 0.21, state: "0.21", level: 0, icon: "mdi:currency-eur", colspan: 1, history_hours: 0, domain: "sensor", active: false, level_ok: true, level_label: true, read_only: true })
                 add({ entity_id: "sensor.fan_rpm", name: "Fan speed", kind: "sensor", value: "1000 rpm", num: 1000, unit: "rpm", state: "1000", level: 0, icon: "mdi:fan", colspan: 1, history_hours: 0, domain: "sensor", active: false })
                 add({ entity_id: "climate.living", heading: "Heating", name: "Living room", kind: "thermostat", value: "Auto", num: NaN, state: "auto", level: 0, icon: "mdi:thermostat", colspan: 1, history_hours: 0, domain: "climate", active: false, current_temp: 21.9, target_temp: 21, current_humidity: 52, hvac_action: "heating" })
                 add({ entity_id: "light.desk", heading: "Lights", name: "Desk lamp", kind: "switch", value: "on", num: NaN, state: "on", level: 0, icon: "mdi:lightbulb", colspan: 0.5, history_hours: 0, domain: "light", active: true, brightness_pct: 60, light_color: "#ffcc66" })
@@ -192,6 +196,9 @@ ApplicationWindow {
             }
             walkColors(view)
             if (colors["41%"] !== "#ff0000") problems.push("simple tile ignores its own value color: " + colors["41%"])
+            const okColor = String(palette.ok)
+            if (colors["0.21 €"] !== okColor) problems.push("value in OK color: " + colors["0.21 €"] + " instead of " + okColor)
+            if (colors["Energy price"] !== okColor) problems.push("label in status color: " + colors["Energy price"] + " instead of " + okColor)
             let ownBackground = false
             const walkBg = item => {
                 if (item.radius !== undefined && item.border !== undefined && String(item.color) === "#123456") ownBackground = true

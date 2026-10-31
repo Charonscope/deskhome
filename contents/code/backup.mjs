@@ -5,8 +5,17 @@ export const LOOK_KEYS = Object.freeze([
     "tileScale", "tileSpacing", "labelScale", "valueScale", "showMinMax", "showTrend",
     "graphHeight", "graphLineWidth", "graphFill", "graphCustomColor", "graphColor",
     "colorSource", "haTheme", "valueCustomColor", "valueColor", "labelCustomColor", "labelColor", "animations",
-    "batteryThreshold", "showLastChanged", "valueWeight", "showSwitchState", "secondCustomColor", "secondColor"
+    "batteryThreshold", "showLastChanged", "valueWeight", "showSwitchState", "secondCustomColor", "secondColor",
+    "readOnly", "levelCustomColors", "customOkColor", "customWarnColor", "customCritColor"
 ])
+
+// Older copies of the automatic backup: "backup.json" -> "backup.1.json" … (newest first)
+export const BACKUP_COPIES = 3
+export function copyName(path, n) {
+    const slash = path.lastIndexOf("/")
+    const dot = path.lastIndexOf(".")
+    return dot > slash + 1 ? `${path.slice(0, dot)}.${n}${path.slice(dot)}` : `${path}.${n}`
+}
 
 export function backupData(configuration, items) {
     const look = {}

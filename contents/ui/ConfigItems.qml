@@ -18,6 +18,7 @@ KCM.ScrollViewKCM {
     property alias cfg_autoBackupFile: autoBackupFileField.text
     property int cfg_itemDisplayDefault
     property int cfg_batteryThreshold
+    property bool cfg_readOnly
     property ListModel items: ListModel { dynamicRoles: true }
     property var services: ({})
     property var entities: ({})
@@ -123,6 +124,12 @@ KCM.ScrollViewKCM {
                 ToolTip.text: tr("battery.hint")
                 ToolTip.visible: hovered
             }
+        }
+
+        CheckBox {
+            text: tr("items.readOnly")
+            checked: cfg_readOnly
+            onToggled: cfg_readOnly = checked
         }
     }
 
@@ -459,7 +466,7 @@ KCM.ScrollViewKCM {
 
     function saveConfig() {
         if (cfg_autoBackupFile) {
-            file.write(cfg_autoBackupFile, backupData())
+            file.writeKeepingCopies(cfg_autoBackupFile, backupData())
         }
     }
 }

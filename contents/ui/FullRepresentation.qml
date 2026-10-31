@@ -258,7 +258,17 @@ PlasmaExtras.Representation {
                         tooltipTitle: model.name
 
                         Loader {
+                            id: tileContent
                             anchors.fill: parent
+                            // "blinks on warning/critical": the content fades in and out
+                            readonly property bool blinking: !!model.blink && model.level > 0 && !!root.look.animations
+                            onBlinkingChanged: if (!blinking) opacity = 1
+                            SequentialAnimation on opacity {
+                                running: tileContent.blinking
+                                loops: Animation.Infinite
+                                NumberAnimation { to: 0.2; duration: 500; easing.type: Easing.InOutSine }
+                                NumberAnimation { to: 1; duration: 500; easing.type: Easing.InOutSine }
+                            }
                             source: {
                                 switch (model.kind) {
                                     case "sensor": return "tiles/SensorTile.qml"
