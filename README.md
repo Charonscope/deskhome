@@ -88,7 +88,7 @@ To update an existing installation use `-u` instead of `-i`.
 **“No connection to Home Assistant” / no values**
 
 - Open the Home Assistant URL from the settings in your browser on the same computer – it must load.
-- Use `http://` or `https://` exactly as your Home Assistant uses it, including the port.
+- Use `http://` or `https://` exactly as your Home Assistant uses it, including the port if it has one.
 - Create a new token and paste it again (no spaces before or after).
 - Is KWallet enabled? DeskHome stores the token there.
 
@@ -108,6 +108,10 @@ tests/run.sh
 
 It lints the QML, checks the translations, loads every settings page and renders the tile view
 (connected and disconnected) outside Plasma.
+
+## Support
+
+DeskHome is free and stays free. If you like it, you can [buy me a coffee ☕](https://buymeacoffee.com/charonscope) – thank you!
 
 ## Credits
 
@@ -201,7 +205,7 @@ Für ein Update `-u` statt `-i` verwenden.
 **„Keine Verbindung zu Home Assistant“ / keine Werte**
 
 - Die Home-Assistant-Adresse aus den Einstellungen im Browser auf demselben Rechner öffnen – sie muss laden.
-- `http://` bzw. `https://` genau so wie bei deinem Home Assistant, inklusive Port.
+- `http://` bzw. `https://` genau so wie bei deinem Home Assistant, inklusive Port, falls einer dabei ist.
 - Neuen Token anlegen und erneut einfügen (ohne Leerzeichen davor oder danach).
 - Ist KWallet aktiv? Dort speichert DeskHome den Token.
 
@@ -210,5 +214,9 @@ Für ein Update `-u` statt `-i` verwenden.
 ```bash
 journalctl --user -b | grep -i deskhome | tail -30
 ```
+
+## Unterstützen
+
+DeskHome ist kostenlos und bleibt es. Wenn es dir gefällt, kannst du mir [einen Kaffee spendieren ☕](https://buymeacoffee.com/charonscope) – danke!
 
 DeskHome basiert auf [plasma-homeassistant](https://github.com/korapp/plasma-homeassistant) von Krzysztof Korab (GPLv3).

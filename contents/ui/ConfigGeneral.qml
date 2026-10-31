@@ -136,6 +136,24 @@ KCM.SimpleKCM {
             url: cfg_url + "/profile/security"
             visible: cfg_url
         }
+
+        // A small thank-you link, only here in the settings (never on the desktop)
+        Item {
+            Kirigami.FormData.isSection: true
+            Kirigami.FormData.label: tr("support.title")
+        }
+
+        Label {
+            text: tr("support.text")
+            wrapMode: Text.WordWrap
+            Layout.fillWidth: true
+            Layout.maximumWidth: Kirigami.Units.gridUnit * 26
+        }
+
+        Kirigami.UrlButton {
+            text: tr("support.link")
+            url: "https://buymeacoffee.com/charonscope"
+        }
     }
 
     function saveConfig() {
