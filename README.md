@@ -67,7 +67,7 @@ To update an existing installation use `-u` instead of `-i`.
    - **On the desktop** the tile grid is shown directly. This is the normal way to use DeskHome.
    - **In a panel** DeskHome shows a compact row of icons (or icons + values). Click it to open the tile grid as a popup.
 2. Open the settings: right-click the widget → *Configure DeskHome…*
-3. Under *General*, enter your Home Assistant URL including protocol and port, e.g. `http://homeassistant.local:8123` or `http://192.168.1.10:8123`.
+3. Under *General*, enter your Home Assistant URL including the protocol – the same address you open Home Assistant with in the browser, e.g. `http://homeassistant.local:8123` or `http://192.168.1.10:8123`. Newer Home Assistant OS installations also answer without a port (`http://homeassistant.local`); Docker installations use `:8123`.
 4. Create a token: in Home Assistant click your user name (profile) → *Security* → *Long-lived access tokens* → *Create token*. Copy it right away – it is shown only once.
 5. Paste the token into the *Token* field and click *Apply*.
 6. Under *Tiles*, add the entities you want to see – search by name or area, or add a whole area at once. Click *Apply*.
@@ -179,7 +179,7 @@ Für ein Update `-u` statt `-i` verwenden.
    - **Auf dem Desktop** erscheint das Kachel-Raster direkt. Das ist der normale Weg.
    - **In der Leiste** (Taskleiste) zeigt DeskHome nur eine kompakte Reihe Symbole (oder Symbole + Werte). Ein Klick darauf öffnet die Kacheln als Aufklappfenster.
 2. Einstellungen öffnen: Rechtsklick auf das Widget → *DeskHome einrichten …*
-3. Unter *Allgemein* die Home-Assistant-Adresse mit Protokoll und Port eintragen, z. B. `http://homeassistant.local:8123` oder `http://192.168.1.10:8123`.
+3. Unter *Allgemein* die Home-Assistant-Adresse mit Protokoll eintragen – dieselbe Adresse, mit der ihr Home Assistant im Browser öffnet, z. B. `http://homeassistant.local:8123` oder `http://192.168.1.10:8123`. Neuere Home-Assistant-OS-Installationen sind auch ohne Port erreichbar (`http://homeassistant.local`); Docker-Installationen nutzen `:8123`.
 4. Token anlegen: in Home Assistant auf den Benutzernamen klicken (Profil) → *Sicherheit* → *Langlebige Zugangstoken* → *Token erstellen*. Sofort kopieren – er wird nur einmal angezeigt.
 5. Token ins Feld *Token* einfügen und *Anwenden* klicken.
 6. Unter *Kacheln* die gewünschten Entities hinzufügen – Suche nach Name oder Bereich, oder gleich einen ganzen Bereich übernehmen. *Anwenden* klicken.
