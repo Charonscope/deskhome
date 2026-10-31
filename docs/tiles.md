@@ -58,6 +58,7 @@ With *Tile type: Automatic* DeskHome picks the type from the entity. You can cha
 | **Second value** | only for *Combo*: the entity of the second value, e.g. the humidity next to a temperature sensor. It gets a second color and its own history line. |
 | **Width (columns)** | ½, 1, 2, 3 or 4 columns. Two half tiles sit side by side when they follow each other directly in the list. |
 | **History** | time span of the graph, 1 hour to 7 days, or *Off* |
+| **Logarithmic history** | the graph on a logarithmic scale: small values stay visible next to large peaks (e.g. power with an oven running) |
 
 ### Status and warnings
 
@@ -67,6 +68,9 @@ With *Tile type: Automatic* DeskHome picks the type from the entity. You can cha
 | **Critical below / above** | red, same as above |
 | **OK states** | states that count as fine, comma-separated, e.g. `off` or `on, home`. Every other state is shown red. Empty = automatic. |
 | **Only show when abnormal** | the tile stays hidden while everything is fine. A summary tile counts the hidden checks, so you can still see that they are being watched. |
+| **Show status: value in the OK color** | while the value is in range it is shown in the OK color (green). Together with the thresholds this gives three colors. |
+| **Show status: label in the status color** | the tile name takes the same color as the value |
+| **Show status: blinks on warning/critical** | the tile fades in and out while it is yellow or red (only with animations switched on) |
 
 **How the color is decided:**
 
@@ -75,7 +79,7 @@ With *Tile type: Automatic* DeskHome picks the type from the entity. You can cha
 - Binary sensors are red when they report a problem (`on` for e.g. smoke, moisture, gas, problem, battery low, update available), otherwise green.
 - Numbers follow the warning and critical thresholds. Battery sensors without own thresholds use 30 % (warning) and 15 % (critical).
 
-Problems also get a colored tile border.
+Problems also get a colored tile border; switch it off under *Appearance → Color border on warning/error* if the colored value is enough. Own colors for OK, warning and error: *Appearance → Colors → Status colors*.
 
 ### Actions
 
@@ -84,12 +88,13 @@ Problems also get a colored tile border.
 | **Click action** | Home Assistant action on a single click, e.g. `light.toggle` or `script.turn_on` |
 | **Double click action** | same, on a double click |
 | **Scroll action** | action for the scroll wheel, e.g. brightness of a light |
+| **Control: display only** | the tile only shows its value: click, double click and scroll wheel do nothing. For all tiles at once: tick *All tiles display only* on the *Tiles* page. |
 
 Lights and switches get *toggle* (click) and *brightness* (scroll) automatically when nothing is set. Sensor, combo and status tiles without a click action open the history in Home Assistant.
 
 ### Colors of this tile
 
-Value font color, label font color, second value color (combo tile), line color, background color and background opacity: tick *Custom color* next to one of them to override the *Appearance* settings for this tile only. Unticked, the *Appearance* page applies. Warning and error colors always take precedence. Background and opacity only work with the own tile style.
+Value font color, label font color, second value color and its line color (combo tile), line color, background color and background opacity: tick *Custom color* next to one of them to override the *Appearance* settings for this tile only. Unticked, the *Appearance* page applies. Warning and error colors always take precedence. Background and opacity only work with the own tile style.
 
 ### More
 
@@ -113,9 +118,12 @@ Entity: `binary_sensor.window_…` → *Tile type: Status light* → *OK states:
 **Power consumption with a warning**
 Entity: the power sensor (W) → *Warning above:* `2000` → *Critical above:* `3500`.
 
+**Energy price in three colors**
+Entity: the price sensor → *Warning above:* `0.30` → *Critical above:* `0.40` → *Show status:* tick *value in the OK color* (and *label in the status color* if you like). Below 0.30 the price is green, up to 0.40 yellow, above that red. Switch off the colored border under *Appearance* if you only want the colors.
+
 **Freezer temperature**
 Entity: the freezer sensor → *Warning above:* `-16` → *Critical above:* `-12` → *Only show when abnormal*.
 
 ## Backup
 
-*Export* on the *Tiles* page saves all tiles, the appearance and the Home Assistant URL into one file (never the token). *Import* restores it, e.g. on a new computer. *Automatic backup* additionally saves a copy on every change.
+*Export* on the *Tiles* page saves all tiles, the appearance and the Home Assistant URL into one file (never the token). *Import* restores it, e.g. on a new computer. *Automatic backup* additionally saves a copy on every change and keeps the three previous versions next to it (`name.1.json` is the previous one, `name.3.json` the oldest).

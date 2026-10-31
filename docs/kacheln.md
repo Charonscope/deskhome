@@ -58,6 +58,7 @@ Bei *Kachel-Typ: Automatisch* wählt DeskHome den Typ anhand der Entity. Pro Kac
 | **Zweiter Wert** | nur bei *Kombi*: die Entity des zweiten Werts, z. B. die Luftfeuchte zum Temperatursensor. Er bekommt eine zweite Farbe und eine eigene Verlaufslinie. |
 | **Breite (Spalten)** | ½, 1, 2, 3 oder 4 Spalten. Zwei halbe Kacheln stehen nebeneinander, wenn sie in der Liste direkt aufeinander folgen. |
 | **Verlauf** | Zeitraum des Graphen, 1 Stunde bis 7 Tage, oder *Aus* |
+| **Verlauf logarithmisch** | der Graph mit logarithmischer Skala: kleine Werte bleiben neben großen Spitzen sichtbar (z. B. Stromverbrauch, wenn der Backofen läuft) |
 
 ### Status und Warnungen
 
@@ -67,6 +68,9 @@ Bei *Kachel-Typ: Automatisch* wählt DeskHome den Typ anhand der Entity. Pro Kac
 | **Kritisch unter / über** | rot, sonst wie oben |
 | **OK-Zustände** | Zustände, die als in Ordnung gelten, mit Komma getrennt, z. B. `off` oder `on, home`. Jeder andere Zustand wird rot. Leer = automatisch. |
 | **Nur bei Auffälligkeit zeigen** | die Kachel bleibt ausgeblendet, solange alles in Ordnung ist. Eine Sammelkachel zählt die ausgeblendeten Prüfungen, damit du siehst, dass sie überwacht werden. |
+| **Status zeigen: Wert im OK-Bereich in OK-Farbe** | solange der Wert in Ordnung ist, erscheint er in der OK-Farbe (grün). Zusammen mit den Schwellen ergibt das drei Farben. |
+| **Status zeigen: Beschriftung in Statusfarbe** | der Kachelname bekommt dieselbe Farbe wie der Wert |
+| **Status zeigen: Blinkt bei Warnung/Kritisch** | die Kachel blendet ein und aus, solange sie gelb oder rot ist (nur bei eingeschalteten Animationen) |
 
 **So entsteht die Farbe:**
 
@@ -75,7 +79,7 @@ Bei *Kachel-Typ: Automatisch* wählt DeskHome den Typ anhand der Entity. Pro Kac
 - Binärsensoren sind rot, wenn sie ein Problem melden (`on` z. B. bei Rauch, Feuchtigkeit, Gas, Problem, Batterie schwach, Update verfügbar), sonst grün.
 - Zahlen richten sich nach den Warn- und Kritisch-Schwellen. Batteriesensoren ohne eigene Schwellen nutzen 30 % (Warnung) und 15 % (kritisch).
 
-Bei Problemen bekommt die Kachel zusätzlich einen farbigen Rand.
+Bei Problemen bekommt die Kachel zusätzlich einen farbigen Rand; abschalten unter *Aussehen → Rand bei Warnung/Fehler einfärben*, wenn dir der farbige Wert reicht. Eigene Farben für OK, Warnung und Fehler: *Aussehen → Farben → Statusfarben*.
 
 ### Aktionen
 
@@ -84,12 +88,13 @@ Bei Problemen bekommt die Kachel zusätzlich einen farbigen Rand.
 | **Klick-Aktion** | Home-Assistant-Aktion bei einem Klick, z. B. `light.toggle` oder `script.turn_on` |
 | **Doppelklick-Aktion** | dasselbe bei einem Doppelklick |
 | **Mausrad-Aktion** | Aktion für das Mausrad, z. B. Helligkeit eines Lichts |
+| **Bedienung: Nur anzeigen** | die Kachel zeigt nur ihren Wert: Klick, Doppelklick und Mausrad bewirken nichts. Für alle Kacheln auf einmal: auf der Seite *Kacheln* *Alle Kacheln nur anzeigen* anhaken. |
 
 Lichter und Schalter bekommen automatisch *Umschalten* (Klick) und *Helligkeit* (Mausrad), wenn nichts eingestellt ist. Sensor-, Kombi- und Status-Kacheln ohne Klick-Aktion öffnen den Verlauf in Home Assistant.
 
 ### Farben dieser Kachel
 
-Schriftfarbe Messwert, Schriftfarbe Beschriftung, Farbe zweiter Wert (Kombikachel), Linienfarbe, Hintergrundfarbe und Deckkraft Hintergrund: Mit dem Haken *Eigene Farbe* daneben gilt die Farbe nur für diese Kachel. Ohne Haken gelten die Werte unter *Aussehen*. Warn- und Fehlerfarben haben immer Vorrang. Hintergrund und Deckkraft wirken nur beim eigenen Kachelstil.
+Schriftfarbe Messwert, Schriftfarbe Beschriftung, Farbe zweiter Wert und Linie zweiter Wert (Kombikachel), Linienfarbe, Hintergrundfarbe und Deckkraft Hintergrund: Mit dem Haken *Eigene Farbe* daneben gilt die Farbe nur für diese Kachel. Ohne Haken gelten die Werte unter *Aussehen*. Warn- und Fehlerfarben haben immer Vorrang. Hintergrund und Deckkraft wirken nur beim eigenen Kachelstil.
 
 ### Weiteres
 
@@ -113,9 +118,12 @@ Entity: `binary_sensor.fenster_…` → *Kachel-Typ: Status-Ampel* → *OK-Zust�
 **Stromverbrauch mit Warnung**
 Entity: der Leistungssensor (W) → *Warnung über:* `2000` → *Kritisch über:* `3500`.
 
+**Strompreis in drei Farben**
+Entity: der Preis-Sensor → *Warnung über:* `0,30` → *Kritisch über:* `0,40` → *Status zeigen:* *Wert im OK-Bereich in OK-Farbe* anhaken (wer mag, auch *Beschriftung in Statusfarbe*). Unter 0,30 ist der Preis grün, bis 0,40 gelb, darüber rot. Den farbigen Rand unter *Aussehen* abschalten, wenn nur die Farben gewünscht sind.
+
 **Gefriertruhe**
 Entity: der Gefriertruhen-Sensor → *Warnung über:* `-16` → *Kritisch über:* `-12` → *Nur bei Auffälligkeit zeigen*.
 
 ## Backup
 
-*Exportieren* auf der Seite *Kacheln* speichert alle Kacheln, das Aussehen und die Home-Assistant-Adresse in eine Datei (nie den Token). *Importieren* stellt sie wieder her, z. B. auf einem neuen Rechner. *Automatisches Backup* legt zusätzlich bei jeder Änderung eine Kopie an.
+*Exportieren* auf der Seite *Kacheln* speichert alle Kacheln, das Aussehen und die Home-Assistant-Adresse in eine Datei (nie den Token). *Importieren* stellt sie wieder her, z. B. auf einem neuen Rechner. *Automatisches Backup* legt zusätzlich bei jeder Änderung eine Kopie an und behält die drei vorigen Stände daneben (`name.1.json` ist der vorige, `name.3.json` der älteste).

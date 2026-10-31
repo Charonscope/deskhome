@@ -14,16 +14,17 @@
   - **Light / switch** – click to toggle, scroll to dim, icon in the light's color
   - **Status light** – green / yellow / red, e.g. for unavailable devices
   - **Simple** – the classic icon + value tile
-- **Thresholds** for warning and critical (below/above), custom “OK” states, colored tile border on problems
+- **Thresholds** for warning and critical (below/above), custom “OK” states, colored tile border on problems; optionally value and label in the status color (three colors, e.g. for an energy price), own status colors and blinking tiles
 - **“Only show when abnormal”** – such tiles stay hidden while everything is fine; a summary tile counts the hidden checks
 - **Battery list** – automatically lists every battery below a threshold you set
 - **Right-click a tile** to edit it, change its width, open it in Home Assistant or remove it
+- **Display only** – for all tiles or single ones: click and scroll wheel switch nothing
 - **Searchable entity picker** (name, area or ID) and “add a whole area” at once
 - **Live updates** via the Home Assistant WebSocket API – no polling
 - **Appearance**: Home Assistant or own colors, per-tile color and background, transparency, corner radius, tile size, spacing, font sizes and weight, icon picker (all Material Design Icons), graph style, “changed 5 min ago”, small animations
 - **Panel mode** (compact view) with icons or icon + value
 - **English, German, Spanish and French** user interface
-- **Full backup**: export/import of all tiles, appearance and the Home Assistant URL (the token is never exported), plus an automatic backup on every change
+- **Full backup**: export/import of all tiles, appearance and the Home Assistant URL (the token is never exported), plus an automatic backup on every change that keeps the three previous versions
 - **Update notice** when a new version is released (can be switched off)
 - Access token stored in **KWallet**
 
@@ -128,15 +129,16 @@ GNU General Public License v3.0 – see [LICENSE](LICENSE).
 
 - **Kachel-Raster**, passt sich der Widget-Größe an; Kacheln ½ bis 4 Spalten breit, optional mit **Überschriften**
 - **Kachel-Typ automatisch** je Entity, pro Kachel änderbar: Sensor mit Verlauf (1 Stunde bis 7 Tage, Min/Max, Trendpfeil), Kombikachel (z. B. Temperatur + Luftfeuchte), Thermostat (Mausrad stellt die Solltemperatur), Licht/Schalter (Klick schaltet, Mausrad dimmt), Status-Ampel, Einfach
-- **Schwellen** für Warnung und Kritisch, eigene OK-Zustände, farbiger Rand bei Problemen
+- **Schwellen** für Warnung und Kritisch, eigene OK-Zustände, farbiger Rand bei Problemen; wahlweise Wert und Beschriftung in Statusfarbe (drei Farben, z. B. für einen Strompreis), eigene Statusfarben und blinkende Kacheln
 - **„Nur bei Auffälligkeit zeigen“** mit Sammelkachel für alle unauffälligen Prüfungen
 - **Batterieliste** – zeigt automatisch alle Batterien unter einer einstellbaren Schwelle
 - **Rechtsklick auf eine Kachel**: bearbeiten, Breite ändern, in Home Assistant öffnen, entfernen
+- **Nur anzeigen** – für alle oder einzelne Kacheln: Klick und Mausrad schalten nichts
 - **Entity-Suche** nach Name, Bereich oder ID und „ganzen Bereich übernehmen“
 - **Live-Aktualisierung** über die WebSocket-Schnittstelle von Home Assistant
 - **Aussehen** frei einstellbar: Home-Assistant- oder eigene Farben, Farbe und Hintergrund pro Kachel, Transparenz, Ecken, Größe, Abstände, Schriftgröße und -stärke, Icon-Auswahl, Graph, „vor 5 min“, kleine Animationen
 - **Deutsch, Englisch, Spanisch und Französisch**
-- **Komplett-Backup** von Kacheln, Aussehen und HA-Adresse (ohne Token), dazu automatisches Backup bei jeder Änderung
+- **Komplett-Backup** von Kacheln, Aussehen und HA-Adresse (ohne Token), dazu automatisches Backup bei jeder Änderung, das die drei vorigen Stände behält
 - **Update-Hinweis** bei neuer Version (abschaltbar)
 
 ## Voraussetzungen
