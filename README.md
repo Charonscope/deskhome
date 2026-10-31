@@ -16,12 +16,17 @@
   - **Simple** – the classic icon + value tile
 - **Thresholds** for warning and critical (below/above), custom “OK” states, colored tile border on problems; optionally value and label in the status color (three colors, e.g. for an energy price), own status colors and blinking tiles
 - **“Only show when abnormal”** – such tiles stay hidden while everything is fine; a summary tile counts the hidden checks
-- **Battery list** – automatically lists every battery below a threshold you set
+- **Watching without tiles** (Watching page):
+  - **Battery list** – every battery below a threshold you set
+  - **Problem list** – devices that have been completely unavailable for a while and motion sensors stuck on “on”, with an ignore list
+  - **Home Assistant messages** – notifications, open repairs and available updates as a small tile; new notifications optionally as desktop notifications
+- **“Seen”** – right-click a warning tile to quiet it (no border, pulse or blinking) until its value was OK again
+- **Yesterday's line** – yesterday's history faintly behind today's
 - **Right-click a tile** to edit it, change its width, open it in Home Assistant or remove it
 - **Display only** – for all tiles or single ones: click and scroll wheel switch nothing
 - **Searchable entity picker** (name, area or ID) and “add a whole area” at once
 - **Live updates** via the Home Assistant WebSocket API – no polling
-- **Settings in six pages** (General, Tiles, Watching, Tile style, Colors, Values & history): Home Assistant or own colors, per-tile color and background, transparency, corner radius, tile size, spacing, font sizes and weight, icon picker (all Material Design Icons), graph style, “changed 5 min ago”, small animations
+- **Settings in six pages** (General, Tiles, Watching, Tile style, Colors, Values & history): Home Assistant or own colors, per-tile color and background, transparency, corner radius, tile size, spacing, font sizes and weight, help buttons for every setting, icon picker (all Material Design Icons), graph style, “changed 5 min ago”, small animations
 - **Panel mode** (compact view) with icons or icon + value
 - **English, German, Spanish and French** user interface
 - **Full backup**: export/import of all tiles, appearance and the Home Assistant URL (the token is never exported), plus an automatic backup on every change that keeps the three previous versions
@@ -135,12 +140,17 @@ GNU General Public License v3.0 – see [LICENSE](LICENSE).
 - **Kachel-Typ automatisch** je Entity, pro Kachel änderbar: Sensor mit Verlauf (1 Stunde bis 7 Tage, Min/Max, Trendpfeil), Kombikachel (z. B. Temperatur + Luftfeuchte), Thermostat (Mausrad stellt die Solltemperatur), Licht/Schalter (Klick schaltet, Mausrad dimmt), Status-Ampel, Einfach
 - **Schwellen** für Warnung und Kritisch, eigene OK-Zustände, farbiger Rand bei Problemen; wahlweise Wert und Beschriftung in Statusfarbe (drei Farben, z. B. für einen Strompreis), eigene Statusfarben und blinkende Kacheln
 - **„Nur bei Auffälligkeit zeigen“** mit Sammelkachel für alle unauffälligen Prüfungen
-- **Batterieliste** – zeigt automatisch alle Batterien unter einer einstellbaren Schwelle
+- **Überwachung ohne Kacheln** (Seite *Überwachung*):
+  - **Batterieliste** – alle Batterien unter einer einstellbaren Schwelle
+  - **Problemliste** – Geräte, die schon eine Weile komplett nicht erreichbar sind, und Bewegungsmelder, die auf „an“ hängen, mit Ausnahmeliste
+  - **Home-Assistant-Meldungen** – Meldungen, offene Reparaturen und verfügbare Updates als kleine Kachel; neue Meldungen wahlweise als Desktop-Benachrichtigung
+- **„Gesehen“** – Rechtsklick auf eine Warn-Kachel macht sie still (kein Rand, Puls, Blinken), bis der Wert wieder in Ordnung war
+- **Gestern-Linie** – der gestrige Verlauf blass hinter dem heutigen
 - **Rechtsklick auf eine Kachel**: bearbeiten, Breite ändern, in Home Assistant öffnen, entfernen
 - **Nur anzeigen** – für alle oder einzelne Kacheln: Klick und Mausrad schalten nichts
 - **Entity-Suche** nach Name, Bereich oder ID und „ganzen Bereich übernehmen“
 - **Live-Aktualisierung** über die WebSocket-Schnittstelle von Home Assistant
-- **Einstellungen auf sechs Seiten** (Allgemein, Kacheln, Überwachung, Kachelstil, Farben, Werte & Verlauf): Home-Assistant- oder eigene Farben, Farbe und Hintergrund pro Kachel, Transparenz, Ecken, Größe, Abstände, Schriftgröße und -stärke, Icon-Auswahl, Graph, „vor 5 min“, kleine Animationen
+- **Einstellungen auf sechs Seiten** (Allgemein, Kacheln, Überwachung, Kachelstil, Farben, Werte & Verlauf): Home-Assistant- oder eigene Farben, Farbe und Hintergrund pro Kachel, Transparenz, Ecken, Größe, Abstände, Schriftgröße und -stärke, Hilfe-Knopf an jeder Einstellung, Icon-Auswahl, Graph, „vor 5 min“, kleine Animationen
 - **Deutsch, Englisch, Spanisch und Französisch**
 - **Komplett-Backup** von Kacheln, Aussehen und HA-Adresse (ohne Token), dazu automatisches Backup bei jeder Änderung, das die drei vorigen Stände behält
 - **Update-Hinweis** bei neuer Version (abschaltbar)
