@@ -21,7 +21,7 @@
 - **Display only** – for all tiles or single ones: click and scroll wheel switch nothing
 - **Searchable entity picker** (name, area or ID) and “add a whole area” at once
 - **Live updates** via the Home Assistant WebSocket API – no polling
-- **Appearance**: Home Assistant or own colors, per-tile color and background, transparency, corner radius, tile size, spacing, font sizes and weight, icon picker (all Material Design Icons), graph style, “changed 5 min ago”, small animations
+- **Settings in six pages** (General, Tiles, Watching, Tile style, Colors, Values & history): Home Assistant or own colors, per-tile color and background, transparency, corner radius, tile size, spacing, font sizes and weight, icon picker (all Material Design Icons), graph style, “changed 5 min ago”, small animations
 - **Panel mode** (compact view) with icons or icon + value
 - **English, German, Spanish and French** user interface
 - **Full backup**: export/import of all tiles, appearance and the Home Assistant URL (the token is never exported), plus an automatic backup on every change that keeps the three previous versions
@@ -136,7 +136,7 @@ GNU General Public License v3.0 – see [LICENSE](LICENSE).
 - **Nur anzeigen** – für alle oder einzelne Kacheln: Klick und Mausrad schalten nichts
 - **Entity-Suche** nach Name, Bereich oder ID und „ganzen Bereich übernehmen“
 - **Live-Aktualisierung** über die WebSocket-Schnittstelle von Home Assistant
-- **Aussehen** frei einstellbar: Home-Assistant- oder eigene Farben, Farbe und Hintergrund pro Kachel, Transparenz, Ecken, Größe, Abstände, Schriftgröße und -stärke, Icon-Auswahl, Graph, „vor 5 min“, kleine Animationen
+- **Einstellungen auf sechs Seiten** (Allgemein, Kacheln, Überwachung, Kachelstil, Farben, Werte & Verlauf): Home-Assistant- oder eigene Farben, Farbe und Hintergrund pro Kachel, Transparenz, Ecken, Größe, Abstände, Schriftgröße und -stärke, Icon-Auswahl, Graph, „vor 5 min“, kleine Animationen
 - **Deutsch, Englisch, Spanisch und Französisch**
 - **Komplett-Backup** von Kacheln, Aussehen und HA-Adresse (ohne Token), dazu automatisches Backup bei jeder Änderung, das die drei vorigen Stände behält
 - **Update-Hinweis** bei neuer Version (abschaltbar)

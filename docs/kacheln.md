@@ -79,7 +79,7 @@ Bei *Kachel-Typ: Automatisch* wählt DeskHome den Typ anhand der Entity. Pro Kac
 - Binärsensoren sind rot, wenn sie ein Problem melden (`on` z. B. bei Rauch, Feuchtigkeit, Gas, Problem, Batterie schwach, Update verfügbar), sonst grün.
 - Zahlen richten sich nach den Warn- und Kritisch-Schwellen. Batteriesensoren ohne eigene Schwellen nutzen 30 % (Warnung) und 15 % (kritisch).
 
-Bei Problemen bekommt die Kachel zusätzlich einen farbigen Rand; abschalten unter *Aussehen → Rand bei Warnung/Fehler einfärben*, wenn dir der farbige Wert reicht. Eigene Farben für OK, Warnung und Fehler: *Aussehen → Farben → Statusfarben*.
+Bei Problemen bekommt die Kachel zusätzlich einen farbigen Rand; abschalten unter *Kachelstil → Rand bei Warnung/Fehler einfärben*, wenn dir der farbige Wert reicht. Eigene Farben für OK, Warnung und Fehler: *Farben → Statusfarben*.
 
 ### Aktionen
 
@@ -94,7 +94,7 @@ Lichter und Schalter bekommen automatisch *Umschalten* (Klick) und *Helligkeit* 
 
 ### Farben dieser Kachel
 
-Schriftfarbe Messwert, Schriftfarbe Beschriftung, Farbe zweiter Wert und Linie zweiter Wert (Kombikachel), Linienfarbe, Hintergrundfarbe und Deckkraft Hintergrund: Mit dem Haken *Eigene Farbe* daneben gilt die Farbe nur für diese Kachel. Ohne Haken gelten die Werte unter *Aussehen*. Warn- und Fehlerfarben haben immer Vorrang. Hintergrund und Deckkraft wirken nur beim eigenen Kachelstil.
+Schriftfarbe Messwert, Schriftfarbe Beschriftung, Farbe zweiter Wert und Linie zweiter Wert (Kombikachel), Linienfarbe, Hintergrundfarbe und Deckkraft Hintergrund: Mit dem Haken *Eigene Farbe* daneben gilt die Farbe nur für diese Kachel. Ohne Haken gelten die Werte unter *Farben* und *Kachelstil*. Warn- und Fehlerfarben haben immer Vorrang. Hintergrund und Deckkraft wirken nur beim eigenen Kachelstil.
 
 ### Weiteres
 
@@ -105,7 +105,7 @@ Schriftfarbe Messwert, Schriftfarbe Beschriftung, Farbe zweiter Wert und Linie z
 
 ## Schwache Batterien
 
-Auf der Seite *Kacheln* findet *Schwache Batterien zeigen unter* alle Batteriesensoren in Home Assistant selbst – Kacheln dafür sind nicht nötig. Geräte, die nur „Batterie schwach“ melden (z. B. Homematic-Thermostate), erscheinen unabhängig von der Schwelle. *aus* schaltet die Liste ab.
+Auf der Seite *Überwachung* findet *Schwache Batterien zeigen unter* alle Batteriesensoren in Home Assistant selbst – Kacheln dafür sind nicht nötig. Geräte, die nur „Batterie schwach“ melden (z. B. Homematic-Thermostate), erscheinen unabhängig von der Schwelle. *aus* schaltet die Liste ab.
 
 ## Beispiele
 
@@ -119,7 +119,7 @@ Entity: `binary_sensor.fenster_…` → *Kachel-Typ: Status-Ampel* → *OK-Zust�
 Entity: der Leistungssensor (W) → *Warnung über:* `2000` → *Kritisch über:* `3500`.
 
 **Strompreis in drei Farben**
-Entity: der Preis-Sensor → *Warnung über:* `0,30` → *Kritisch über:* `0,40` → *Status zeigen:* *Wert im OK-Bereich in OK-Farbe* anhaken (wer mag, auch *Beschriftung in Statusfarbe*). Unter 0,30 ist der Preis grün, bis 0,40 gelb, darüber rot. Den farbigen Rand unter *Aussehen* abschalten, wenn nur die Farben gewünscht sind.
+Entity: der Preis-Sensor → *Warnung über:* `0,30` → *Kritisch über:* `0,40` → *Status zeigen:* *Wert im OK-Bereich in OK-Farbe* anhaken (wer mag, auch *Beschriftung in Statusfarbe*). Unter 0,30 ist der Preis grün, bis 0,40 gelb, darüber rot. Den farbigen Rand unter *Kachelstil* abschalten, wenn nur die Farben gewünscht sind.
 
 **Gefriertruhe**
 Entity: der Gefriertruhen-Sensor → *Warnung über:* `-16` → *Kritisch über:* `-12` → *Nur bei Auffälligkeit zeigen*.

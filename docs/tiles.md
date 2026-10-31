@@ -79,7 +79,7 @@ With *Tile type: Automatic* DeskHome picks the type from the entity. You can cha
 - Binary sensors are red when they report a problem (`on` for e.g. smoke, moisture, gas, problem, battery low, update available), otherwise green.
 - Numbers follow the warning and critical thresholds. Battery sensors without own thresholds use 30 % (warning) and 15 % (critical).
 
-Problems also get a colored tile border; switch it off under *Appearance → Color border on warning/error* if the colored value is enough. Own colors for OK, warning and error: *Appearance → Colors → Status colors*.
+Problems also get a colored tile border; switch it off under *Tile style → Color border on warning/error* if the colored value is enough. Own colors for OK, warning and error: *Colors → Status colors*.
 
 ### Actions
 
@@ -94,7 +94,7 @@ Lights and switches get *toggle* (click) and *brightness* (scroll) automatically
 
 ### Colors of this tile
 
-Value font color, label font color, second value color and its line color (combo tile), line color, background color and background opacity: tick *Custom color* next to one of them to override the *Appearance* settings for this tile only. Unticked, the *Appearance* page applies. Warning and error colors always take precedence. Background and opacity only work with the own tile style.
+Value font color, label font color, second value color and its line color (combo tile), line color, background color and background opacity: tick *Custom color* next to one of them to override the *Colors* and *Tile style* settings for this tile only. Unticked, those pages apply. Warning and error colors always take precedence. Background and opacity only work with the own tile style.
 
 ### More
 
@@ -105,7 +105,7 @@ Value font color, label font color, second value color and its line color (combo
 
 ## Weak batteries
 
-On the *Tiles* page, *Show weak batteries below* finds every battery sensor in Home Assistant on its own – you don't need tiles for them. Devices that only report “battery low” (e.g. Homematic thermostats) appear regardless of the threshold. *off* disables the list.
+On the *Watching* page, *Show weak batteries below* finds every battery sensor in Home Assistant on its own – you don't need tiles for them. Devices that only report “battery low” (e.g. Homematic thermostats) appear regardless of the threshold. *off* disables the list.
 
 ## Examples
 
@@ -119,7 +119,7 @@ Entity: `binary_sensor.window_…` → *Tile type: Status light* → *OK states:
 Entity: the power sensor (W) → *Warning above:* `2000` → *Critical above:* `3500`.
 
 **Energy price in three colors**
-Entity: the price sensor → *Warning above:* `0.30` → *Critical above:* `0.40` → *Show status:* tick *value in the OK color* (and *label in the status color* if you like). Below 0.30 the price is green, up to 0.40 yellow, above that red. Switch off the colored border under *Appearance* if you only want the colors.
+Entity: the price sensor → *Warning above:* `0.30` → *Critical above:* `0.40` → *Show status:* tick *value in the OK color* (and *label in the status color* if you like). Below 0.30 the price is green, up to 0.40 yellow, above that red. Switch off the colored border under *Tile style* if you only want the colors.
 
 **Freezer temperature**
 Entity: the freezer sensor → *Warning above:* `-16` → *Critical above:* `-12` → *Only show when abnormal*.

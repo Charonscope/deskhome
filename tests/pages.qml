@@ -28,7 +28,10 @@ ApplicationWindow {
     readonly property var pages: [
         ["ConfigGeneral.qml", { cfg_url: "http://ha.test:8123", cfg_language: "de" }],
         ["ConfigItems.qml", { cfg_items: "[]", cfg_autoBackupFile: "", cfg_itemDisplayDefault: 1 }],
+        ["ConfigWatch.qml", {}],
         ["ConfigLook.qml", {}],
+        ["ConfigColors.qml", {}],
+        ["ConfigValues.qml", {}],
         ["ConfigItem.qml", { item: { entity_id: "light.test", domain: "light", colspan: 0.5 } }]
     ]
     property int done: 0

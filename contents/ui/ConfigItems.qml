@@ -17,7 +17,6 @@ KCM.ScrollViewKCM {
     property string cfg_items
     property alias cfg_autoBackupFile: autoBackupFileField.text
     property int cfg_itemDisplayDefault
-    property int cfg_batteryThreshold
     property bool cfg_readOnly
     property ListModel items: ListModel { dynamicRoles: true }
     property var services: ({})
@@ -103,26 +102,6 @@ KCM.ScrollViewKCM {
                         onTriggered: setDisplayDefaultAndItems(DisplayFilterModel.Full, checked)
                     }
                 ]
-            }
-        }
-
-        RowLayout {
-            Layout.maximumWidth: itemList.width - Kirigami.Units.largeSpacing * 2
-            Label {
-                text: tr("battery.setting")
-                Layout.fillWidth: true
-            }
-            SpinBox {
-                id: batteryThreshold
-                from: 0
-                to: 100
-                stepSize: 5
-                value: cfg_batteryThreshold
-                textFromValue: v => v ? v + " %" : tr("battery.off")
-                valueFromText: t => parseInt(t) || 0
-                onValueModified: cfg_batteryThreshold = value
-                ToolTip.text: tr("battery.hint")
-                ToolTip.visible: hovered
             }
         }
 

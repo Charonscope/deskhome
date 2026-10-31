@@ -7,16 +7,17 @@ import org.kde.kcmutils as KCM
 import org.kde.kquickcontrols as KQControls
 
 import "../code/i18n.mjs" as I18n
-import "../code/themes.mjs" as Themes
-import "."
 
+import "."
+import "components"
+
+// Tile style: frame, transparency, corners, borders, size and spacing, panel view
 KCM.SimpleKCM {
     property alias cfg_flat: flat.checked
     property alias cfg_activeFrame: activeFrame.checked
     property alias cfg_compactScaleIconsToFit: compactScaleIconsToFit.checked
     property string cfg_compactEntity
     property int cfg_compactIconSpacing
-
     property alias cfg_tileOpacity: tileOpacity.value
     property alias cfg_tileCustomColor: tileCustomColor.checked
     property alias cfg_tileColor: tileColor.color
@@ -25,67 +26,10 @@ KCM.SimpleKCM {
     property alias cfg_levelBorder: levelBorder.checked
     property alias cfg_tileScale: tileScale.value
     property alias cfg_tileSpacing: tileSpacing.value
-    property alias cfg_valueScale: valueScale.value
-    property alias cfg_labelScale: labelScale.value
-    property alias cfg_showMinMax: showMinMax.checked
-    property alias cfg_showTrend: showTrend.checked
-    property alias cfg_graphHeight: graphHeight.value
-    property alias cfg_graphLineWidth: graphLineWidth.value
-    property alias cfg_graphFill: graphFill.checked
-    property alias cfg_graphYesterday: graphYesterday.checked
-    property alias cfg_graphCustomColor: graphCustomColor.checked
-    property alias cfg_graphColor: graphColor.color
-    property string cfg_colorSource
-    property string cfg_haTheme
-    property alias cfg_valueCustomColor: valueCustomColor.checked
-    property alias cfg_valueColor: valueColor.color
-    property alias cfg_labelCustomColor: labelCustomColor.checked
-    property alias cfg_labelColor: labelColor.color
     property alias cfg_animations: animations.checked
-    property alias cfg_showLastChanged: showLastChanged.checked
-    property alias cfg_showSwitchState: showSwitchState.checked
-    property alias cfg_secondCustomColor: secondCustomColor.checked
-    property alias cfg_secondColor: secondColor.color
-    property int cfg_valueWeight
-    property alias cfg_levelCustomColors: levelCustomColors.checked
-    property alias cfg_customOkColor: customOkColor.color
-    property alias cfg_customWarnColor: customWarnColor.color
-    property alias cfg_customCritColor: customCritColor.color
-
-    // HA theme names for the selection; loaded from the shared connection
-    property Client ha
-    property var haThemes: null
-    function loadThemes() {
-        if (ha?.ready) ha.getThemes().then(result => haThemes = result, () => {})
-    }
-    Component.onCompleted: {
-        if (!plasmoid.configuration.url) return
-        ha = ClientFactory.getClient(this, plasmoid.configuration.url)
-        ha.readyChanged.connect(loadThemes)
-        loadThemes()
-    }
 
     signal configurationChanged
     function tr(key, ...args) { return I18n.tr(plasmoid.configuration.language, key, ...args) }
-
-    // Slider with value display
-    component ValueSlider: RowLayout {
-        property alias value: slider.value
-        property alias from: slider.from
-        property alias to: slider.to
-        property alias stepSize: slider.stepSize
-        property string suffix: ""
-        property int decimals: 0
-        Slider {
-            id: slider
-            snapMode: Slider.SnapAlways
-            Layout.preferredWidth: Kirigami.Units.gridUnit * 12
-        }
-        Label {
-            text: slider.value.toFixed(decimals) + suffix
-            Layout.preferredWidth: Kirigami.Units.gridUnit * 3
-        }
-    }
 
     Kirigami.FormLayout {
         Item {
@@ -160,124 +104,6 @@ KCM.SimpleKCM {
             text: tr("look.activeFrame")
         }
 
-        Item {
-            Kirigami.FormData.isSection: true
-            Kirigami.FormData.label: tr("look.colors")
-        }
-
-        ComboBox {
-            id: colorSource
-            Kirigami.FormData.label: tr("look.colorSource")
-            model: [
-                { value: "plasma", text: tr("look.source.plasma") },
-                { value: "ha", text: tr("look.source.ha") }
-            ]
-            textRole: "text"
-            valueRole: "value"
-            Component.onCompleted: currentIndex = Math.max(0, indexOfValue(cfg_colorSource))
-            onActivated: cfg_colorSource = currentValue
-        }
-
-        ComboBox {
-            id: haTheme
-            visible: cfg_colorSource === "ha"
-            enabled: !!haThemes
-            Kirigami.FormData.label: tr("look.haTheme")
-            model: {
-                const def = haThemes ? Themes.themeName(haThemes, "", false) : ""
-                return [{ value: "", text: tr("look.haDefault", def || "…") }]
-                    .concat((haThemes ? Themes.themeNames(haThemes) : []).map(n => ({ value: n, text: n })))
-            }
-            textRole: "text"
-            valueRole: "value"
-            onModelChanged: currentIndex = Math.max(0, indexOfValue(cfg_haTheme))
-            onActivated: cfg_haTheme = currentValue
-            Layout.maximumWidth: Kirigami.Units.gridUnit * 20
-        }
-
-        Label {
-            visible: cfg_colorSource === "ha"
-            text: haThemes ? tr("look.haHint") : tr("look.haNotConnected")
-            wrapMode: Text.WordWrap
-            opacity: 0.7
-            Layout.maximumWidth: Kirigami.Units.gridUnit * 20
-        }
-
-        RowLayout {
-            Kirigami.FormData.label: tr("look.valueColor")
-            CheckBox {
-                id: valueCustomColor
-                text: tr("look.customColor")
-            }
-            KQControls.ColorButton {
-                id: valueColor
-                enabled: valueCustomColor.checked
-                showAlphaChannel: false
-            }
-        }
-
-        RowLayout {
-            Kirigami.FormData.label: tr("look.secondColor")
-            CheckBox {
-                id: secondCustomColor
-                text: tr("look.customColor")
-            }
-            KQControls.ColorButton {
-                id: secondColor
-                enabled: secondCustomColor.checked
-                showAlphaChannel: false
-            }
-        }
-
-        // Own status colors instead of the theme's (OK / warning / critical)
-        RowLayout {
-            Kirigami.FormData.label: tr("look.levelColors")
-            CheckBox {
-                id: levelCustomColors
-                text: tr("look.customColor")
-            }
-            KQControls.ColorButton {
-                id: customOkColor
-                enabled: levelCustomColors.checked
-                showAlphaChannel: false
-                ToolTip.text: tr("look.levelOk")
-                ToolTip.visible: hovered
-            }
-            KQControls.ColorButton {
-                id: customWarnColor
-                enabled: levelCustomColors.checked
-                showAlphaChannel: false
-                ToolTip.text: tr("look.levelWarn")
-                ToolTip.visible: hovered
-            }
-            KQControls.ColorButton {
-                id: customCritColor
-                enabled: levelCustomColors.checked
-                showAlphaChannel: false
-                ToolTip.text: tr("look.levelCrit")
-                ToolTip.visible: hovered
-            }
-        }
-
-        RowLayout {
-            Kirigami.FormData.label: tr("look.labelColor")
-            CheckBox {
-                id: labelCustomColor
-                text: tr("look.customColor")
-            }
-            KQControls.ColorButton {
-                id: labelColor
-                enabled: labelCustomColor.checked
-                showAlphaChannel: false
-            }
-        }
-
-        Label {
-            text: tr("look.colorHint")
-            wrapMode: Text.WordWrap
-            opacity: 0.7
-            Layout.maximumWidth: Kirigami.Units.gridUnit * 20
-        }
 
         Item {
             Kirigami.FormData.isSection: true
@@ -315,119 +141,6 @@ KCM.SimpleKCM {
             suffix: " px"
         }
 
-        Item {
-            Kirigami.FormData.isSection: true
-            Kirigami.FormData.label: tr("look.values")
-        }
-
-        ValueSlider {
-            id: labelScale
-            Kirigami.FormData.label: tr("look.labelSize")
-            from: 70
-            to: 200
-            stepSize: 10
-            suffix: " %"
-        }
-
-        Label {
-            text: tr("look.labelSizeHint")
-            wrapMode: Text.WordWrap
-            opacity: 0.7
-            Layout.maximumWidth: Kirigami.Units.gridUnit * 20
-        }
-
-        ValueSlider {
-            id: valueScale
-            Kirigami.FormData.label: tr("look.valueSize")
-            from: 60
-            to: 200
-            stepSize: 10
-            suffix: " %"
-        }
-
-        ComboBox {
-            Kirigami.FormData.label: tr("look.valueWeight")
-            model: [
-                { value: 300, text: tr("look.weightLight") },
-                { value: 400, text: tr("look.weightNormal") },
-                { value: 600, text: tr("look.weightSemi") },
-                { value: 700, text: tr("look.weightBold") }
-            ]
-            textRole: "text"
-            valueRole: "value"
-            Component.onCompleted: currentIndex = Math.max(0, indexOfValue(cfg_valueWeight || 700))
-            onActivated: cfg_valueWeight = currentValue
-        }
-
-        CheckBox {
-            id: showMinMax
-            Kirigami.FormData.label: tr("look.show")
-            text: tr("look.minMax")
-        }
-
-        CheckBox {
-            id: showTrend
-            text: tr("look.trend")
-        }
-
-        CheckBox {
-            id: showLastChanged
-            text: tr("look.lastChanged")
-        }
-
-        CheckBox {
-            id: showSwitchState
-            text: tr("look.switchState")
-        }
-
-        Item {
-            Kirigami.FormData.isSection: true
-            Kirigami.FormData.label: tr("look.graph")
-        }
-
-        ValueSlider {
-            id: graphHeight
-            Kirigami.FormData.label: tr("look.graphHeight")
-            from: 20
-            to: 70
-            stepSize: 2
-            suffix: " %"
-        }
-
-        ValueSlider {
-            id: graphLineWidth
-            Kirigami.FormData.label: tr("look.lineWidth")
-            from: 0.5
-            to: 4
-            stepSize: 0.5
-            decimals: 1
-            suffix: " px"
-        }
-
-        CheckBox {
-            id: graphFill
-            Kirigami.FormData.label: tr("look.area")
-            text: tr("look.fill")
-        }
-
-        CheckBox {
-            id: graphYesterday
-            Kirigami.FormData.label: tr("look.yesterday")
-            text: tr("look.yesterdayText")
-        }
-
-        RowLayout {
-            Kirigami.FormData.label: tr("look.lineColor")
-            CheckBox {
-                id: graphCustomColor
-                text: tr("look.customColor")
-            }
-            KQControls.ColorButton {
-                id: graphColor
-                enabled: graphCustomColor.checked
-                showAlphaChannel: false
-            }
-        }
 
         Item {
             Kirigami.FormData.isSection: true
