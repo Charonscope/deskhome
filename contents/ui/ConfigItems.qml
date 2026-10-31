@@ -105,10 +105,13 @@ KCM.ScrollViewKCM {
             }
         }
 
-        CheckBox {
-            text: tr("items.readOnly")
-            checked: cfg_readOnly
-            onToggled: cfg_readOnly = checked
+        HelpRow {
+            help: tr("help.readOnlyAll")
+            CheckBox {
+                text: tr("items.readOnly")
+                checked: cfg_readOnly
+                onToggled: cfg_readOnly = checked
+            }
         }
     }
 

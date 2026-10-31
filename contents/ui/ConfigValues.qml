@@ -33,23 +33,19 @@ KCM.SimpleKCM {
     Kirigami.FormLayout {
         Item {
             Kirigami.FormData.isSection: true
-            Kirigami.FormData.label: tr("look.values")
+            Kirigami.FormData.label: tr("look.fonts")
         }
 
-        ValueSlider {
-            id: labelScale
+        HelpRow {
             Kirigami.FormData.label: tr("look.labelSize")
-            from: 70
-            to: 200
-            stepSize: 10
-            suffix: " %"
-        }
-
-        Label {
-            text: tr("look.labelSizeHint")
-            wrapMode: Text.WordWrap
-            opacity: 0.7
-            Layout.maximumWidth: Kirigami.Units.gridUnit * 20
+            help: tr("look.labelSizeHint")
+            ValueSlider {
+                id: labelScale
+                from: 70
+                to: 200
+                stepSize: 10
+                suffix: " %"
+            }
         }
 
         ValueSlider {
@@ -61,34 +57,51 @@ KCM.SimpleKCM {
             suffix: " %"
         }
 
-        ComboBox {
+        HelpRow {
             Kirigami.FormData.label: tr("look.valueWeight")
-            model: [
-                { value: 300, text: tr("look.weightLight") },
-                { value: 400, text: tr("look.weightNormal") },
-                { value: 600, text: tr("look.weightSemi") },
-                { value: 700, text: tr("look.weightBold") }
-            ]
-            textRole: "text"
-            valueRole: "value"
-            Component.onCompleted: currentIndex = Math.max(0, indexOfValue(cfg_valueWeight || 700))
-            onActivated: cfg_valueWeight = currentValue
+            help: tr("help.valueWeight")
+            ComboBox {
+                model: [
+                    { value: 300, text: tr("look.weightLight") },
+                    { value: 400, text: tr("look.weightNormal") },
+                    { value: 600, text: tr("look.weightSemi") },
+                    { value: 700, text: tr("look.weightBold") }
+                ]
+                textRole: "text"
+                valueRole: "value"
+                Component.onCompleted: currentIndex = Math.max(0, indexOfValue(cfg_valueWeight || 700))
+                onActivated: cfg_valueWeight = currentValue
+            }
         }
 
-        CheckBox {
-            id: showMinMax
+        Item {
+            Kirigami.FormData.isSection: true
+            Kirigami.FormData.label: tr("look.extras")
+        }
+
+        HelpRow {
             Kirigami.FormData.label: tr("look.show")
-            text: tr("look.minMax")
+            help: tr("help.minMax")
+            CheckBox {
+                id: showMinMax
+                text: tr("look.minMax")
+            }
         }
 
-        CheckBox {
-            id: showTrend
-            text: tr("look.trend")
+        HelpRow {
+            help: tr("help.trend")
+            CheckBox {
+                id: showTrend
+                text: tr("look.trend")
+            }
         }
 
-        CheckBox {
-            id: showLastChanged
-            text: tr("look.lastChanged")
+        HelpRow {
+            help: tr("help.lastChanged")
+            CheckBox {
+                id: showLastChanged
+                text: tr("look.lastChanged")
+            }
         }
 
         CheckBox {
@@ -96,19 +109,21 @@ KCM.SimpleKCM {
             text: tr("look.switchState")
         }
 
-
         Item {
             Kirigami.FormData.isSection: true
             Kirigami.FormData.label: tr("look.graph")
         }
 
-        ValueSlider {
-            id: graphHeight
+        HelpRow {
             Kirigami.FormData.label: tr("look.graphHeight")
-            from: 20
-            to: 70
-            stepSize: 2
-            suffix: " %"
+            help: tr("help.graphHeight")
+            ValueSlider {
+                id: graphHeight
+                from: 20
+                to: 70
+                stepSize: 2
+                suffix: " %"
+            }
         }
 
         ValueSlider {
@@ -119,18 +134,6 @@ KCM.SimpleKCM {
             stepSize: 0.5
             decimals: 1
             suffix: " px"
-        }
-
-        CheckBox {
-            id: graphFill
-            Kirigami.FormData.label: tr("look.area")
-            text: tr("look.fill")
-        }
-
-        CheckBox {
-            id: graphYesterday
-            Kirigami.FormData.label: tr("look.yesterday")
-            text: tr("look.yesterdayText")
         }
 
         RowLayout {
@@ -146,5 +149,19 @@ KCM.SimpleKCM {
             }
         }
 
+        CheckBox {
+            id: graphFill
+            Kirigami.FormData.label: tr("look.area")
+            text: tr("look.fill")
+        }
+
+        HelpRow {
+            Kirigami.FormData.label: tr("look.yesterday")
+            help: tr("help.yesterday")
+            CheckBox {
+                id: graphYesterday
+                text: tr("look.yesterdayText")
+            }
+        }
     }
 }

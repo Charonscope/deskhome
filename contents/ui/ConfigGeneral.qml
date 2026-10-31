@@ -6,6 +6,7 @@ import org.kde.kirigami as Kirigami
 import org.kde.kcmutils as KCM
 
 import "../code/i18n.mjs" as I18n
+import "components"
 
 KCM.SimpleKCM {
     property string cfg_url
@@ -71,11 +72,14 @@ KCM.SimpleKCM {
             onActivated: cfg_language = currentValue
         }
 
-        CheckBox {
+        HelpRow {
             Kirigami.FormData.label: tr("general.updates")
-            text: tr("general.updatesText")
-            checked: cfg_checkUpdates
-            onToggled: cfg_checkUpdates = checked
+            help: tr("help.updates")
+            CheckBox {
+                text: tr("general.updatesText")
+                checked: cfg_checkUpdates
+                onToggled: cfg_checkUpdates = checked
+            }
         }
 
         Item {
@@ -107,11 +111,15 @@ KCM.SimpleKCM {
 
         // Password field with an eye icon: the token is as powerful as the HA password
         // and must not end up on screenshots of the settings
-        Kirigami.PasswordField {
-            id: token
-            text: secrets.token
-            onTextEdited: configurationChanged()
+        HelpRow {
             Kirigami.FormData.label: tr("general.token")
+            help: tr("help.token")
+            Kirigami.PasswordField {
+                id: token
+                text: secrets.token
+                onTextEdited: configurationChanged()
+                Layout.preferredWidth: Kirigami.Units.gridUnit * 18
+            }
         }
 
         Item {

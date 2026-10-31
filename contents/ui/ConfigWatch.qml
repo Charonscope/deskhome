@@ -7,6 +7,8 @@ import org.kde.kcmutils as KCM
 
 import "../code/i18n.mjs" as I18n
 
+import "components"
+
 // Watching Home Assistant as a whole, without tiles: weak batteries, devices that are gone,
 // motion sensors that hang, and Home Assistant's own notifications, repairs and updates
 KCM.SimpleKCM {
@@ -33,78 +35,71 @@ KCM.SimpleKCM {
             Kirigami.FormData.label: tr("battery.title")
         }
 
-        SpinBox {
+        HelpRow {
             Kirigami.FormData.label: tr("battery.setting")
-            from: 0
-            to: 100
-            stepSize: 5
-            value: cfg_batteryThreshold
-            textFromValue: v => v ? v + " %" : tr("battery.off")
-            valueFromText: t => parseInt(t) || 0
-            onValueModified: cfg_batteryThreshold = value
+            help: tr("battery.hint")
+            SpinBox {
+                from: 0
+                to: 100
+                stepSize: 5
+                value: cfg_batteryThreshold
+                textFromValue: v => v ? v + " %" : tr("battery.off")
+                valueFromText: t => parseInt(t) || 0
+                onValueModified: cfg_batteryThreshold = value
+            }
         }
 
-        Label {
-            text: tr("battery.hint")
-            wrapMode: Text.WordWrap
-            opacity: 0.7
-            font: Kirigami.Theme.smallFont
-            Layout.fillWidth: true
-            Layout.maximumWidth: Kirigami.Units.gridUnit * 20
-        }
-
-        // Watching Home Assistant as a whole, without tiles
         Item {
             Kirigami.FormData.isSection: true
             Kirigami.FormData.label: tr("watch.devices")
         }
 
-        ComboBox {
+        HelpRow {
             Kirigami.FormData.label: tr("problems.unavailableSetting")
-            textRole: "text"
-            valueRole: "value"
-            model: [
-                { value: 0, text: tr("battery.off") },
-                { value: 15, text: tr("problems.minutes", 15) },
-                { value: 30, text: tr("problems.minutes", 30) },
-                { value: 60, text: tr("item.hour") },
-                { value: 360, text: tr("item.hours", 6) },
-                { value: 1440, text: tr("problems.day") }
-            ]
-            Component.onCompleted: currentIndex = Math.max(0, indexOfValue(cfg_problemUnavailableMinutes))
-            onActivated: cfg_problemUnavailableMinutes = currentValue
+            help: tr("help.unavailable")
+            ComboBox {
+                textRole: "text"
+                valueRole: "value"
+                model: [
+                    { value: 0, text: tr("battery.off") },
+                    { value: 15, text: tr("problems.minutes", 15) },
+                    { value: 30, text: tr("problems.minutes", 30) },
+                    { value: 60, text: tr("item.hour") },
+                    { value: 360, text: tr("item.hours", 6) },
+                    { value: 1440, text: tr("problems.day") }
+                ]
+                Component.onCompleted: currentIndex = Math.max(0, indexOfValue(cfg_problemUnavailableMinutes))
+                onActivated: cfg_problemUnavailableMinutes = currentValue
+            }
         }
 
-        ComboBox {
+        HelpRow {
             Kirigami.FormData.label: tr("problems.stuckSetting")
-            textRole: "text"
-            valueRole: "value"
-            model: [
-                { value: 0, text: tr("battery.off") },
-                { value: 6, text: tr("item.hours", 6) },
-                { value: 12, text: tr("item.hours", 12) },
-                { value: 24, text: tr("problems.day") },
-                { value: 48, text: tr("item.days", 2) }
-            ]
-            Component.onCompleted: currentIndex = Math.max(0, indexOfValue(cfg_problemStuckHours))
-            onActivated: cfg_problemStuckHours = currentValue
+            help: tr("help.stuck")
+            ComboBox {
+                textRole: "text"
+                valueRole: "value"
+                model: [
+                    { value: 0, text: tr("battery.off") },
+                    { value: 6, text: tr("item.hours", 6) },
+                    { value: 12, text: tr("item.hours", 12) },
+                    { value: 24, text: tr("problems.day") },
+                    { value: 48, text: tr("item.days", 2) }
+                ]
+                Component.onCompleted: currentIndex = Math.max(0, indexOfValue(cfg_problemStuckHours))
+                onActivated: cfg_problemStuckHours = currentValue
+            }
         }
 
-        TextField {
-            id: problemIgnore
+        HelpRow {
             Kirigami.FormData.label: tr("problems.ignore")
-            placeholderText: tr("problems.ignorePlaceholder")
-            Layout.fillWidth: true
-            Layout.maximumWidth: Kirigami.Units.gridUnit * 20
-        }
-
-        Label {
-            text: tr("problems.ignoreHint")
-            wrapMode: Text.WordWrap
-            opacity: 0.7
-            font: Kirigami.Theme.smallFont
-            Layout.fillWidth: true
-            Layout.maximumWidth: Kirigami.Units.gridUnit * 20
+            help: tr("problems.ignoreHint")
+            enabled: cfg_problemUnavailableMinutes > 0 || cfg_problemStuckHours > 0
+            TextField {
+                id: problemIgnore
+                placeholderText: tr("problems.ignorePlaceholder")
+                Layout.preferredWidth: Kirigami.Units.gridUnit * 18
+            }
         }
 
         Item {
@@ -112,15 +107,20 @@ KCM.SimpleKCM {
             Kirigami.FormData.label: "Home Assistant"
         }
 
-        CheckBox {
-            id: haCounts
-            text: tr("ha.countsSetting")
+        HelpRow {
+            help: tr("help.haCounts")
+            CheckBox {
+                id: haCounts
+                text: tr("ha.countsSetting")
+            }
         }
 
-        CheckBox {
-            id: haPopups
-            text: tr("ha.popupsSetting")
+        HelpRow {
+            help: tr("help.haPopups")
+            CheckBox {
+                id: haPopups
+                text: tr("ha.popupsSetting")
+            }
         }
-
     }
 }

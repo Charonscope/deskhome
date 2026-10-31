@@ -45,49 +45,61 @@ KCM.SimpleKCM {
     Kirigami.FormLayout {
         Item {
             Kirigami.FormData.isSection: true
-            Kirigami.FormData.label: tr("look.colors")
+            Kirigami.FormData.label: tr("look.colorSourceTitle")
         }
 
-        ComboBox {
-            id: colorSource
+        HelpRow {
             Kirigami.FormData.label: tr("look.colorSource")
-            model: [
-                { value: "plasma", text: tr("look.source.plasma") },
-                { value: "ha", text: tr("look.source.ha") }
-            ]
-            textRole: "text"
-            valueRole: "value"
-            Component.onCompleted: currentIndex = Math.max(0, indexOfValue(cfg_colorSource))
-            onActivated: cfg_colorSource = currentValue
+            help: tr("help.colorSource")
+            ComboBox {
+                id: colorSource
+                model: [
+                    { value: "plasma", text: tr("look.source.plasma") },
+                    { value: "ha", text: tr("look.source.ha") }
+                ]
+                textRole: "text"
+                valueRole: "value"
+                Component.onCompleted: currentIndex = Math.max(0, indexOfValue(cfg_colorSource))
+                onActivated: cfg_colorSource = currentValue
+            }
         }
 
-        ComboBox {
-            id: haTheme
+        HelpRow {
             visible: cfg_colorSource === "ha"
-            enabled: !!haThemes
             Kirigami.FormData.label: tr("look.haTheme")
-            model: {
-                const def = haThemes ? Themes.themeName(haThemes, "", false) : ""
-                return [{ value: "", text: tr("look.haDefault", def || "…") }]
-                    .concat((haThemes ? Themes.themeNames(haThemes) : []).map(n => ({ value: n, text: n })))
+            help: tr("look.haHint")
+            ComboBox {
+                id: haTheme
+                enabled: !!haThemes
+                model: {
+                    const def = haThemes ? Themes.themeName(haThemes, "", false) : ""
+                    return [{ value: "", text: tr("look.haDefault", def || "…") }]
+                        .concat((haThemes ? Themes.themeNames(haThemes) : []).map(n => ({ value: n, text: n })))
+                }
+                textRole: "text"
+                valueRole: "value"
+                onModelChanged: currentIndex = Math.max(0, indexOfValue(cfg_haTheme))
+                onActivated: cfg_haTheme = currentValue
+                Layout.maximumWidth: Kirigami.Units.gridUnit * 20
             }
-            textRole: "text"
-            valueRole: "value"
-            onModelChanged: currentIndex = Math.max(0, indexOfValue(cfg_haTheme))
-            onActivated: cfg_haTheme = currentValue
-            Layout.maximumWidth: Kirigami.Units.gridUnit * 20
         }
 
         Label {
-            visible: cfg_colorSource === "ha"
-            text: haThemes ? tr("look.haHint") : tr("look.haNotConnected")
+            visible: cfg_colorSource === "ha" && !haThemes
+            text: tr("look.haNotConnected")
             wrapMode: Text.WordWrap
             opacity: 0.7
             Layout.maximumWidth: Kirigami.Units.gridUnit * 20
         }
 
-        RowLayout {
+        Item {
+            Kirigami.FormData.isSection: true
+            Kirigami.FormData.label: tr("look.fontColors")
+        }
+
+        HelpRow {
             Kirigami.FormData.label: tr("look.valueColor")
+            help: tr("look.colorHint")
             CheckBox {
                 id: valueCustomColor
                 text: tr("look.customColor")
@@ -96,49 +108,6 @@ KCM.SimpleKCM {
                 id: valueColor
                 enabled: valueCustomColor.checked
                 showAlphaChannel: false
-            }
-        }
-
-        RowLayout {
-            Kirigami.FormData.label: tr("look.secondColor")
-            CheckBox {
-                id: secondCustomColor
-                text: tr("look.customColor")
-            }
-            KQControls.ColorButton {
-                id: secondColor
-                enabled: secondCustomColor.checked
-                showAlphaChannel: false
-            }
-        }
-
-        // Own status colors instead of the theme's (OK / warning / critical)
-        RowLayout {
-            Kirigami.FormData.label: tr("look.levelColors")
-            CheckBox {
-                id: levelCustomColors
-                text: tr("look.customColor")
-            }
-            KQControls.ColorButton {
-                id: customOkColor
-                enabled: levelCustomColors.checked
-                showAlphaChannel: false
-                ToolTip.text: tr("look.levelOk")
-                ToolTip.visible: hovered
-            }
-            KQControls.ColorButton {
-                id: customWarnColor
-                enabled: levelCustomColors.checked
-                showAlphaChannel: false
-                ToolTip.text: tr("look.levelWarn")
-                ToolTip.visible: hovered
-            }
-            KQControls.ColorButton {
-                id: customCritColor
-                enabled: levelCustomColors.checked
-                showAlphaChannel: false
-                ToolTip.text: tr("look.levelCrit")
-                ToolTip.visible: hovered
             }
         }
 
@@ -155,12 +124,58 @@ KCM.SimpleKCM {
             }
         }
 
-        Label {
-            text: tr("look.colorHint")
-            wrapMode: Text.WordWrap
-            opacity: 0.7
-            Layout.maximumWidth: Kirigami.Units.gridUnit * 20
+        HelpRow {
+            Kirigami.FormData.label: tr("look.secondColor")
+            help: tr("help.secondColor")
+            CheckBox {
+                id: secondCustomColor
+                text: tr("look.customColor")
+            }
+            KQControls.ColorButton {
+                id: secondColor
+                enabled: secondCustomColor.checked
+                showAlphaChannel: false
+            }
         }
 
+        Item {
+            Kirigami.FormData.isSection: true
+            Kirigami.FormData.label: tr("look.statusColorsTitle")
+        }
+
+        // Own status colors instead of the theme's (OK / warning / critical)
+        HelpRow {
+            Kirigami.FormData.label: tr("look.levelColors")
+            help: tr("help.levelColors")
+            CheckBox {
+                id: levelCustomColors
+                text: tr("look.customColors")
+            }
+        }
+
+        RowLayout {
+            enabled: levelCustomColors.checked
+            Kirigami.FormData.label: tr("look.levelOk") + ":"
+            KQControls.ColorButton {
+                id: customOkColor
+                showAlphaChannel: false
+            }
+        }
+        RowLayout {
+            enabled: levelCustomColors.checked
+            Kirigami.FormData.label: tr("look.levelWarn") + ":"
+            KQControls.ColorButton {
+                id: customWarnColor
+                showAlphaChannel: false
+            }
+        }
+        RowLayout {
+            enabled: levelCustomColors.checked
+            Kirigami.FormData.label: tr("look.levelCrit") + ":"
+            KQControls.ColorButton {
+                id: customCritColor
+                showAlphaChannel: false
+            }
+        }
     }
 }

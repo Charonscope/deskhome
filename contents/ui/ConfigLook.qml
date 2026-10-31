@@ -32,33 +32,31 @@ KCM.SimpleKCM {
     function tr(key, ...args) { return I18n.tr(plasmoid.configuration.language, key, ...args) }
 
     Kirigami.FormLayout {
+        HelpRow {
+            Kirigami.FormData.label: tr("look.frame")
+            help: tr("look.bgHint")
+            CheckBox {
+                id: flat
+                text: tr("look.flat")
+            }
+        }
+
         Item {
             Kirigami.FormData.isSection: true
-            Kirigami.FormData.label: tr("look.tiles")
+            Kirigami.FormData.label: tr("look.background")
         }
 
-        CheckBox {
-            id: flat
-            Kirigami.FormData.label: tr("look.frame")
-            text: tr("look.flat")
-        }
-
-        Label {
-            text: tr("look.bgHint")
-            wrapMode: Text.WordWrap
-            opacity: 0.7
-            Layout.maximumWidth: Kirigami.Units.gridUnit * 20
-        }
-
-
-        ValueSlider {
-            id: tileOpacity
+        HelpRow {
             enabled: flat.checked
             Kirigami.FormData.label: tr("look.opacity")
-            from: 0
-            to: 100
-            stepSize: 5
-            suffix: " %"
+            help: tr("help.opacity")
+            ValueSlider {
+                id: tileOpacity
+                from: 0
+                to: 100
+                stepSize: 5
+                suffix: " %"
+            }
         }
 
         RowLayout {
@@ -85,6 +83,11 @@ KCM.SimpleKCM {
             suffix: " px"
         }
 
+        Item {
+            Kirigami.FormData.isSection: true
+            Kirigami.FormData.label: tr("look.borders")
+        }
+
         CheckBox {
             id: tileBorder
             enabled: flat.checked
@@ -92,44 +95,39 @@ KCM.SimpleKCM {
             text: tr("look.borderThin")
         }
 
-        CheckBox {
-            id: levelBorder
+        HelpRow {
             enabled: flat.checked
-            text: tr("look.levelBorder")
+            help: tr("help.levelBorder")
+            CheckBox {
+                id: levelBorder
+                text: tr("look.levelBorder")
+            }
         }
 
-        CheckBox {
-            id: activeFrame
+        HelpRow {
             enabled: flat.checked
-            text: tr("look.activeFrame")
+            help: tr("help.activeFrame")
+            CheckBox {
+                id: activeFrame
+                text: tr("look.activeFrame")
+            }
         }
-
 
         Item {
             Kirigami.FormData.isSection: true
             Kirigami.FormData.label: tr("look.layout")
         }
 
-        CheckBox {
-            id: animations
-            Kirigami.FormData.label: tr("look.animations")
-            text: tr("look.animationsText")
-        }
-
-        Label {
-            text: tr("look.animationsHint")
-            wrapMode: Text.WordWrap
-            opacity: 0.7
-            Layout.maximumWidth: Kirigami.Units.gridUnit * 20
-        }
-
-        ValueSlider {
-            id: tileScale
+        HelpRow {
             Kirigami.FormData.label: tr("look.size")
-            from: 70
-            to: 160
-            stepSize: 5
-            suffix: " %"
+            help: tr("help.size")
+            ValueSlider {
+                id: tileScale
+                from: 70
+                to: 160
+                stepSize: 5
+                suffix: " %"
+            }
         }
 
         ValueSlider {
@@ -141,28 +139,42 @@ KCM.SimpleKCM {
             suffix: " px"
         }
 
+        HelpRow {
+            Kirigami.FormData.label: tr("look.animations")
+            help: tr("look.animationsHint")
+            CheckBox {
+                id: animations
+                text: tr("look.animationsText")
+            }
+        }
 
         Item {
             Kirigami.FormData.isSection: true
             Kirigami.FormData.label: tr("look.compact")
         }
 
-        CheckBox {
-            id: compactScaleIconsToFit
-            Kirigami.FormData.label: tr("look.scaleIcons")
-            text: tr("look.scaleIconsText")
+        HelpRow {
+            Kirigami.FormData.label: tr("look.display")
+            help: tr("help.compactDisplay")
+            ComboBox {
+                model: [
+                    {value: "icon", label: tr("look.iconOnly")},
+                    {value: "icon-and-text", label: tr("look.iconText")}
+                ]
+                textRole: "label"
+                valueRole: "value"
+                Component.onCompleted: (currentIndex = indexOfValue(cfg_compactEntity))
+                onActivated: (cfg_compactEntity = currentValue)
+            }
         }
 
-        ComboBox {
-            model: [
-                {value: "icon", label: tr("look.iconOnly")},
-                {value: "icon-and-text", label: tr("look.iconText")}
-            ]
-            textRole: "label"
-            valueRole: "value"
-            Kirigami.FormData.label: tr("look.display")
-            Component.onCompleted: (currentIndex = indexOfValue(cfg_compactEntity))
-            onActivated: (cfg_compactEntity = currentValue)
+        HelpRow {
+            Kirigami.FormData.label: tr("look.scaleIcons")
+            help: tr("help.scaleIcons")
+            CheckBox {
+                id: compactScaleIconsToFit
+                text: tr("look.scaleIconsText")
+            }
         }
 
         ComboBox {

@@ -40,25 +40,28 @@ Kirigami.FormLayout {
         }
     }
 
-    RestorableComboBox {
-        readonly property int steps: 7
+    HelpRow {
         Kirigami.FormData.label: tr("item.precision")
         visible: !isNaN(+source.state) && !attributeSelector.enabled
-        // undefined = automatic (about three significant digits), -1 = exactly as HA sends it
-        model: [{
-            text: tr("item.precisionAuto", Formatter.formatIfNumber(source.state, Formatter.getDefaultPrecision(String(source.state ?? "")))),
-            value: undefined
-        }, {
-            text: tr("item.precisionRaw", source.state),
-            value: -1
-        }, ...Array.from({ length: steps }, (_, i) => ({
-            text: Formatter.formatIfNumber(source.state, i),
-            value: i
-        }))]
-        textRole: "text"
-        valueRole: "value"
-        onActivated: item.value_number_precision = currentValue
-        initialValue: item.value_number_precision
+        help: tr("help.item.precision")
+        RestorableComboBox {
+            readonly property int steps: 7
+            // undefined = automatic (about three significant digits), -1 = exactly as HA sends it
+            model: [{
+                text: tr("item.precisionAuto", Formatter.formatIfNumber(source.state, Formatter.getDefaultPrecision(String(source.state ?? "")))),
+                value: undefined
+            }, {
+                text: tr("item.precisionRaw", source.state),
+                value: -1
+            }, ...Array.from({ length: steps }, (_, i) => ({
+                text: Formatter.formatIfNumber(source.state, i),
+                value: i
+            }))]
+            textRole: "text"
+            valueRole: "value"
+            onActivated: item.value_number_precision = currentValue
+            initialValue: item.value_number_precision
+        }
     }
 
     CheckableFormControl {
@@ -81,11 +84,14 @@ Kirigami.FormLayout {
         Kirigami.FormData.label: tr("item.name")
     }
 
-    TextField {
-        text: item.heading || ''
-        placeholderText: tr("item.headingPlaceholder")
-        onTextChanged: item.heading = text.trim() || undefined
+    HelpRow {
         Kirigami.FormData.label: tr("item.heading")
+        help: tr("help.item.heading")
+        TextField {
+            text: item.heading || ''
+            placeholderText: tr("item.headingPlaceholder")
+            onTextChanged: item.heading = text.trim() || undefined
+        }
     }
 
     Row {
@@ -141,10 +147,13 @@ Kirigami.FormLayout {
         }
     }
 
-    CheckBox {
+    HelpRow {
         Kirigami.FormData.label: tr("item.notify")
-        checked: !!item.notify
-        onCheckedChanged: item.notify = checked
+        help: tr("help.item.notify")
+        CheckBox {
+            checked: !!item.notify
+            onCheckedChanged: item.notify = checked
+        }
     }
 
     // --- Tile options (DeskHome) ---
@@ -169,87 +178,82 @@ Kirigami.FormLayout {
         Kirigami.FormData.label: tr("item.tile")
     }
 
-    ComboBox {
+    HelpRow {
         Kirigami.FormData.label: tr("item.tileType")
-        textRole: "text"
-        valueRole: "value"
-        model: [
-            { value: "auto", text: tr("item.type.auto") },
-            { value: "sensor", text: tr("item.type.sensor") },
-            { value: "combo", text: tr("item.type.combo") },
-            { value: "switch", text: tr("item.type.switch") },
-            { value: "status", text: tr("item.type.status") },
-            { value: "thermostat", text: tr("item.type.thermostat") },
-            { value: "simple", text: tr("item.type.simple") }
-        ]
-        Component.onCompleted: currentIndex = Math.max(0, indexOfValue(item.tile || "auto"))
-        onActivated: {
-            item.tile = currentValue === "auto" ? undefined : currentValue
-            form.tileType = currentValue
+        help: tr("help.item.tileType")
+        ComboBox {
+            textRole: "text"
+            valueRole: "value"
+            model: [
+                { value: "auto", text: tr("item.type.auto") },
+                { value: "sensor", text: tr("item.type.sensor") },
+                { value: "combo", text: tr("item.type.combo") },
+                { value: "switch", text: tr("item.type.switch") },
+                { value: "status", text: tr("item.type.status") },
+                { value: "thermostat", text: tr("item.type.thermostat") },
+                { value: "simple", text: tr("item.type.simple") }
+            ]
+            Component.onCompleted: currentIndex = Math.max(0, indexOfValue(item.tile || "auto"))
+            onActivated: {
+                item.tile = currentValue === "auto" ? undefined : currentValue
+                form.tileType = currentValue
+            }
         }
     }
 
     property string tileType: item.tile || "auto"
 
-    TextField {
+    HelpRow {
         Kirigami.FormData.label: tr("item.secondEntity")
         visible: form.tileType === "combo"
-        text: item.second_entity_id || ""
-        placeholderText: "sensor.…"
-        onTextChanged: item.second_entity_id = text.trim() || undefined
-        Autocompletion {
-            model: form.entityChoices(e => e.startsWith("sensor.") || e.startsWith("number.") || e.startsWith("input_number."))
+        help: tr("item.secondHint")
+        TextField {
+            text: item.second_entity_id || ""
+            placeholderText: "sensor.…"
+            onTextChanged: item.second_entity_id = text.trim() || undefined
+            Autocompletion {
+                model: form.entityChoices(e => e.startsWith("sensor.") || e.startsWith("number.") || e.startsWith("input_number."))
+            }
         }
     }
 
-    Label {
-        visible: form.tileType === "combo"
-        text: tr("item.secondHint")
-        wrapMode: Text.WordWrap
-        opacity: 0.7
-        font: Kirigami.Theme.smallFont
-        Layout.maximumWidth: Kirigami.Units.gridUnit * 18
-    }
-
-    ComboBox {
+    HelpRow {
         Kirigami.FormData.label: tr("item.width")
-        textRole: "text"
-        valueRole: "value"
-        model: [
-            { value: 0.5, text: tr("item.widthHalf") },
-            { value: 1, text: "1" },
-            { value: 2, text: "2" },
-            { value: 3, text: "3" },
-            { value: 4, text: "4" }
-        ]
-        Component.onCompleted: currentIndex = Math.max(0, indexOfValue(+item.colspan || 1))
-        onActivated: item.colspan = currentValue === 1 ? undefined : currentValue
+        help: tr("item.widthHint")
+        ComboBox {
+            textRole: "text"
+            valueRole: "value"
+            model: [
+                { value: 0.5, text: tr("item.widthHalf") },
+                { value: 1, text: "1" },
+                { value: 2, text: "2" },
+                { value: 3, text: "3" },
+                { value: 4, text: "4" }
+            ]
+            Component.onCompleted: currentIndex = Math.max(0, indexOfValue(+item.colspan || 1))
+            onActivated: item.colspan = currentValue === 1 ? undefined : currentValue
+        }
     }
 
-    Label {
-        text: tr("item.widthHint")
-        wrapMode: Text.WordWrap
-        opacity: 0.7
-        font: Kirigami.Theme.smallFont
-        Layout.maximumWidth: Kirigami.Units.gridUnit * 18
-    }
-
-    ComboBox {
+    HelpRow {
         Kirigami.FormData.label: tr("item.history")
         visible: sourceIsNumber
-        textRole: "text"
-        valueRole: "value"
-        model: [
-            { value: 0, text: tr("item.historyOff") },
-            { value: 1, text: tr("item.hour") },
-            { value: 6, text: tr("item.hours", 6) },
-            { value: 12, text: tr("item.hours", 12) },
-            { value: 24, text: tr("item.hours", 24) },
-            { value: 48, text: tr("item.hours", 48) },
-            { value: 168, text: tr("item.days", 7) }
-        ]
-        Component.onCompleted: currentIndex = Math.max(0, indexOfValue(item.history_hours ?? 24))
-        onActivated: item.history_hours = currentValue === 24 ? undefined : currentValue
+        help: tr("help.item.history")
+        ComboBox {
+            textRole: "text"
+            valueRole: "value"
+            model: [
+                { value: 0, text: tr("item.historyOff") },
+                { value: 1, text: tr("item.hour") },
+                { value: 6, text: tr("item.hours", 6) },
+                { value: 12, text: tr("item.hours", 12) },
+                { value: 24, text: tr("item.hours", 24) },
+                { value: 48, text: tr("item.hours", 48) },
+                { value: 168, text: tr("item.days", 7) }
+            ]
+            Component.onCompleted: currentIndex = Math.max(0, indexOfValue(item.history_hours ?? 24))
+            onActivated: item.history_hours = currentValue === 24 ? undefined : currentValue
+        }
     }
 
     CheckBox {
@@ -259,10 +263,15 @@ Kirigami.FormLayout {
         onCheckedChanged: item.graph_log = checked || undefined
     }
 
-    Row {
+    Item {
+        Kirigami.FormData.isSection: true
+        Kirigami.FormData.label: tr("item.statusTitle")
+    }
+
+    HelpRow {
         Kirigami.FormData.label: tr("item.warn")
         visible: sourceIsNumber
-        spacing: Kirigami.Units.smallSpacing
+        help: tr("help.item.thresholds")
         NumberField { key: "warn_below" }
         NumberField { key: "warn_above" }
     }
@@ -275,26 +284,35 @@ Kirigami.FormLayout {
         NumberField { key: "crit_above" }
     }
 
-    TextField {
+    HelpRow {
         Kirigami.FormData.label: tr("item.okStates")
-        text: item.ok_states || ''
-        placeholderText: sourceIsNumber ? "" : tr("item.okStatesHint")
         visible: !sourceIsNumber
-        onTextChanged: item.ok_states = text.trim() || undefined
+        help: tr("help.item.okStates")
+        TextField {
+            text: item.ok_states || ''
+            placeholderText: sourceIsNumber ? "" : tr("item.okStatesHint")
+            onTextChanged: item.ok_states = text.trim() || undefined
+        }
     }
 
-    CheckBox {
+    HelpRow {
         Kirigami.FormData.label: tr("item.hideWhenOk")
-        checked: !!item.hide_when_ok
-        onCheckedChanged: item.hide_when_ok = checked || undefined
+        help: tr("help.item.hideWhenOk")
+        CheckBox {
+            checked: !!item.hide_when_ok
+            onCheckedChanged: item.hide_when_ok = checked || undefined
+        }
     }
 
     // Status shown in the colors instead of (or besides) the border, e.g. a price in three colors
-    CheckBox {
+    HelpRow {
         Kirigami.FormData.label: tr("item.statusShow")
-        text: tr("item.levelOk")
-        checked: !!item.level_ok
-        onCheckedChanged: item.level_ok = checked || undefined
+        help: tr("item.statusHint")
+        CheckBox {
+            text: tr("item.levelOk")
+            checked: !!item.level_ok
+            onCheckedChanged: item.level_ok = checked || undefined
+        }
     }
     CheckBox {
         text: tr("item.levelLabel")
@@ -306,13 +324,6 @@ Kirigami.FormLayout {
         checked: !!item.blink
         onCheckedChanged: item.blink = checked || undefined
     }
-    Label {
-        text: tr("item.statusHint")
-        wrapMode: Text.WordWrap
-        opacity: 0.7
-        font: Kirigami.Theme.smallFont
-        Layout.maximumWidth: Kirigami.Units.gridUnit * 18
-    }
 
     // Own colors of this tile; unticked = the global colors from Appearance
     Item {
@@ -320,7 +331,7 @@ Kirigami.FormLayout {
         Kirigami.FormData.label: tr("item.colors")
     }
 
-    component ColorOverride: RowLayout {
+    component ColorOverride: HelpRow {
         property string key
         // starting color when the own color is switched on
         property color fallback: Kirigami.Theme.textColor
@@ -342,6 +353,7 @@ Kirigami.FormLayout {
     ColorOverride {
         key: "value_color"
         Kirigami.FormData.label: tr("look.valueColor")
+        help: tr("item.colorsHint")
     }
     ColorOverride {
         key: "label_color"
@@ -390,13 +402,6 @@ Kirigami.FormLayout {
             opacity: ownOpacity.checked ? 1 : 0.5
         }
     }
-    Label {
-        text: tr("item.colorsHint")
-        wrapMode: Text.WordWrap
-        opacity: 0.7
-        font: Kirigami.Theme.smallFont
-        Layout.maximumWidth: Kirigami.Units.gridUnit * 18
-    }
 
     component ServiceSelector: CheckableFormControl {
         visible: !!serviceSelector.count
@@ -415,11 +420,18 @@ Kirigami.FormLayout {
         item[action] = Object.assign({}, item[action], part)
     }
 
-    CheckBox {
-        Kirigami.FormData.label: tr("item.readOnly")
-        text: tr("item.readOnlyText")
-        checked: !!item.read_only
-        onCheckedChanged: item.read_only = checked || undefined
+    Item {
+        Kirigami.FormData.isSection: true
+        Kirigami.FormData.label: tr("item.controlTitle")
+    }
+
+    HelpRow {
+        help: tr("help.item.actions")
+        CheckBox {
+            text: tr("item.readOnlyText")
+            checked: !!item.read_only
+            onCheckedChanged: item.read_only = checked || undefined
+        }
     }
 
     ServiceSelector {
