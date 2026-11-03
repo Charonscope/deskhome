@@ -13,7 +13,9 @@
   - **Thermostat** – current and target temperature, scroll to change the target
   - **Light / switch** – click to toggle, scroll to dim, icon in the light's color
   - **Status light** – green / yellow / red, e.g. for unavailable devices
+  - **Gauge** – a round arc with the value in the middle and color ranges, e.g. for a price, a usage in % or a thermostat
   - **Simple** – the classic icon + value tile
+- **Color ranges per tile** – from–to with a color each (e.g. good / normal / bad); they color the value, the history line and the gauge
 - **Thresholds** for warning and critical (below/above), custom “OK” states, colored tile border on problems; optionally value and label in the status color (three colors, e.g. for an energy price), own status colors and blinking tiles
 - **“Only show when abnormal”** – such tiles stay hidden while everything is fine; a summary tile counts the hidden checks
 - **Watching without tiles** (Watching page):
@@ -137,7 +139,8 @@ GNU General Public License v3.0 – see [LICENSE](LICENSE).
 ## Funktionen
 
 - **Kachel-Raster**, passt sich der Widget-Größe an; Kacheln ½ bis 4 Spalten breit, optional mit **Überschriften**
-- **Kachel-Typ automatisch** je Entity, pro Kachel änderbar: Sensor mit Verlauf (1 Stunde bis 7 Tage, Min/Max, Trendpfeil), Kombikachel (z. B. Temperatur + Luftfeuchte), Thermostat (Mausrad stellt die Solltemperatur), Licht/Schalter (Klick schaltet, Mausrad dimmt), Status-Ampel, Einfach
+- **Kachel-Typ automatisch** je Entity, pro Kachel änderbar: Sensor mit Verlauf (1 Stunde bis 7 Tage, Min/Max, Trendpfeil), Kombikachel (z. B. Temperatur + Luftfeuchte), Thermostat (Mausrad stellt die Solltemperatur), Licht/Schalter (Klick schaltet, Mausrad dimmt), Status-Ampel, **Rundanzeige (Gauge)** mit Farbbereichen, Einfach
+- **Farbbereiche pro Kachel** – von–bis mit je einer Farbe (z. B. gut / normal / schlecht); sie färben Wert, Verlaufslinie und Gauge
 - **Schwellen** für Warnung und Kritisch, eigene OK-Zustände, farbiger Rand bei Problemen; wahlweise Wert und Beschriftung in Statusfarbe (drei Farben, z. B. für einen Strompreis), eigene Statusfarben und blinkende Kacheln
 - **„Nur bei Auffälligkeit zeigen“** mit Sammelkachel für alle unauffälligen Prüfungen
 - **Überwachung ohne Kacheln** (Seite *Überwachung*):

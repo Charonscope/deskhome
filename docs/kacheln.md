@@ -35,6 +35,7 @@ Bei *Kachel-Typ: Automatisch* wählt DeskHome den Typ anhand der Entity. Pro Kac
 | **Licht / Schalter** | `light`, `switch`, `fan`, `input_boolean`, `cover`, `siren`, `humidifier` | Zustand, Icon in der Lichtfarbe, Helligkeit | Klick schaltet, Mausrad dimmt Lichter |
 | **Thermostat** | `climate` | Ist- und Solltemperatur | Mausrad stellt die Solltemperatur |
 | **Status-Ampel** | `binary_sensor` | grün / gelb / rot | Klick öffnet den Verlauf in HA |
+| **Rundanzeige (Gauge)** | – (selbst auswählen) | Bogen über 240° mit dem Wert in der Mitte, die Farbbereiche als Spur; Thermostate zeigen ihre Ist-Temperatur mit dem Ziel darunter | Klick öffnet den Verlauf in HA |
 | **Einfach (wie Original)** | alles andere | Icon + Wert | wie eingestellt |
 
 ## Kachel-Einstellungen
@@ -92,6 +93,12 @@ Bei Problemen bekommt die Kachel zusätzlich einen farbigen Rand; abschalten unt
 
 Lichter und Schalter bekommen automatisch *Umschalten* (Klick) und *Helligkeit* (Mausrad), wenn nichts eingestellt ist. Sensor-, Kombi- und Status-Kacheln ohne Klick-Aktion öffnen den Verlauf in Home Assistant.
 
+### Farbbereiche
+
+Jeder Bereich gibt dem Wert eine eigene Farbe: *von*, *bis* und eine Farbe. *Von* gehört zum Bereich, *bis* nicht mehr; ein leeres Feld heißt offen. *Bereich hinzufügen* schließt an den letzten Bereich an (erst grün, dann orange, dann rot). Die Farbe gilt für Wert, Verlaufslinie und Rundanzeige, mit *Beschriftung in Statusfarbe* auch für den Namen. Warnung und Kritisch haben Vorrang.
+
+Bei einer **Rundanzeige** legt *Bogen von – bis (voll)* (direkt unter dem Kachel-Typ) fest, wo der Bogen beginnt und welcher Wert ihn ganz füllt, z. B. 0 und 1000 für einen Internet-Download in Mbit/s. Leer: die äußeren Grenzen der Bereiche, bei Thermostaten deren einstellbare Temperaturen, sonst 0 bis 100.
+
 ### Farben dieser Kachel
 
 Schriftfarbe Messwert, Schriftfarbe Beschriftung, Farbe zweiter Wert und Linie zweiter Wert (Kombikachel), Linienfarbe, Hintergrundfarbe und Deckkraft Hintergrund: Mit dem Haken *Eigene Farbe* daneben gilt die Farbe nur für diese Kachel. Ohne Haken gelten die Werte unter *Farben* und *Kachelstil*. Warn- und Fehlerfarben haben immer Vorrang. Hintergrund und Deckkraft wirken nur beim eigenen Kachelstil.
@@ -120,6 +127,9 @@ Entity: der Leistungssensor (W) → *Warnung über:* `2000` → *Kritisch über:
 
 **Strompreis in drei Farben**
 Entity: der Preis-Sensor → *Warnung über:* `0,30` → *Kritisch über:* `0,40` → *Status zeigen:* *Wert im OK-Bereich in OK-Farbe* anhaken (wer mag, auch *Beschriftung in Statusfarbe*). Unter 0,30 ist der Preis grün, bis 0,40 gelb, darüber rot. Den farbigen Rand unter *Kachelstil* abschalten, wenn nur die Farben gewünscht sind.
+
+**Rundanzeige für den Strompreis**
+Entity: der Preis-Sensor → *Kachel-Typ: Rundanzeige (Gauge)* → *Bogen von – bis:* `0` und `0,50` → *Farbbereiche:* offen–`0,25` grün, `0,25`–`0,33` orange, `0,33`–offen rot.
 
 **Gefriertruhe**
 Entity: der Gefriertruhen-Sensor → *Warnung über:* `-16` → *Kritisch über:* `-12` → *Nur bei Auffälligkeit zeigen*.

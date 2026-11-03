@@ -35,6 +35,7 @@ With *Tile type: Automatic* DeskHome picks the type from the entity. You can cha
 | **Light / switch** | `light`, `switch`, `fan`, `input_boolean`, `cover`, `siren`, `humidifier` | state, icon in the light's color, brightness | click toggles, scroll wheel dims lights |
 | **Thermostat** | `climate` | current and target temperature | scroll wheel changes the target temperature |
 | **Status light** | `binary_sensor` | green / yellow / red | click opens the history in HA |
+| **Gauge** | – (choose it yourself) | a 240° arc with the value in the middle, the color ranges as the track; thermostats show their current temperature with the target below | click opens the history in HA |
 | **Simple (like original)** | everything else | icon + value | as configured |
 
 ## Tile settings
@@ -92,6 +93,12 @@ Problems also get a colored tile border; switch it off under *Tile style → Col
 
 Lights and switches get *toggle* (click) and *brightness* (scroll) automatically when nothing is set. Sensor, combo and status tiles without a click action open the history in Home Assistant.
 
+### Color ranges
+
+Each range gives the value its own color: *from*, *to* and a color. *From* belongs to the range, *to* no longer does; an empty field means open. *Add range* continues from the last range (green, then orange, then red). The color applies to the value, the history line and the gauge, and with *label in the status color* to the name too. Warning and critical take precedence.
+
+For a **gauge**, *Arc from – to (full)* (right under the tile type) sets where the arc starts and what fills it completely, e.g. 0 and 1000 for an internet download in Mbit/s. Empty: the outer ends of the ranges, for thermostats their settable temperatures, otherwise 0 to 100.
+
 ### Colors of this tile
 
 Value font color, label font color, second value color and its line color (combo tile), line color, background color and background opacity: tick *Custom color* next to one of them to override the *Colors* and *Tile style* settings for this tile only. Unticked, those pages apply. Warning and error colors always take precedence. Background and opacity only work with the own tile style.
@@ -120,6 +127,9 @@ Entity: the power sensor (W) → *Warning above:* `2000` → *Critical above:* `
 
 **Energy price in three colors**
 Entity: the price sensor → *Warning above:* `0.30` → *Critical above:* `0.40` → *Show status:* tick *value in the OK color* (and *label in the status color* if you like). Below 0.30 the price is green, up to 0.40 yellow, above that red. Switch off the colored border under *Tile style* if you only want the colors.
+
+**Gauge for an energy price**
+Entity: the price sensor → *Tile type: Gauge* → *Arc from – to:* `0` and `0.50` → *Color ranges:* open–`0.25` green, `0.25`–`0.33` orange, `0.33`–open red.
 
 **Freezer temperature**
 Entity: the freezer sensor → *Warning above:* `-16` → *Critical above:* `-12` → *Only show when abnormal*.
