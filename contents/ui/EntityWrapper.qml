@@ -13,7 +13,7 @@ MouseArea {
     // thermostats have no click action but take the scroll wheel
     // sensors without an own click action open their history in Home Assistant
     readonly property bool opensHistory: sourceIndex >= 0 && !default_action?.service
-        && ["sensor", "combo", "status"].includes(model.kind) && !!root.url
+        && ["sensor", "combo", "status", "gauge"].includes(model.kind) && !!root.url
     readonly property bool interactive: !!actions.length || model.kind === "thermostat" && !readOnly || opensHistory
     // "Seen" in the right-click menu: no border, pulse or blinking until the value was OK again
     readonly property bool quiet: { root.acknowledged; return root.isAcknowledged(model.entity_id) }

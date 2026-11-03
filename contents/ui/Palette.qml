@@ -38,13 +38,17 @@ QtObject {
 
     // A tile's own colors (set in its settings) win over the global ones; empty = global
     function tileValue(e) { return e?.value_color || value }
-    // the label takes the status color when the tile asks for it (OK only with "value in OK color")
-    function labelLeveled(e) { return !!e?.level_label && (e.level > 0 || !!e.level_ok) }
-    function tileLabel(e) { return labelLeveled(e) ? levelColor(e.level, ok) : (e?.label_color || label) }
+    // the color while there is no warning: the tile's color range the value lies in, else the
+    // OK color when the tile asks for it ("value in OK color"), else ''
+    function okOrRange(e) { return e?.range_color || (e?.level_ok ? ok : "") }
+    // the label takes the status/range color when the tile asks for it
+    function labelLeveled(e) { return !!e?.level_label && (e.level > 0 || !!okOrRange(e)) }
+    function tileLabel(e) { return labelLeveled(e) ? levelColor(e.level, okOrRange(e)) : (e?.label_color || label) }
     function tileLabelOpacity(e) { return labelLeveled(e) || e?.label_color ? 1 : labelOpacity }
-    // the large value: status color, or the OK color while in range when the tile asks for it
-    function tileLevelValue(e) { return levelColor(e?.level, e?.level_ok ? ok : tileValue(e)) }
-    function tileGraph(e) { return e?.graph_color || graph }
+    // the large value: status color, else range or OK color, else the value color
+    function tileLevelValue(e) { return levelColor(e?.level, okOrRange(e) || tileValue(e)) }
+    // history line: in the range color while the value lies in a range
+    function tileGraph(e) { return e?.range_color || e?.graph_color || graph }
     function tileSecond(e) { return e?.second_color || second }
     function tileSecondGraph(e) { return e?.second_graph_color || tileSecond(e) }
 

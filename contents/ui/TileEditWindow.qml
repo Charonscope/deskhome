@@ -33,6 +33,10 @@ Window {
     height: Kirigami.Units.gridUnit * 32
     minimumWidth: Kirigami.Units.gridUnit * 24
     minimumHeight: Kirigami.Units.gridUnit * 16
+    // the application color scheme like the settings dialog, not the Plasma theme the widget
+    // inherits: with a dark Plasma theme and light application colors the labels were dark on dark
+    Kirigami.Theme.colorSet: Kirigami.Theme.Window
+    Kirigami.Theme.inherit: false
     color: Kirigami.Theme.backgroundColor
     flags: Qt.Dialog
 

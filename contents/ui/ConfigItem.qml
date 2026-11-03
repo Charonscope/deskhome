@@ -191,6 +191,7 @@ Kirigami.FormLayout {
                 { value: "switch", text: tr("item.type.switch") },
                 { value: "status", text: tr("item.type.status") },
                 { value: "thermostat", text: tr("item.type.thermostat") },
+                { value: "gauge", text: tr("item.type.gauge") },
                 { value: "simple", text: tr("item.type.simple") }
             ]
             Component.onCompleted: currentIndex = Math.max(0, indexOfValue(item.tile || "auto"))
@@ -323,6 +324,86 @@ Kirigami.FormLayout {
         text: tr("item.blink")
         checked: !!item.blink
         onCheckedChanged: item.blink = checked || undefined
+    }
+
+    // Color ranges: from–to with a color each; they color value, line and gauge arc
+    Item {
+        Kirigami.FormData.isSection: true
+        Kirigami.FormData.label: tr("item.rangesTitle")
+    }
+
+    HelpRow {
+        Kirigami.FormData.label: tr("item.gaugeScale")
+        visible: form.tileType === "gauge"
+        help: tr("help.item.gaugeScale")
+        NumberField { key: "gauge_min" }
+        Label { text: "–" }
+        NumberField { key: "gauge_max" }
+    }
+
+    // edited as a copy; every change is written back to the tile (empty list = no ranges)
+    property var rangeList: (item.ranges || []).map(r => Object.assign({}, r))
+    function setRanges(list) {
+        rangeList = list
+        item.ranges = list.length ? list.map(r => Object.assign({}, r)) : undefined
+    }
+    function updateRange(i, changes) {
+        const list = rangeList.map(r => Object.assign({}, r))
+        Object.assign(list[i], changes)
+        setRanges(list)
+    }
+
+    Repeater {
+        model: form.rangeList.length
+        delegate: RowLayout {
+            required property int index
+            readonly property var range: form.rangeList[index] || {}
+            Kirigami.FormData.label: index === 0 ? tr("item.ranges") : ""
+            spacing: Kirigami.Units.smallSpacing
+            TextField {
+                text: range.from ?? ""
+                placeholderText: tr("item.rangeOpen")
+                implicitWidth: Kirigami.Units.gridUnit * 5
+                validator: RegularExpressionValidator { regularExpression: /^-?\d*([.,]\d*)?$/ }
+                onEditingFinished: form.updateRange(index, { from: form.parseNumber(text) })
+            }
+            Label { text: "–" }
+            TextField {
+                text: range.to ?? ""
+                placeholderText: tr("item.rangeOpen")
+                implicitWidth: Kirigami.Units.gridUnit * 5
+                validator: RegularExpressionValidator { regularExpression: /^-?\d*([.,]\d*)?$/ }
+                onEditingFinished: form.updateRange(index, { to: form.parseNumber(text) })
+            }
+            KQControls.ColorButton {
+                color: range.color || "#4caf50"
+                showAlphaChannel: false
+                onAccepted: c => form.updateRange(index, { color: c.toString() })
+            }
+            ToolButton {
+                icon.name: "list-remove"
+                text: tr("item.removeRange")
+                display: AbstractButton.IconOnly
+                ToolTip.text: text
+                ToolTip.visible: hovered
+                onClicked: form.setRanges(form.rangeList.filter((_, i) => i !== index))
+            }
+        }
+    }
+
+    HelpRow {
+        Kirigami.FormData.label: form.rangeList.length ? "" : tr("item.ranges")
+        help: tr("help.item.ranges")
+        Button {
+            icon.name: "list-add"
+            text: tr("item.addRange")
+            // new ranges follow on from the last one: green, then orange, then red
+            onClicked: {
+                const colors = ["#4caf50", "#ff9800", "#e53935"]
+                const last = form.rangeList[form.rangeList.length - 1]
+                form.setRanges(form.rangeList.concat([{ from: last?.to, color: colors[Math.min(form.rangeList.length, 2)] }]))
+            }
+        }
     }
 
     // Own colors of this tile; unticked = the global colors from Appearance

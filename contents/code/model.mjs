@@ -1,6 +1,7 @@
 import { isActiveState } from "states.mjs"
 import { levelOf } from "levels.mjs"
 import { tileKind, historyHoursOf, fallbackIcon } from "defaults.mjs"
+import { rangesOf, rangeColor, gaugeScale } from "ranges.mjs"
 
 export function EntityUpdate(config = {}, update = {}, entity = {}, options = {}) {
     this.attributes = Object.assign({}, entity.attributes, update.a)
@@ -14,6 +15,8 @@ export function EntityUpdate(config = {}, update = {}, entity = {}, options = {}
     this.kind = tileKind(config, this.state)
     this.level = levelOf(config, this)
     this.num = this.state !== '' && !isNaN(+this.state) ? +this.state : NaN
+    // color of the tile's own range the value lies in ('' = none)
+    this.range_color = rangeColor(rangesOf(config), this.num)
     this.unit = this.attributes.unit_of_measurement || ''
     this.device_class = this.attributes.device_class || ''
     if (!this.icon) this.icon = fallbackIcon(config.domain, this.device_class, this.active)
@@ -85,6 +88,12 @@ export function Entity(config = {}, data = {}, options = {}) {
     this.blink = !!config.blink
     // history graph on a logarithmic scale
     this.graph_log = !!config.graph_log
+    // color ranges as JSON (arrays turn into sub-models in a ListModel) and the gauge scale
+    const ranges = rangesOf(config)
+    this.ranges = JSON.stringify(ranges)
+    const scale = gaugeScale(config, ranges)
+    this.gauge_min = scale.min
+    this.gauge_max = scale.max
     this.value2 = ''
     this.num2 = NaN
 }
@@ -145,6 +154,9 @@ export function ConfigEntity(config = {}) {
     this.level_label = config.level_label
     this.blink = config.blink
     this.graph_log = config.graph_log
+    this.ranges = config.ranges
+    this.gauge_min = config.gauge_min
+    this.gauge_max = config.gauge_max
 }
 
 function addActionProperty(o, name) {

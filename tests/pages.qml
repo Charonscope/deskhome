@@ -32,7 +32,8 @@ ApplicationWindow {
         ["ConfigLook.qml", {}],
         ["ConfigColors.qml", {}],
         ["ConfigValues.qml", {}],
-        ["ConfigItem.qml", { item: { entity_id: "light.test", domain: "light", colspan: 0.5 } }]
+        ["ConfigItem.qml", { item: { entity_id: "light.test", domain: "light", colspan: 0.5 } }],
+        ["ConfigItem.qml", { item: { entity_id: "sensor.price", domain: "sensor", tile: "gauge", ranges: [{ to: 0.25, color: "#4caf50" }, { from: 0.25, to: 0.33, color: "#ff9800" }, { from: 0.33, color: "#e53935" }] } }]
     ]
     property int done: 0
     property int failed: 0

@@ -128,7 +128,7 @@ ApplicationWindow {
         function history(id) { return id.startsWith("sensor.") ? points : [] }
         property ListModel itemModel: ListModel {
             Component.onCompleted: {
-                const base = { attributes: {}, default_action: {}, dclick_action: {}, scroll_action: {}, display: 1, hide_when_ok: false, light_color: "", brightness_pct: -1, device_class: "", unit: "", attribute: "", second_entity_id: "", value2: "", num2: NaN, current_temp: NaN, target_temp: NaN, temp_min: 7, temp_max: 35, temp_step: 0.5, current_humidity: NaN, hvac_action: "", heading: "", last_changed: 0, fan_pct: -1, value_color: "", label_color: "", second_color: "", graph_color: "", bg_color: "", bg_opacity: -1, second_graph_color: "", read_only: false, level_ok: false, level_label: false, blink: false, graph_log: false }
+                const base = { attributes: {}, default_action: {}, dclick_action: {}, scroll_action: {}, display: 1, hide_when_ok: false, light_color: "", brightness_pct: -1, device_class: "", unit: "", attribute: "", second_entity_id: "", value2: "", num2: NaN, current_temp: NaN, target_temp: NaN, temp_min: 7, temp_max: 35, temp_step: 0.5, current_humidity: NaN, hvac_action: "", heading: "", last_changed: 0, fan_pct: -1, value_color: "", label_color: "", second_color: "", graph_color: "", bg_color: "", bg_opacity: -1, second_graph_color: "", read_only: false, level_ok: false, level_label: false, blink: false, graph_log: false, range_color: "", ranges: "[]", gauge_min: 0, gauge_max: 100 }
                 const add = o => append(Object.assign({}, base, o))
                 add({ entity_id: "sensor.outside", name: "Outside", kind: "sensor", value: "9.6 °C", num: 9.6, state: "9.6", level: 0, icon: "mdi:thermometer", colspan: 1, history_hours: 24, domain: "sensor", active: false, graph_log: true })
                 add({ entity_id: "sensor.humidity", name: "Outside humidity", kind: "sensor", value: "63%", num: 63, state: "63", level: 0, icon: "mdi:water-percent", colspan: 1, history_hours: 24, domain: "sensor", active: false })
@@ -137,6 +137,8 @@ ApplicationWindow {
                 add({ entity_id: "sensor.battery_home", name: "Home battery", kind: "simple", value: "41%", num: 41, state: "41", level: 0, icon: "mdi:battery", colspan: 1, history_hours: 0, domain: "sensor", active: false, value_color: "#ff0000", bg_color: "#123456", bg_opacity: 100 })
                 // value and label in the OK color while in range (three-color price), display only
                 add({ entity_id: "sensor.price", name: "Energy price", kind: "simple", value: "0.21 €", num: 0.21, state: "0.21", level: 0, icon: "mdi:currency-eur", colspan: 1, history_hours: 0, domain: "sensor", active: false, level_ok: true, level_label: true, read_only: true })
+                // gauge with color ranges: 0.31 lies in the orange range
+                add({ entity_id: "sensor.price_gauge", name: "Price gauge", kind: "gauge", value: "0.31 €", num: 0.31, state: "0.31", level: 0, icon: "mdi:gauge", colspan: 1, history_hours: 0, domain: "sensor", active: false, range_color: "#ff9800", gauge_min: 0, gauge_max: 0.5, ranges: JSON.stringify([{ to: 0.25, color: "#4caf50" }, { from: 0.25, to: 0.33, color: "#ff9800" }, { from: 0.33, color: "#e53935" }]) })
                 add({ entity_id: "sensor.fan_rpm", name: "Fan speed", kind: "sensor", value: "1000 rpm", num: 1000, unit: "rpm", state: "1000", level: 0, icon: "mdi:fan", colspan: 1, history_hours: 0, domain: "sensor", active: false })
                 add({ entity_id: "climate.living", heading: "Heating", name: "Living room", kind: "thermostat", value: "Auto", num: NaN, state: "auto", level: 0, icon: "mdi:thermostat", colspan: 1, history_hours: 0, domain: "climate", active: false, current_temp: 21.9, target_temp: 21, current_humidity: 52, hvac_action: "heating" })
                 add({ entity_id: "light.desk", heading: "Lights", name: "Desk lamp", kind: "switch", value: "on", num: NaN, state: "on", level: 0, icon: "mdi:lightbulb", colspan: 0.5, history_hours: 0, domain: "light", active: true, brightness_pct: 60, light_color: "#ffcc66" })
@@ -182,7 +184,7 @@ ApplicationWindow {
 
     readonly property var valueTexts: ["12.4 °C", "23.7 °C", "45%", "1000 rpm"]
     readonly property var expectedTexts: ["12.4 °C", "Outside", "Outside humidity", "Desk climate", "45%", "Home battery", "41%", "Fan speed", "1000 rpm", "Heating", "Lights", "Weak batteries", "Hall sensor battery", "8 %", "Front door battery", "Radiator battery", "low", "Living room", "heating", "Desk lamp", "Kitchen", "Hallway motion", "unavailable · 5 min ago", "Late tile", "1 more check OK",
-        "Problems", "Hue motion sensor", "unavailable · 3 h ago", "Kitchen motion", "stuck on “on” · 2 d ago", "Notifications: 1", "Repairs: 2", "Updates: 1"]
+        "Problems", "Hue motion sensor", "unavailable · 3 h ago", "Kitchen motion", "stuck on “on” · 2 d ago", "Notifications: 1", "Repairs: 2", "Updates: 1", "Price gauge", "0.31 €"]
 
     FullRepresentation {
         id: view
@@ -213,6 +215,7 @@ ApplicationWindow {
             const okColor = String(palette.ok)
             if (colors["0.21 €"] !== okColor) problems.push("value in OK color: " + colors["0.21 €"] + " instead of " + okColor)
             if (colors["Energy price"] !== okColor) problems.push("label in status color: " + colors["Energy price"] + " instead of " + okColor)
+            if (colors["0.31 €"] !== "#ff9800") problems.push("gauge value not in its range color: " + colors["0.31 €"])
             let ownBackground = false
             const walkBg = item => {
                 if (item.radius !== undefined && item.border !== undefined && String(item.color) === "#123456") ownBackground = true

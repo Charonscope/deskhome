@@ -180,7 +180,9 @@ PlasmaExtras.Representation {
                         }
                         const span = Math.min(Math.round((e.colspan || 1) * 2), columns)
                         // only sensors with a graph need the full height
-                        const height = (e.kind === "sensor" || e.kind === "combo") && e.history_hours > 0 || e.kind === "thermostat" ? tileHeight
+                        // a gauge needs more height for a readable arc
+                        const height = e.kind === "gauge" ? Math.round(tileHeight * 1.5)
+                            : (e.kind === "sensor" || e.kind === "combo") && e.history_hours > 0 || e.kind === "thermostat" ? tileHeight
                             : e.kind === "sensor" || e.kind === "combo" ? Math.max(compactTileHeight, valueTileHeight)
                             : compactTileHeight
                         result.push(put(span, height))
@@ -302,6 +304,7 @@ PlasmaExtras.Representation {
                                     case "switch": return "tiles/SwitchTile.qml"
                                     case "status": return "tiles/StatusTile.qml"
                                     case "thermostat": return "tiles/ThermostatTile.qml"
+                                    case "gauge": return "tiles/GaugeTile.qml"
                                 }
                                 return "EntityDelegateTile.qml"
                             }
@@ -701,6 +704,9 @@ PlasmaExtras.Representation {
             property int index: -1
             property string question
             title: root.tr("menu.removeTitle")
+            // application colors, not the Plasma theme (see TileEditWindow)
+            Kirigami.Theme.colorSet: Kirigami.Theme.Window
+            Kirigami.Theme.inherit: false
             flags: Qt.Dialog
             modality: Qt.ApplicationModal
             color: Kirigami.Theme.backgroundColor
