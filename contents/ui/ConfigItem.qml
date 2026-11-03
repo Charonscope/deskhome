@@ -204,6 +204,16 @@ Kirigami.FormLayout {
 
     property string tileType: item.tile || "auto"
 
+    // right under the tile type, so the full-scale value is easy to find
+    HelpRow {
+        Kirigami.FormData.label: tr("item.gaugeScale")
+        visible: form.tileType === "gauge"
+        help: tr("help.item.gaugeScale")
+        NumberField { key: "gauge_min" }
+        Label { text: "–" }
+        NumberField { key: "gauge_max" }
+    }
+
     HelpRow {
         Kirigami.FormData.label: tr("item.secondEntity")
         visible: form.tileType === "combo"
@@ -330,15 +340,6 @@ Kirigami.FormLayout {
     Item {
         Kirigami.FormData.isSection: true
         Kirigami.FormData.label: tr("item.rangesTitle")
-    }
-
-    HelpRow {
-        Kirigami.FormData.label: tr("item.gaugeScale")
-        visible: form.tileType === "gauge"
-        help: tr("help.item.gaugeScale")
-        NumberField { key: "gauge_min" }
-        Label { text: "–" }
-        NumberField { key: "gauge_max" }
     }
 
     // edited as a copy; every change is written back to the tile (empty list = no ranges)
