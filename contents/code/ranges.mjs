@@ -28,8 +28,10 @@ export function gaugeScale(config = {}, ranges = rangesOf(config)) {
     const ends = ranges.reduce((all, r) => all.concat([r.from, r.to]), []).filter(v => !isNaN(v))
     let min = num(config.gauge_min)
     let max = num(config.gauge_max)
+    // neither an own scale nor ranges: the caller may know a better default
+    const auto = isNaN(min) && isNaN(max) && !ends.length
     if (isNaN(min)) min = ends.length ? Math.min(...ends) : 0
     if (isNaN(max)) max = ends.length ? Math.max(...ends) : 100
     if (max <= min) max = min + 1
-    return { min, max }
+    return { min, max, auto }
 }

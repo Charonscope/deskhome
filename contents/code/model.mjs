@@ -15,8 +15,6 @@ export function EntityUpdate(config = {}, update = {}, entity = {}, options = {}
     this.kind = tileKind(config, this.state)
     this.level = levelOf(config, this)
     this.num = this.state !== '' && !isNaN(+this.state) ? +this.state : NaN
-    // color of the tile's own range the value lies in ('' = none)
-    this.range_color = rangeColor(rangesOf(config), this.num)
     this.unit = this.attributes.unit_of_measurement || ''
     this.device_class = this.attributes.device_class || ''
     if (!this.icon) this.icon = fallbackIcon(config.domain, this.device_class, this.active)
@@ -37,6 +35,10 @@ export function EntityUpdate(config = {}, update = {}, entity = {}, options = {}
     this.hvac_action = a.hvac_action || ''
     // fans: speed in percent (-1 = unknown)
     this.fan_pct = numberOr(a.percentage, -1)
+    // the number for color ranges and gauges: the state, for thermostats the current temperature
+    this.gauge_num = !isNaN(this.num) ? this.num : this.current_temp
+    // color of the tile's own range that number lies in ('' = none)
+    this.range_color = rangeColor(rangesOf(config), this.gauge_num)
 }
 
 function numberOr(v, fallback) {
@@ -92,8 +94,10 @@ export function Entity(config = {}, data = {}, options = {}) {
     const ranges = rangesOf(config)
     this.ranges = JSON.stringify(ranges)
     const scale = gaugeScale(config, ranges)
-    this.gauge_min = scale.min
-    this.gauge_max = scale.max
+    // without an own scale or ranges a thermostat's gauge spans its settable temperatures
+    const thermostatScale = scale.auto && config.domain === "climate"
+    this.gauge_min = thermostatScale ? this.temp_min : scale.min
+    this.gauge_max = thermostatScale ? this.temp_max : scale.max
     this.value2 = ''
     this.num2 = NaN
 }

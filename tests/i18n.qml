@@ -45,9 +45,9 @@ QtObject {
             check("range open end", Ranges.rangeColor(Ranges.rangesOf(priceRanges), 9), "#ff0000"),
             check("no value, no color", Ranges.rangeColor(Ranges.rangesOf(priceRanges), NaN), ""),
             check("ranges without color are ignored", Ranges.rangesOf({ ranges: [{ from: 1 }] }).length, 0),
-            check("gauge scale from the ranges", JSON.stringify(Ranges.gaugeScale(priceRanges)), JSON.stringify({ min: 0.25, max: 0.33 })),
-            check("gauge scale own min/max", JSON.stringify(Ranges.gaugeScale({ gauge_min: 0, gauge_max: "0,5".replace(",", ".") })), JSON.stringify({ min: 0, max: 0.5 })),
-            check("gauge scale default", JSON.stringify(Ranges.gaugeScale({})), JSON.stringify({ min: 0, max: 100 }))
+            check("gauge scale from the ranges", JSON.stringify(Ranges.gaugeScale(priceRanges)), JSON.stringify({ min: 0.25, max: 0.33, auto: false })),
+            check("gauge scale own min/max", JSON.stringify(Ranges.gaugeScale({ gauge_min: 0, gauge_max: "0,5".replace(",", ".") })), JSON.stringify({ min: 0, max: 0.5, auto: false })),
+            check("gauge scale default", JSON.stringify(Ranges.gaugeScale({})), JSON.stringify({ min: 0, max: 100, auto: true }))
         ]
         Qt.exit(results.every(r => r) ? 0 : 1)
     }

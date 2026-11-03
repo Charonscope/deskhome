@@ -17,7 +17,13 @@ Item {
     readonly property real min: model.gauge_min
     readonly property real max: model.gauge_max
     // share of the arc filled (0..1)
-    readonly property real target: isNaN(model.num) ? 0 : Math.max(0, Math.min(1, (model.num - min) / (max - min)))
+    // thermostats: the current temperature, their state is text ("heat", "auto")
+    readonly property bool thermostat: model.domain === "climate"
+    readonly property real number: model.gauge_num
+    readonly property string valueText: thermostat
+        ? (isNaN(number) ? "–" : Number(number).toLocaleString(Qt.locale(), "f", 1) + "°")
+        : model.value
+    readonly property real target: isNaN(number) ? 0 : Math.max(0, Math.min(1, (number - min) / (max - min)))
     property real shown: 0
     Component.onCompleted: shown = target
     onTargetChanged: shown = target
@@ -117,12 +123,23 @@ Item {
             y: arc.cy - height / 2
             width: arc.radius * 1.5
             horizontalAlignment: Text.AlignHCenter
-            value: model.value
+            value: tile.valueText
             color: tile.valueColor
             font.pixelSize: Math.max(10, arc.radius * 0.42 * root.look.valueScale / 100)
             font.weight: root.valueWeight
             fontSizeMode: Text.HorizontalFit
             minimumPixelSize: 8
+        }
+
+        // thermostats: the target temperature below the value
+        PlasmaComponents3.Label {
+            visible: tile.thermostat && !isNaN(model.target_temp)
+            text: root.tr("thermo.target", Number(model.target_temp).toLocaleString(Qt.locale(), "f", model.temp_step < 1 ? 1 : 0) + "°")
+            font.pointSize: root.smallPt
+            color: root.tileLabelColor(model)
+            opacity: 0.8
+            x: arc.cx - width / 2
+            y: arc.cy + arc.radius * 0.32
         }
 
         // scale ends below the ends of the arc
