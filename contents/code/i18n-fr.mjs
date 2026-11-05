@@ -117,6 +117,7 @@ export const STRINGS = Object.freeze({
     "problems.title": "Problèmes",
     "problems.tip": "Clic : ouvrir dans Home Assistant · Clic droit : ne plus afficher",
     "problems.unavailable": "indisponible · %1",
+    "problems.unavailableStart": "indisponible · depuis le démarrage de HA",
     "problems.stuck": "bloqué sur « marche » · %1",
     "problems.unavailableSetting": "Afficher les appareils indisponibles après :",
     "problems.stuckSetting": "Afficher les détecteurs de mouvement bloqués après :",

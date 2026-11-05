@@ -100,6 +100,18 @@ Item {
         check("lamp after a longer time", Problems.findProblems(states, registry, { unavailableMinutes: 5 }, now).map(p => p.name), ["Hue sensor", "Fresh lamp"])
         check("off means off", Problems.findProblems(states, registry, { unavailableMinutes: 0, stuckHours: 0 }, now).length, 0)
         check("only stuck sensors", Problems.findProblems(states, registry, { stuckHours: 12 }, now).map(p => p.name), ["Kitchen motion"])
+        // HA started 20 min ago: every last_changed is the start time or later. The Hue sensor
+        // was gone at the start (shown after the grace period, with no age), the lamp went
+        // 15 min after the start (an ordinary 30 min wait)
+        const restarted = [
+            { entity_id: "sensor.ok", state: "21", last_changed: at(20 / 60), attributes: {} },
+            { entity_id: "binary_sensor.hue_motion", state: "unavailable", last_changed: at(20 / 60), attributes: {} },
+            { entity_id: "sensor.hue_temperature", state: "unavailable", last_changed: at(19 / 60), attributes: {} },
+            { entity_id: "light.fresh", state: "unavailable", last_changed: at(5 / 60), attributes: {} }
+        ]
+        check("gone since HA started", Problems.findProblems(restarted, registry, { unavailableMinutes: 30 }, now).map(p => [p.name, p.sinceStart]), [["Hue sensor", true]])
+        check("grace after the start", Problems.findProblems(restarted, registry, { unavailableMinutes: 30 }, now + 30 * 60000).map(p => [p.name, p.sinceStart]), [["Hue sensor", true], ["Fresh lamp", false]])
+        check("a shorter own wait wins", Problems.findProblems(restarted.slice(0, 3), registry, { unavailableMinutes: 5 }, Date.parse(restarted[0].last_changed) + 6 * 60000).length, 1)
         const ignore = Problems.ignoreMatcher("light.x, sensor.a_*")
         check("ignore exact", ignore("light.x"), true)
         check("ignore pattern", ignore("sensor.a_b"), true)

@@ -5,6 +5,9 @@
 //   Entities without a device are not listed either: there are many, and most are leftovers.
 // - "stuck": motion/occupancy/presence sensors that have been "on" for at least `stuckHours`
 // Only entities a user would put on a tile count: not hidden, no configuration/diagnostic ones.
+// A restart of Home Assistant sets last_changed of every entity to the start time, so a device
+// gone for weeks looks as if it had just gone. Devices already gone when HA started are
+// therefore listed after a short grace period (integrations need a few minutes to connect).
 
 export const UNAVAILABLE = "unavailable"
 export const STUCK = "stuck"
@@ -15,6 +18,10 @@ const SKIPPED_DOMAINS = Object.freeze(["button", "event", "scene", "script", "au
     "image", "tts", "stt", "conversation", "notify", "persistent_notification", "zone", "person", "sun",
     "media_player"])
 const MOTION_CLASSES = Object.freeze(["motion", "occupancy", "presence", "moving"])
+// gone within this time after the start: gone since the start (startup takes a while)
+const STARTUP_MS = 5 * 60000
+// grace period for devices gone since the start
+const START_GRACE_MS = 10 * 60000
 
 // "sensor.old_*, light.x" -> matcher; * matches anything
 export function ignoreMatcher(text) {
@@ -32,6 +39,8 @@ export function findProblems(states, registry, options, now) {
     // device_id -> { total, gone, entity_ids, since }
     const devices = {}
     const result = []
+    // HA's start: entities that did not change since then carry it as last_changed
+    const start = (states || []).reduce((min, s) => Math.min(min, Date.parse(s.last_changed) || Infinity), Infinity)
     for (const s of states || []) {
         const id = s.entity_id
         const entry = registry.entities?.[id]
@@ -56,8 +65,10 @@ export function findProblems(states, registry, options, now) {
     }
     for (const deviceId in devices) {
         const d = devices[deviceId]
-        if (d.gone && d.gone === d.total && now - d.since >= unavailableMs) {
-            result.push({ kind: UNAVAILABLE, name: registry.deviceNames[deviceId] || d.entity_ids[0], device_id: deviceId, entity_ids: d.entity_ids, since: d.since })
+        if (!d.gone || d.gone !== d.total) continue
+        const sinceStart = d.since - start < STARTUP_MS
+        if (now - d.since >= (sinceStart ? Math.min(unavailableMs, START_GRACE_MS) : unavailableMs)) {
+            result.push({ kind: UNAVAILABLE, name: registry.deviceNames[deviceId] || d.entity_ids[0], device_id: deviceId, entity_ids: d.entity_ids, since: d.since, sinceStart })
         }
     }
     // gone devices first, then hanging sensors; the longest-standing problem first

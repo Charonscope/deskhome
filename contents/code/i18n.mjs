@@ -149,6 +149,7 @@ const STRINGS = Object.freeze({
     "problems.title": ["Probleme", "Problems"],
     "problems.tip": ["Klick: in Home Assistant öffnen · Rechtsklick: nicht mehr anzeigen", "Click: open in Home Assistant · Right-click: don't show again"],
     "problems.unavailable": ["nicht erreichbar · %1", "unavailable · %1"],
+    "problems.unavailableStart": ["nicht erreichbar · seit HA-Start", "unavailable · since HA started"],
     "problems.stuck": ["hängt auf „an“ · %1", "stuck on “on” · %1"],
     "problems.unavailableSetting": ["Nicht erreichbare Geräte zeigen nach:", "Show unavailable devices after:"],
     "problems.stuckSetting": ["Bewegungsmelder als hängend zeigen nach:", "Show motion sensors as stuck after:"],

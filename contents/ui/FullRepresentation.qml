@@ -448,7 +448,9 @@ PlasmaExtras.Representation {
                                         Layout.fillWidth: true
                                     }
                                     PlasmaComponents3.Label {
-                                        text: root.tr(modelData.kind === "stuck" ? "problems.stuck" : "problems.unavailable",
+                                        // gone since HA started: how long before is unknown
+                                        text: modelData.sinceStart ? root.tr("problems.unavailableStart")
+                                            : root.tr(modelData.kind === "stuck" ? "problems.stuck" : "problems.unavailable",
                                                       TimeAgo.ago(root.lang, modelData.since, root.now))
                                         font.pointSize: root.smallPt
                                         font.weight: Font.DemiBold
