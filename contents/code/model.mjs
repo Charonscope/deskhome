@@ -88,6 +88,8 @@ export function Entity(config = {}, data = {}, options = {}) {
     this.level_label = !!config.level_label
     // the tile blinks on warning/critical
     this.blink = !!config.blink
+    // status and switch tiles: state on top in the value font, name below (like the simple tile)
+    this.state_first = !!config.state_first
     // history graph on a logarithmic scale
     this.graph_log = !!config.graph_log
     // color ranges as JSON (arrays turn into sub-models in a ListModel) and the gauge scale
@@ -157,6 +159,7 @@ export function ConfigEntity(config = {}) {
     this.level_ok = config.level_ok
     this.level_label = config.level_label
     this.blink = config.blink
+    this.state_first = config.state_first
     this.graph_log = config.graph_log
     this.ranges = config.ranges
     this.gauge_min = config.gauge_min

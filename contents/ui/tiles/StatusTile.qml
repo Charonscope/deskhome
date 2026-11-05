@@ -16,6 +16,8 @@ Item {
     // a motion sensor that fires sends a short wave out of its dot
     readonly property bool motion: ["motion", "occupancy", "presence"].includes(model.device_class)
     readonly property bool on: !!model.active
+    // "state on top" (like the simple tile): state first in the value font, name below
+    readonly property bool stateFirst: !!model.state_first
     onOnChanged: if (on && motion && root.animationDuration > 0) wave.restart()
 
     RowLayout {
@@ -62,8 +64,10 @@ Item {
             Layout.alignment: Qt.AlignVCenter
         }
 
-        ColumnLayout {
-            spacing: 0
+        // "state on top": state first in the value font, name below, like the simple tile
+        GridLayout {
+            columns: 1
+            rowSpacing: 0
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignVCenter
             // Long name: two lines instead of cutting it off; the state is then shown by the dot color
@@ -72,19 +76,23 @@ Item {
                 text: model.name
                 elide: Text.ElideRight
                 wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-                maximumLineCount: model.level ? 1 : 2
+                maximumLineCount: model.level || tile.stateFirst ? 1 : 2
                 font.pointSize: root.defaultPt
                 color: root.tileLabelColor(model)
+                opacity: tile.stateFirst ? root.tileLabelOpacity(model) : 1
                 Layout.fillWidth: true
+                Layout.row: tile.stateFirst ? 1 : 0
             }
             PlasmaComponents3.Label {
-                visible: nameLabel.lineCount < 2 || model.level > 0
+                visible: nameLabel.lineCount < 2 || model.level > 0 || tile.stateFirst
                 text: root.ago(model.last_changed) ? model.value + " · " + root.ago(model.last_changed) : model.value
                 elide: Text.ElideRight
-                font.pointSize: root.smallPt
-                color: model.level ? tile.dotColor : root.tileLabelColor(model)
-                opacity: model.level ? 1 : root.tileLabelOpacity(model) * 0.9
+                font.pointSize: tile.stateFirst ? root.defaultPt * 1.1 : root.smallPt
+                font.weight: tile.stateFirst ? root.valueWeight : Font.Normal
+                color: model.level ? tile.dotColor : tile.stateFirst ? root.tileLevelValueColor(model) : root.tileLabelColor(model)
+                opacity: model.level || tile.stateFirst ? 1 : root.tileLabelOpacity(model) * 0.9
                 Layout.fillWidth: true
+                Layout.row: tile.stateFirst ? 0 : 1
             }
         }
     }

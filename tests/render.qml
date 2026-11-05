@@ -128,7 +128,7 @@ ApplicationWindow {
         function history(id) { return id.startsWith("sensor.") ? points : [] }
         property ListModel itemModel: ListModel {
             Component.onCompleted: {
-                const base = { attributes: {}, default_action: {}, dclick_action: {}, scroll_action: {}, display: 1, hide_when_ok: false, light_color: "", brightness_pct: -1, device_class: "", unit: "", attribute: "", second_entity_id: "", value2: "", num2: NaN, current_temp: NaN, target_temp: NaN, temp_min: 7, temp_max: 35, temp_step: 0.5, current_humidity: NaN, hvac_action: "", heading: "", last_changed: 0, fan_pct: -1, value_color: "", label_color: "", second_color: "", graph_color: "", bg_color: "", bg_opacity: -1, second_graph_color: "", read_only: false, level_ok: false, level_label: false, blink: false, graph_log: false, range_color: "", ranges: "[]", gauge_min: 0, gauge_max: 100, gauge_num: NaN }
+                const base = { attributes: {}, default_action: {}, dclick_action: {}, scroll_action: {}, display: 1, hide_when_ok: false, light_color: "", brightness_pct: -1, device_class: "", unit: "", attribute: "", second_entity_id: "", value2: "", num2: NaN, current_temp: NaN, target_temp: NaN, temp_min: 7, temp_max: 35, temp_step: 0.5, current_humidity: NaN, hvac_action: "", heading: "", last_changed: 0, fan_pct: -1, value_color: "", label_color: "", second_color: "", graph_color: "", bg_color: "", bg_opacity: -1, second_graph_color: "", read_only: false, level_ok: false, level_label: false, blink: false, state_first: false, graph_log: false, range_color: "", ranges: "[]", gauge_min: 0, gauge_max: 100, gauge_num: NaN }
                 const add = o => append(Object.assign({}, base, o))
                 add({ entity_id: "sensor.outside", name: "Outside", kind: "sensor", value: "9.6 °C", num: 9.6, state: "9.6", level: 0, icon: "mdi:thermometer", colspan: 1, history_hours: 24, domain: "sensor", active: false, graph_log: true })
                 add({ entity_id: "sensor.humidity", name: "Outside humidity", kind: "sensor", value: "63%", num: 63, state: "63", level: 0, icon: "mdi:water-percent", colspan: 1, history_hours: 24, domain: "sensor", active: false })
@@ -148,6 +148,9 @@ ApplicationWindow {
                 add({ entity_id: "fan.hall", name: "Hall fan", kind: "switch", value: "off", num: NaN, state: "off", level: 0, icon: "mdi:fan", colspan: 1, history_hours: 0, domain: "fan", active: false })
                 add({ entity_id: "light.kitchen", name: "Kitchen", kind: "switch", value: "off", num: NaN, state: "off", level: 0, icon: "mdi:lightbulb-outline", colspan: 0.5, history_hours: 0, domain: "light", active: false })
                 add({ entity_id: "binary_sensor.hall", last_changed: new Date(2026, 9, 25, 11, 55).getTime(), name: "Hallway motion", kind: "status", value: "unavailable", num: NaN, state: "unavailable", level: 2, icon: "mdi:motion-sensor", colspan: 1, history_hours: 0, domain: "binary_sensor", active: false })
+                // "state on top" (like the simple tile): state above the name
+                add({ entity_id: "binary_sensor.garden", name: "Garden door", kind: "status", value: "Closed", num: NaN, state: "off", level: 0, icon: "mdi:door", colspan: 1, history_hours: 0, domain: "binary_sensor", active: false, state_first: true })
+                add({ entity_id: "light.porch", name: "Porch", kind: "switch", value: "off", num: NaN, state: "off", level: 0, icon: "mdi:lightbulb-outline", colspan: 1, history_hours: 0, domain: "light", active: false, state_first: true })
                 // hidden while ok -> must show up in the "1 more check OK" summary tile
                 add({ entity_id: "sensor.battery_ok", name: "Bedroom battery", kind: "status", value: "100%", num: 100, state: "100", level: 0, icon: "mdi:battery", colspan: 1, history_hours: 0, domain: "sensor", active: false, hide_when_ok: true })
             }
@@ -186,6 +189,7 @@ ApplicationWindow {
 
     readonly property var valueTexts: ["12.4 °C", "23.7 °C", "45%", "1000 rpm"]
     readonly property var expectedTexts: ["12.4 °C", "Outside", "Outside humidity", "Desk climate", "45%", "Home battery", "41%", "Fan speed", "1000 rpm", "Heating", "Lights", "Weak batteries", "Hall sensor battery", "8 %", "Front door battery", "Radiator battery", "low", "Living room", "heating", "Desk lamp", "Kitchen", "Hallway motion", "unavailable · 5 min ago", "Late tile", "1 more check OK",
+        "Garden door", "Closed", "Porch",
         "Problems", "Hue motion sensor", "unavailable · 3 h ago", "Kitchen motion", "stuck on “on” · 2 d ago", "Notifications: 1", "Repairs: 2", "Updates: 1", "Price gauge", "0.31 €", "Bath gauge",
         // numbers in the system locale, as the tiles show them
         Number(20.5).toLocaleString(Qt.locale(), "f", 1) + "°", "Target " + Number(22).toLocaleString(Qt.locale(), "f", 1) + "°"]
@@ -229,7 +233,8 @@ ApplicationWindow {
             if (!ownBackground) problems.push("tile ignores its own background color")
             if (colors["45%"] !== "#ff8800") problems.push("combo tile ignores its own second color: " + colors["45%"])
             const statesShown = window.args[1] !== "theme"
-            if (statesShown !== (states.length > 0)) problems.push("switch state text " + (statesShown ? "missing" : "not hidden") + ": " + JSON.stringify(states))
+            // the "state on top" porch tile always shows its state, it is the tile's value
+            if (statesShown !== (states.length > 1)) problems.push("switch state text " + (statesShown ? "missing" : "not hidden") + ": " + JSON.stringify(states))
             // animations: the rpm icon turns, history lines have drawn in completely
             const anim = { spinning: 0, turned: 0, lines: 0, revealed: 0 }
             const walkAnim = item => {
@@ -295,6 +300,18 @@ ApplicationWindow {
             else if (found[t] === "outside") problems.push("tile outside the view: " + t)
             else if (found[t] === "truncated") problems.push("tile text cut off: " + t)
         }
+        // "state on top": the state lies above the name
+        const y = text => {
+            let at = NaN
+            const walk = item => {
+                if (item.text === text && item.visible) at = item.mapToItem(view, 0, 0).y
+                for (let i = 0; i < item.children.length; i++) walk(item.children[i])
+            }
+            walk(view)
+            return at
+        }
+        if (!(y("Closed") < y("Garden door"))) problems.push("status tile: state not above the name")
+        if (!(y("Off") < y("Porch"))) problems.push("switch tile: state not above the name")
         return problems
     }
 

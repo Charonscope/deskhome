@@ -204,6 +204,18 @@ Kirigami.FormLayout {
 
     property string tileType: item.tile || "auto"
 
+    // status and switch tiles look like the simple tile: state on top, name below
+    HelpRow {
+        Kirigami.FormData.label: tr("item.layout")
+        visible: form.tileType === "switch" || form.tileType === "status" || (form.tileType === "auto" && !sourceIsNumber)
+        help: tr("help.item.stateFirst")
+        CheckBox {
+            text: tr("item.stateFirst")
+            checked: !!item.state_first
+            onCheckedChanged: item.state_first = checked || undefined
+        }
+    }
+
     // right under the tile type, so the full-scale value is easy to find
     HelpRow {
         Kirigami.FormData.label: tr("item.gaugeScale")
