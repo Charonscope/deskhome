@@ -216,6 +216,14 @@ PlasmoidItem {
         id: notifications
     }
 
+    // Desk Status (beta): reports this computer to Home Assistant, runs the quick rules
+    DeskStatus {
+        client: root.ha
+        configuration: plasmoid.configuration
+        lang: root.lang
+        version: plasmoid.metaData.version
+    }
+
     // Changes from the tiles' right-click menu go straight into the tile list
     function tileConfigs() {
         return JSON.parse(plasmoid.configuration.items || "[]")

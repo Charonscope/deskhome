@@ -170,4 +170,22 @@
       <default>#88c0d0</default>
     </entry>
   </group>
+  <group name="DeskStatus">
+    <entry name="deskStatusEnabled" type="bool">
+      <default>false</default>
+    </entry>
+    <entry name="deskStatusDeviceName" type="string"></entry>
+    <entry name="deskStatusInterval" type="int">
+      <default>15</default>
+    </entry>
+    <entry name="deskStatusSensors" type="string">
+      <default>status,locked</default>
+    </entry>
+    <entry name="deskStatusRules" type="string">
+      <default>[]</default>
+    </entry>
+    <entry name="deskStatusDeviceId" type="string"></entry>
+    <entry name="deskStatusWebhook" type="string"></entry>
+    <entry name="deskStatusInfo" type="string"></entry>
+  </group>
 </kcfg>

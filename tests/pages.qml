@@ -15,7 +15,7 @@ ApplicationWindow {
     QtObject {
         id: plasmoid
         property var configuration: ({
-            url: "http://ha.test:8123", language: "de", items: "[]",
+            url: "http://ha.test:8123", language: "de", items: "[]", deskStatusEnabled: true, deskStatusInfo: "",
             autoBackupFile: "", itemDisplayDefault: 1
         })
     }
@@ -29,6 +29,7 @@ ApplicationWindow {
         ["ConfigGeneral.qml", { cfg_url: "http://ha.test:8123", cfg_language: "de" }],
         ["ConfigItems.qml", { cfg_items: "[]", cfg_autoBackupFile: "", cfg_itemDisplayDefault: 1 }],
         ["ConfigWatch.qml", {}],
+        ["ConfigDeskStatus.qml", { cfg_deskStatusInterval: 15, cfg_deskStatusSensors: "status,locked", cfg_deskStatusRules: JSON.stringify([{ trigger: "unlock", entity: "light.desk", brightness: 60, condEntity: "sensor.lux", condValue: 15 }, { trigger: "lock", entity: "scene.away" }]) }],
         ["ConfigLook.qml", {}],
         ["ConfigColors.qml", {}],
         ["ConfigValues.qml", {}],

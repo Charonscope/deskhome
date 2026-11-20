@@ -22,6 +22,12 @@ ConfigModel {
         visible: !!plasmoid?.configuration?.url
     }
     ConfigCategory {
+        name: I18n.tr(plasmoid?.configuration?.language, "cat.desk")
+        icon: "computer"
+        source: "ConfigDeskStatus.qml"
+        visible: !!plasmoid?.configuration?.url
+    }
+    ConfigCategory {
         name: I18n.tr(plasmoid?.configuration?.language, "cat.look")
         icon: "preferences-desktop-theme"
         source: "ConfigLook.qml"

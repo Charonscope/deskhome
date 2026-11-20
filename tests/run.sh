@@ -38,6 +38,7 @@ run entity-model timeout 30 "$QML" tests/model.qml
 run entity-search timeout 30 "$QML" tests/search.qml
 run battery-watch timeout 30 "$QML" tests/battery.qml
 run problems timeout 30 "$QML" tests/problems.qml
+run desk-status timeout 30 "$QML" tests/deskstatus.qml
 run auto-backup bash -c "d=\$(mktemp -d) && timeout 30 \"$QML\" tests/backup.qml -- \"\$d\"; s=\$?; rm -rf \"\$d\"; exit \$s"
 run settings-pages timeout 30 "$QML" tests/pages.qml
 run icon-picker timeout 30 "$QML" tests/iconpicker.qml
