@@ -289,7 +289,7 @@ export const STRINGS = Object.freeze({
     "error.ws": "No se pudo crear la conexión WebSocket",
     "error.requirements": "Mostrar requisitos",
     "configure": "Configurar…",
-    "cat.desk": "Desk Status",
+    "cat.desk": "Desk Status (Beta)",
     "desk.beta": "Beta: Desk Status es nuevo y se ampliará. Comentarios e ideas son bienvenidos (issue en GitHub).",
     "desk.intro": "Hasta ahora DeskHome muestra lo que pasa en Home Assistant. Desk Status va en sentido contrario: tu ordenador le dice a Home Assistant qué ocurre (p. ej. «en uso» o «bloqueado») y puede accionar cosas por sí mismo (p. ej. encender la luz del escritorio al desbloquear si está oscuro). Ambas partes se pueden usar por separado.",
     "desk.reportTitle": "1. Informar a Home Assistant",

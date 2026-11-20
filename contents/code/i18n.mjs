@@ -329,7 +329,7 @@ const STRINGS = Object.freeze({
     "configure": ["Einrichten …", "Configure…"],
 
     // Desk Status (beta)
-    "cat.desk": ["Desk Status", "Desk Status"],
+    "cat.desk": ["Desk Status (Beta)", "Desk Status (Beta)"],
     "desk.beta": ["Beta: Desk Status ist neu und wird noch erweitert. Rückmeldungen und Ideen sind willkommen (GitHub-Issue).", "Beta: Desk Status is new and will be extended. Feedback and ideas are welcome (GitHub issue)."],
     "desk.intro": ["Bisher zeigt DeskHome, was in Home Assistant passiert. Desk Status geht den umgekehrten Weg: Dein Computer meldet Home Assistant, was an ihm los ist (z. B. „in Benutzung“ oder „gesperrt“), und kann selbst Dinge schalten (z. B. das Schreibtischlicht beim Entsperren einschalten, wenn es dunkel ist). Beide Teile sind unabhängig voneinander nutzbar.", "So far DeskHome shows what happens in Home Assistant. Desk Status goes the other way: your computer tells Home Assistant what is going on (e.g. “in use” or “locked”) and can switch things itself (e.g. turn on the desk light when you unlock it and it is dark). Both parts can be used on their own."],
     "desk.reportTitle": ["1. An Home Assistant melden", "1. Report to Home Assistant"],
