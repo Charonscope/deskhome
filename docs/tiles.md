@@ -89,6 +89,7 @@ Problems also get a colored tile border; switch it off under *Tile style → Col
 | **Click action** | Home Assistant action on a single click, e.g. `light.toggle` or `script.turn_on` |
 | **Double click action** | same, on a double click |
 | **Scroll action** | action for the scroll wheel, e.g. brightness of a light |
+| **Layout: state on top, name below** | status and switch tiles only: the state is shown large on top, the name small below – like the simple tile. Useful when a column mixes tile types. |
 | **Control: display only** | the tile only shows its value: click, double click and scroll wheel do nothing. For all tiles at once: tick *All tiles display only* on the *Tiles* page. |
 
 Lights and switches get *toggle* (click) and *brightness* (scroll) automatically when nothing is set. Sensor, combo and status tiles without a click action open the history in Home Assistant.

@@ -89,6 +89,7 @@ Bei Problemen bekommt die Kachel zusätzlich einen farbigen Rand; abschalten unt
 | **Klick-Aktion** | Home-Assistant-Aktion bei einem Klick, z. B. `light.toggle` oder `script.turn_on` |
 | **Doppelklick-Aktion** | dasselbe bei einem Doppelklick |
 | **Mausrad-Aktion** | Aktion für das Mausrad, z. B. Helligkeit eines Lichts |
+| **Aufbau: Zustand oben, Name darunter** | nur Status- und Schalter-Kacheln: der Zustand steht groß oben, der Name klein darunter – wie bei der Einfach-Kachel. Praktisch, wenn eine Spalte verschiedene Kacheltypen mischt. |
 | **Bedienung: Nur anzeigen** | die Kachel zeigt nur ihren Wert: Klick, Doppelklick und Mausrad bewirken nichts. Für alle Kacheln auf einmal: auf der Seite *Kacheln* *Alle Kacheln nur anzeigen* anhaken. |
 
 Lichter und Schalter bekommen automatisch *Umschalten* (Klick) und *Helligkeit* (Mausrad), wenn nichts eingestellt ist. Sensor-, Kombi- und Status-Kacheln ohne Klick-Aktion öffnen den Verlauf in Home Assistant.

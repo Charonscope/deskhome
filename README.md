@@ -24,11 +24,13 @@
   - **Home Assistant messages** – notifications, open repairs and available updates as a small tile; new notifications optionally as desktop notifications
 - **“Seen”** – right-click a warning tile to quiet it (no border, pulse or blinking) until its value was OK again
 - **Yesterday's line** – yesterday's history faintly behind today's
+- **Desk Status (beta)** – the other direction: your computer reports itself to Home Assistant as a device (via the mobile app interface, like the Companion app – no YAML, no extra program): status active/locked/off, locked, volume, muted, CPU load, memory. Plus simple **quick rules** such as “when I unlock → desk light on at 60 %, only if the brightness is below 10 lx”
 - **Right-click a tile** to edit it, change its width, open it in Home Assistant or remove it
 - **Display only** – for all tiles or single ones: click and scroll wheel switch nothing
+- **Uniform layout** – status and switch tiles can show the state on top and the name below, like the simple tile, so mixed columns look alike
 - **Searchable entity picker** (name, area or ID) and “add a whole area” at once
 - **Live updates** via the Home Assistant WebSocket API – no polling
-- **Settings in six pages** (General, Tiles, Watching, Tile style, Colors, Values & history): Home Assistant or own colors, per-tile color and background, transparency, corner radius, tile size, spacing, font sizes and weight, help buttons for every setting, icon picker (all Material Design Icons), graph style, “changed 5 min ago”, small animations
+- **Settings in seven pages** (General, Tiles, Watching, Desk Status, Tile style, Colors, Values & history): Home Assistant or own colors, per-tile color and background, transparency, corner radius, tile size, spacing, font sizes and weight, help buttons for every setting, icon picker (all Material Design Icons), graph style, “changed 5 min ago”, small animations
 - **Panel mode** (compact view) with icons or icon + value
 - **English, German, Spanish and French** user interface
 - **Full backup**: export/import of all tiles, appearance and the Home Assistant URL (the token is never exported), plus an automatic backup on every change that keeps the three previous versions
@@ -149,11 +151,13 @@ GNU General Public License v3.0 – see [LICENSE](LICENSE).
   - **Home-Assistant-Meldungen** – Meldungen, offene Reparaturen und verfügbare Updates als kleine Kachel; neue Meldungen wahlweise als Desktop-Benachrichtigung
 - **„Gesehen“** – Rechtsklick auf eine Warn-Kachel macht sie still (kein Rand, Puls, Blinken), bis der Wert wieder in Ordnung war
 - **Gestern-Linie** – der gestrige Verlauf blass hinter dem heutigen
+- **Desk Status (Beta)** – die umgekehrte Richtung: dein Computer meldet sich in Home Assistant als Gerät an (über die Mobile-App-Schnittstelle wie die Companion-App – ohne YAML, ohne Zusatzprogramm): Status aktiv/gesperrt/aus, Gesperrt, Lautstärke, Stumm, CPU-Auslastung, Arbeitsspeicher. Dazu einfache **Schnellregeln** wie „wenn ich entsperre → Schreibtischlicht an mit 60 %, nur wenn die Helligkeit unter 10 lx liegt“
 - **Rechtsklick auf eine Kachel**: bearbeiten, Breite ändern, in Home Assistant öffnen, entfernen
 - **Nur anzeigen** – für alle oder einzelne Kacheln: Klick und Mausrad schalten nichts
+- **Einheitlicher Aufbau** – Status- und Schalter-Kacheln können den Zustand oben und den Namen darunter zeigen, wie die Einfach-Kachel, damit gemischte Spalten gleich aussehen
 - **Entity-Suche** nach Name, Bereich oder ID und „ganzen Bereich übernehmen“
 - **Live-Aktualisierung** über die WebSocket-Schnittstelle von Home Assistant
-- **Einstellungen auf sechs Seiten** (Allgemein, Kacheln, Überwachung, Kachelstil, Farben, Werte & Verlauf): Home-Assistant- oder eigene Farben, Farbe und Hintergrund pro Kachel, Transparenz, Ecken, Größe, Abstände, Schriftgröße und -stärke, Hilfe-Knopf an jeder Einstellung, Icon-Auswahl, Graph, „vor 5 min“, kleine Animationen
+- **Einstellungen auf sieben Seiten** (Allgemein, Kacheln, Überwachung, Desk Status, Kachelstil, Farben, Werte & Verlauf): Home-Assistant- oder eigene Farben, Farbe und Hintergrund pro Kachel, Transparenz, Ecken, Größe, Abstände, Schriftgröße und -stärke, Hilfe-Knopf an jeder Einstellung, Icon-Auswahl, Graph, „vor 5 min“, kleine Animationen
 - **Deutsch, Englisch, Spanisch und Französisch**
 - **Komplett-Backup** von Kacheln, Aussehen und HA-Adresse (ohne Token), dazu automatisches Backup bei jeder Änderung, das die drei vorigen Stände behält
 - **Update-Hinweis** bei neuer Version (abschaltbar)
