@@ -68,6 +68,7 @@ Item {
         check("light on with brightness", DS.serviceCall(rules[0]), { domain: "light", service: "turn_on", target: { entity_id: "light.desk" }, data: { brightness_pct: 60 } })
         check("switch off", DS.serviceCall(rules[1]), { domain: "switch", service: "turn_off", target: { entity_id: "switch.fan" }, data: {} })
         check("scene always on", DS.serviceCall({ entity: "scene.evening", action: "off", brightness: 0 }).service, "turn_on")
+        check("sensor name without device", DS.sensorName(" Status "), "Status")
         check("device id", /^deskhome-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}$/.test(DS.newDeviceId()), true)
 
         Qt.exit(failed ? 1 : 0)

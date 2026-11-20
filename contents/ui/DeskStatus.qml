@@ -163,7 +163,7 @@ QtObject {
         let failed = false
         for (const key of keys) {
             const def = DS.SENSORS.find(s => s.key === key)
-            const msg = DS.registerSensor(def, DS.sensorName(deviceName, tr(["desk.sensor", key].join("."))), _values[key])
+            const msg = DS.registerSensor(def, DS.sensorName(tr(["desk.sensor", key].join("."))), _values[key])
             post(`${client.baseUrl}/api/webhook/${webhookId()}`, msg, (ok, status) => {
                 if (!ok) failed = true
                 if (--left) return

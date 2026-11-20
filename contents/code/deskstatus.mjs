@@ -82,9 +82,11 @@ export function parse(output, previousCpu) {
     return { values, cpu }
 }
 
-// Name of a sensor in Home Assistant, e.g. "cachypapa Status"
-export function sensorName(deviceName, label) {
-    return `${deviceName} ${label}`.trim()
+// Name of a sensor in Home Assistant. The mobile app integration puts the device name in
+// front by itself ("cachypapa" + "Status" -> "cachypapa Status", sensor.cachypapa_status),
+// so the sensor only gets its own label.
+export function sensorName(label) {
+    return String(label || "").trim()
 }
 
 // Body for POST /api/mobile_app/registrations
