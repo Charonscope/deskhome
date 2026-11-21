@@ -12,19 +12,42 @@ Item {
     property real borderWidth: 0
     property color borderColor: "transparent"
     readonly property real strength: fill.a
+    // the dark part of the glass: a tile's own color, otherwise a deep blue-grey, so white
+    // text stays readable on a bright wallpaper whatever the theme's card color is
+    property color tint: "#192332"
 
     Rectangle {
         anchors.fill: parent
         radius: frame.radius
         gradient: Gradient {
-            GradientStop { position: 0; color: Qt.rgba(1, 1, 1, 0.05 + 0.22 * frame.strength) }
-            GradientStop { position: 1; color: Qt.rgba(frame.fill.r, frame.fill.g, frame.fill.b, 0.15 + 0.55 * frame.strength) }
+            GradientStop { position: 0; color: Qt.rgba(1, 1, 1, 0.18 * frame.strength) }
+            GradientStop { position: 1; color: Qt.rgba(frame.tint.r, frame.tint.g, frame.tint.b, Math.min(0.9, 1.0 * frame.strength)) }
         }
         border.width: frame.borderWidth > 0 ? frame.borderWidth : 1
-        border.color: frame.borderWidth > 0 ? frame.borderColor : Qt.rgba(1, 1, 1, 0.12 + 0.25 * frame.strength)
+        border.color: frame.borderWidth > 0 ? frame.borderColor : Qt.rgba(1, 1, 1, 0.42)
         Behavior on border.color {
             enabled: root.animationDuration > 0
             ColorAnimation { duration: root.animationDuration }
+        }
+    }
+
+    // inner highlight along the top edge, like light catching the edge of a glass pane
+    Item {
+        anchors {
+            left: parent.left
+            right: parent.right
+            top: parent.top
+            margins: 1
+        }
+        height: Math.max(3, frame.radius * 0.8)
+        clip: true
+        Rectangle {
+            width: parent.width
+            height: frame.height - 2
+            radius: Math.max(0, frame.radius - 1)
+            color: "transparent"
+            border.width: 1
+            border.color: Qt.rgba(1, 1, 1, 0.5)
         }
     }
 
@@ -39,7 +62,7 @@ Item {
         height: parent.height * 0.5
         radius: Math.max(0, frame.radius - 1)
         gradient: Gradient {
-            GradientStop { position: 0; color: Qt.rgba(1, 1, 1, 0.14) }
+            GradientStop { position: 0; color: Qt.rgba(1, 1, 1, 0.10) }
             GradientStop { position: 1; color: Qt.rgba(1, 1, 1, 0) }
         }
     }

@@ -55,6 +55,7 @@ MouseArea {
                     visible: root.glass
                     anchors.fill: parent
                     fill: root.tileFill(model)
+                    tint: model.bg_color || "#192332"
                     borderWidth: levelFrame || activeFrame ? 1.5 : 0
                     borderColor: levelFrame ? root.levelColor(model.level) : root.accentColor
                 }

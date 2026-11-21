@@ -102,8 +102,8 @@ PlasmoidItem {
         MultiEffect {
             shadowEnabled: true
             shadowColor: "black"
-            shadowOpacity: 0.55
-            shadowBlur: 0.35
+            shadowOpacity: 0.9
+            shadowBlur: 0.12
             shadowVerticalOffset: 1
             shadowHorizontalOffset: 0
         }

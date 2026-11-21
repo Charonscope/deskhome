@@ -15,9 +15,12 @@ QtObject {
     readonly property bool dark: Kirigami.Theme.backgroundColor.hslLightness < 0.5
     readonly property var ha: useHaTheme && haThemes ? Themes.themePalette(haThemes, look.haTheme, dark) : ({})
 
+    // glass look: white text with a shadow and light graph colors, as on frosted glass
+    readonly property bool glass: !!look.flat && !!look.glass
+    function glassLight(c) { return Qt.hsla(c.hslHue, Math.min(0.85, c.hslSaturation), Math.max(0.72, c.hslLightness), 1) }
     readonly property color accent: ha.accent || Kirigami.Theme.highlightColor
-    readonly property color text: ha.text || Kirigami.Theme.textColor
-    readonly property color muted: ha.muted || Kirigami.Theme.disabledTextColor
+    readonly property color text: glass ? "#ffffff" : (ha.text || Kirigami.Theme.textColor)
+    readonly property color muted: glass ? Qt.rgba(1, 1, 1, 0.6) : (ha.muted || Kirigami.Theme.disabledTextColor)
     readonly property color background: look.tileCustomColor ? look.tileColor : (ha.background || Kirigami.Theme.backgroundColor)
     // own status colors (Appearance → Colors) win over the theme
     readonly property bool customLevels: !!look.levelCustomColors
@@ -25,12 +28,13 @@ QtObject {
     readonly property color warn: customLevels ? look.customWarnColor : (ha.warn || Kirigami.Theme.neutralTextColor)
     readonly property color crit: customLevels ? look.customCritColor : (ha.crit || Kirigami.Theme.negativeTextColor)
     readonly property color value: look.valueCustomColor ? look.valueColor : text
-    readonly property color label: look.labelCustomColor ? look.labelColor : (ha.label || text)
+    readonly property color label: look.labelCustomColor ? look.labelColor : glass ? text : (ha.label || text)
     // the default label color is the text color, dimmed; a chosen one is shown as it is
-    readonly property real labelOpacity: look.labelCustomColor || ha.label ? 1 : 0.8
-    readonly property color graph: look.graphCustomColor ? look.graphColor : accent
+    readonly property real labelOpacity: look.labelCustomColor ? 1 : glass ? 0.88 : ha.label ? 1 : 0.8
+    readonly property color graph: look.graphCustomColor ? look.graphColor : glass ? glassLight(accent) : accent
     // second value of combo tiles: by default the accent turned a quarter back on the color wheel
     readonly property color second: look.secondCustomColor ? look.secondColor
+        : glass ? glassLight(Qt.hsla((accent.hslHue + 0.75) % 1, Math.max(0.45, accent.hslSaturation), 0.6, 1))
         : Qt.hsla((accent.hslHue + 0.75) % 1, Math.max(0.45, accent.hslSaturation),
                   Math.min(0.65, Math.max(0.5, accent.hslLightness)), 1)
     // font weight of the large values (400 normal, 600 semi-bold, 700 bold)
