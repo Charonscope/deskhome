@@ -63,6 +63,9 @@ Item {
             Layout.fillWidth: true
             SpinningIcon {
                 id: headerIcon
+                plate: root.glass
+                Layout.leftMargin: platePad
+                Layout.rightMargin: platePad
                 // a speed in rpm turns the icon: about 3 s per turn at 1000 rpm
                 period: /^(rpm|u\/min)$/i.test(model.unit) && model.num > 0 ? Math.round(Math.min(6000, Math.max(600, 3000000 / model.num)) / 250) * 250 : 0
                 name: model.icon

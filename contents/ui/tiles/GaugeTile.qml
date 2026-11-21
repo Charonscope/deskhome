@@ -51,6 +51,9 @@ Item {
             name: model.icon
             color: tile.valueColor
             animationDuration: root.animationDuration
+            plate: root.glass
+            Layout.leftMargin: platePad
+            Layout.rightMargin: platePad
             Layout.preferredWidth: Kirigami.Units.iconSizes.small * root.labelGrow
             Layout.preferredHeight: Kirigami.Units.iconSizes.small * root.labelGrow
         }

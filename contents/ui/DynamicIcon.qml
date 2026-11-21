@@ -17,6 +17,21 @@ Loader {
         ColorAnimation { duration: dynamicIcon.animationDuration }
     }
 
+    // round plate behind the icon (glass look); it reaches platePad beyond the icon
+    property bool plate: false
+    readonly property real platePad: plate ? 3 : 0
+    Rectangle {
+        z: -1
+        visible: dynamicIcon.plate
+        anchors.centerIn: parent
+        width: Math.max(parent.width, parent.height) + 2 * dynamicIcon.platePad
+        height: width
+        radius: width / 2
+        color: Qt.rgba(dynamicIcon.color.r, dynamicIcon.color.g, dynamicIcon.color.b, 0.22)
+        border.width: 1
+        border.color: Qt.rgba(1, 1, 1, 0.18)
+    }
+
     sourceComponent: {
         switch(type) {
             case 'mdi': return mdi

@@ -198,6 +198,8 @@ export const STRINGS = Object.freeze({
     "look.radius": "Rayon des coins :",
     "look.border": "Bordure :",
     "look.borderThin": "Dessiner une bordure fine",
+    "look.glass": "Aspect verre",
+    "help.glass": "Tuiles façon verre dépoli : plus claires en haut, couleur de la tuile en bas, avec reflet, bordure claire, pastilles rondes pour les icônes et ombre sous le texte. L'opacité règle l'intensité du verre. Un vrai flou de l'arrière-plan n'est pas possible dans les widgets Plasma. Va bien avec un rayon des coins plus grand (12–16 px).",
     "look.levelBorder": "Colorer la bordure en cas d'avertissement/erreur",
     "look.size": "Taille des tuiles :",
     "look.spacing": "Espacement entre les tuiles :",

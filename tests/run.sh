@@ -46,6 +46,7 @@ run render-connected timeout 30 "$QML" tests/render.qml -- "$OUT/connected.png" 
 run render-disconnected timeout 30 "$QML" tests/render.qml -- "$OUT/disconnected.png" lost
 run render-large-values timeout 30 "$QML" tests/render.qml -- "$OUT/large-values.png" big
 run render-ha-theme timeout 30 "$QML" tests/render.qml -- "$OUT/ha-theme.png" theme
+run render-glass timeout 30 "$QML" tests/render.qml -- "$OUT/glass.png" glass
 
 echo "Logs and renders: $OUT"
 exit $status

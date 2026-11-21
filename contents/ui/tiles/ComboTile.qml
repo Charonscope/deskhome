@@ -74,6 +74,9 @@ Item {
             DynamicIcon {
                 animationDuration: root.animationDuration
                 id: headerIcon
+                plate: root.glass
+                Layout.leftMargin: platePad
+                Layout.rightMargin: platePad
                 name: model.icon
                 color: tile.levelColor
                 Layout.preferredWidth: Kirigami.Units.iconSizes.small * root.labelGrow

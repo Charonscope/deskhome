@@ -21,6 +21,7 @@ KCM.SimpleKCM {
     property alias cfg_tileOpacity: tileOpacity.value
     property alias cfg_tileCustomColor: tileCustomColor.checked
     property alias cfg_tileColor: tileColor.color
+    property alias cfg_glass: glass.checked
     property alias cfg_tileRadius: tileRadius.value
     property alias cfg_tileBorder: tileBorder.checked
     property alias cfg_levelBorder: levelBorder.checked
@@ -70,6 +71,15 @@ KCM.SimpleKCM {
                 id: tileColor
                 enabled: tileCustomColor.checked
                 showAlphaChannel: false
+            }
+        }
+
+        HelpRow {
+            enabled: flat.checked
+            help: tr("help.glass")
+            CheckBox {
+                id: glass
+                text: tr("look.glass")
             }
         }
 

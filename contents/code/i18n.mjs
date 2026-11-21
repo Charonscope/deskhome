@@ -238,6 +238,8 @@ const STRINGS = Object.freeze({
     "look.frame": ["Kachelstil:", "Tile style:"],
     "look.flat": ["Eigene Kacheln (Plasma-Rahmen ausblenden)", "Own tiles (hide Plasma frame)"],
     "look.bgHint": ["Deckkraft, Farbe, Eckenradius und Rand gelten nur für eigene Kacheln. Mit Plasma-Rahmen zeichnet Plasma die Kacheln mit festen Ecken.", "Opacity, color, corner radius and borders only apply to own tiles. With the Plasma frame, Plasma draws the tiles with fixed corners."],
+    "look.glass": ["Glas-Optik", "Glass look"],
+    "help.glass": ["Kacheln wie Milchglas: oben heller, unten in der Kachelfarbe, mit Glanz, hellem Rand, runden Icon-Plaketten und Schatten unter der Schrift. Die Deckkraft bestimmt, wie stark das Glas ist. Ein echter Weichzeichner des Hintergrunds ist in Plasma-Widgets nicht möglich. Passt gut zu einem größeren Eckenradius (12–16 px).", "Tiles like frosted glass: lighter at the top, the tile color at the bottom, with a sheen, a light rim, round icon plates and a shadow under the text. The opacity sets how strong the glass is. A real blur of the background is not possible in Plasma widgets. Goes well with a larger corner radius (12–16 px)."],
     "look.activeFrame": ["Eingeschaltete Schalter mit Rahmen hervorheben", "Highlight switched-on tiles with a border"],
     "look.colors": ["Farben", "Colors"],
     "look.layout": ["Größe und Bewegung", "Size and motion"],

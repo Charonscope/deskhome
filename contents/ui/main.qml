@@ -1,4 +1,5 @@
 import QtQuick
+import QtQuick.Effects
 
 import org.kde.plasma.plasmoid
 import org.kde.plasma.core as PlasmaCore
@@ -93,6 +94,20 @@ PlasmoidItem {
     // Own tile style (default): DeskHome draws the tiles itself, so opacity, color, radius
     // and borders apply. Otherwise Plasma's button frames are used (fixed corners).
     readonly property bool tileBackgrounds: look.flat
+    // Glass look (own tiles only): GlassFrame backgrounds, icon plates, a shadow under the content
+    readonly property bool glass: tileBackgrounds && !!look.glass
+    // the shadow is a shader effect; with software rendering it would hide the content
+    readonly property bool glassShadowOn: glass && GraphicsInfo.api !== GraphicsInfo.Software
+    readonly property Component glassShadow: Component {
+        MultiEffect {
+            shadowEnabled: true
+            shadowColor: "black"
+            shadowOpacity: 0.55
+            shadowBlur: 0.35
+            shadowVerticalOffset: 1
+            shadowHorizontalOffset: 0
+        }
+    }
     property Client ha
 
     // Connection banner: only after a short grace period, so a normal start or a brief

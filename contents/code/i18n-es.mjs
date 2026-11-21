@@ -198,6 +198,8 @@ export const STRINGS = Object.freeze({
     "look.radius": "Radio de las esquinas:",
     "look.border": "Borde:",
     "look.borderThin": "Dibujar un borde fino",
+    "look.glass": "Aspecto de cristal",
+    "help.glass": "Mosaicos como cristal esmerilado: más claros arriba, con el color del mosaico abajo, con brillo, borde claro, placas redondas para los iconos y sombra bajo el texto. La opacidad define la intensidad del cristal. Un desenfoque real del fondo no es posible en los widgets de Plasma. Queda bien con un radio de esquinas mayor (12–16 px).",
     "look.levelBorder": "Colorear el borde en aviso/error",
     "look.size": "Tamaño de los mosaicos:",
     "look.spacing": "Separación entre mosaicos:",

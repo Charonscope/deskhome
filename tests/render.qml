@@ -1,7 +1,8 @@
 // Renders the widget's tile view outside Plasma with fake data and saves a PNG.
-// Usage: QT_QPA_PLATFORM=offscreen qml tests/render.qml -- <out.png> [ok|lost|theme|big] [dump]
+// Usage: QT_QPA_PLATFORM=offscreen qml tests/render.qml -- <out.png> [ok|lost|theme|big|glass] [dump]
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Effects
 
 import "../contents/ui"
 import "../contents/code/i18n.mjs" as I18n
@@ -21,7 +22,7 @@ ApplicationWindow {
         property bool configurationRequired: false
         property int formFactor: 0
         property var configuration: ({
-            url: "http://ha.test:8123", language: "en", flat: true,
+            url: "http://ha.test:8123", language: "en", flat: true, glass: window.args[1] === "glass",
             tileOpacity: 78, tileCustomColor: false, tileColor: "#2e3440", tileRadius: 8, tileBorder: true,
             levelBorder: true, activeFrame: true, tileScale: 100, tileSpacing: 6, labelScale: 100, valueScale: window.args[1] === "big" ? 150 : 100,
             showMinMax: true, showTrend: true, graphHeight: 42, graphLineWidth: 1.5, graphFill: true,
@@ -88,6 +89,18 @@ ApplicationWindow {
         property real defaultPt: 10
         property real smallPt: 8
         property bool tileBackgrounds: true
+        property bool glass: window.args[1] === "glass"
+        // the shadow is a shader effect; with software rendering it would hide the content
+        readonly property bool glassShadowOn: glass && GraphicsInfo.api !== GraphicsInfo.Software
+        readonly property Component glassShadow: Component {
+            MultiEffect {
+                shadowEnabled: true
+                shadowColor: "black"
+                shadowOpacity: 0.55
+                shadowBlur: 0.35
+                shadowVerticalOffset: 1
+            }
+        }
         property bool connectionLost: !ha.ready
         property string connectionMessage: tr("conn.lost", "14:05")
         // two weak batteries below a threshold of 20 %

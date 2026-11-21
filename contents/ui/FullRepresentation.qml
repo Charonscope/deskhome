@@ -288,6 +288,8 @@ PlasmaExtras.Representation {
                         Loader {
                             id: tileContent
                             anchors.fill: parent
+                            layer.enabled: root.glassShadowOn
+                            layer.effect: root.glassShadow
                             // "blinks on warning/critical": the content fades in and out
                             readonly property bool blinking: !!model.blink && model.level > 0 && !!root.look.animations && !wrapper.quiet
                             onBlinkingChanged: if (!blinking) opacity = 1
@@ -325,10 +327,18 @@ PlasmaExtras.Representation {
                     width: tileGrid.batteryPosition.width
                     height: tileGrid.batteryPosition.height
                     radius: root.look.tileRadius
-                    color: root.tileFillColor
-                    border.width: root.look.levelBorder ? 1.5 : 0
+                    color: root.glass ? "transparent" : root.tileFillColor
+                    border.width: root.look.levelBorder && !root.glass ? 1.5 : 0
                     border.color: root.warnColor
+                    GlassFrame {
+                        visible: root.glass
+                        anchors.fill: parent
+                        borderWidth: root.look.levelBorder ? 1.5 : 0
+                        borderColor: root.warnColor
+                    }
                     Column {
+                        layer.enabled: root.glassShadowOn
+                        layer.effect: root.glassShadow
                         anchors.fill: parent
                         anchors.margins: Kirigami.Units.smallSpacing
                         RowLayout {
@@ -338,6 +348,9 @@ PlasmaExtras.Representation {
                             DynamicIcon {
                                 name: "mdi:battery-alert"
                                 color: root.warnColor
+                                plate: root.glass
+                                Layout.leftMargin: platePad
+                                Layout.rightMargin: platePad
                                 Layout.preferredWidth: Kirigami.Units.iconSizes.small * root.labelGrow
                                 Layout.preferredHeight: Kirigami.Units.iconSizes.small * root.labelGrow
                             }
@@ -394,10 +407,18 @@ PlasmaExtras.Representation {
                     width: tileGrid.problemPosition.width
                     height: tileGrid.problemPosition.height
                     radius: root.look.tileRadius
-                    color: root.tileFillColor
-                    border.width: root.look.levelBorder ? 1.5 : 0
+                    color: root.glass ? "transparent" : root.tileFillColor
+                    border.width: root.look.levelBorder && !root.glass ? 1.5 : 0
                     border.color: root.critColor
+                    GlassFrame {
+                        visible: root.glass
+                        anchors.fill: parent
+                        borderWidth: root.look.levelBorder ? 1.5 : 0
+                        borderColor: root.critColor
+                    }
                     Column {
+                        layer.enabled: root.glassShadowOn
+                        layer.effect: root.glassShadow
                         anchors.fill: parent
                         anchors.margins: Kirigami.Units.smallSpacing
                         RowLayout {
@@ -407,6 +428,9 @@ PlasmaExtras.Representation {
                             DynamicIcon {
                                 name: "mdi:lan-disconnect"
                                 color: root.critColor
+                                plate: root.glass
+                                Layout.leftMargin: platePad
+                                Layout.rightMargin: platePad
                                 Layout.preferredWidth: Kirigami.Units.iconSizes.small * root.labelGrow
                                 Layout.preferredHeight: Kirigami.Units.iconSizes.small * root.labelGrow
                             }
@@ -490,8 +514,14 @@ PlasmaExtras.Representation {
                     width: tileGrid.haPosition.width
                     height: tileGrid.haPosition.height
                     radius: root.look.tileRadius
-                    color: root.tileFillColor
+                    color: root.glass ? "transparent" : root.tileFillColor
+                    GlassFrame {
+                        visible: root.glass
+                        anchors.fill: parent
+                    }
                     RowLayout {
+                        layer.enabled: root.glassShadowOn
+                        layer.effect: root.glassShadow
                         anchors.fill: parent
                         anchors.margins: Kirigami.Units.smallSpacing
                         spacing: Kirigami.Units.largeSpacing
@@ -570,10 +600,16 @@ PlasmaExtras.Representation {
                     width: tileGrid.okPosition.width
                     height: tileGrid.okPosition.height
                     radius: root.look.tileRadius
-                    color: root.tileBackgrounds
-                        ? root.tileFillColor
+                    color: root.glass ? "transparent"
+                        : root.tileBackgrounds ? root.tileFillColor
                         : Qt.rgba(root.okColor.r, root.okColor.g, root.okColor.b, 0.12)
+                    GlassFrame {
+                        visible: root.glass
+                        anchors.fill: parent
+                    }
                     RowLayout {
+                        layer.enabled: root.glassShadowOn
+                        layer.effect: root.glassShadow
                         anchors.fill: parent
                         anchors.margins: Kirigami.Units.smallSpacing
                         Kirigami.Icon {

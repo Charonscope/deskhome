@@ -49,7 +49,18 @@ MouseArea {
                 height: control.height
                 width: control.width
 
+                GlassFrame {
+                    readonly property bool levelFrame: root.look.levelBorder && (model.level ?? 0) > 0 && !control.quiet
+                    readonly property bool activeFrame: !!root.look.activeFrame && !!model.active
+                    visible: root.glass
+                    anchors.fill: parent
+                    fill: root.tileFill(model)
+                    borderWidth: levelFrame || activeFrame ? 1.5 : 0
+                    borderColor: levelFrame ? root.levelColor(model.level) : root.accentColor
+                }
+
                 Rectangle {
+                    visible: !root.glass
                     readonly property bool levelFrame: root.look.levelBorder && (model.level ?? 0) > 0 && !control.quiet
                     // with own tile backgrounds "active" is drawn here, matching the tile radius
                     readonly property bool activeFrame: root.tileBackgrounds && !!root.look.activeFrame && !!model.active
