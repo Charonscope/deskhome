@@ -25,6 +25,8 @@
 - **“Seen”** – right-click a warning tile to quiet it (no border, pulse or blinking) until its value was OK again
 - **Yesterday's line** – yesterday's history faintly behind today's
 - **Desk Status (beta)** – the other direction: your computer reports itself to Home Assistant as a device (via the mobile app interface, like the Companion app – no YAML, no extra program): status active/locked/off, locked, volume, muted, CPU load, memory. Plus simple **quick rules** such as “when I unlock → desk light on at 60 %, only if the brightness is below 10 lx”
+- **Templates** – one click for a ready-made look: Classic, Glass, Cockpit, Bento, Minimal light/dark (no background, values only), Compact, Large. A template only sets the shape; your tiles and colors stay, everything can be adjusted afterwards, and *Undo* brings back the previous values
+- **Tile styles** – flat, frosted glass, cockpit (fixed-width font, glowing status stripe), bento (colored icon chips) or minimal; combine any of them with any color source: Plasma, a Home Assistant theme or the built-in palettes Nord, Light and OLED
 - **Right-click a tile** to edit it, change its width, open it in Home Assistant or remove it
 - **Display only** – for all tiles or single ones: click and scroll wheel switch nothing
 - **Uniform layout** – status and switch tiles can show the state on top and the name below, like the simple tile, so mixed columns look alike
@@ -152,6 +154,8 @@ GNU General Public License v3.0 – see [LICENSE](LICENSE).
 - **„Gesehen“** – Rechtsklick auf eine Warn-Kachel macht sie still (kein Rand, Puls, Blinken), bis der Wert wieder in Ordnung war
 - **Gestern-Linie** – der gestrige Verlauf blass hinter dem heutigen
 - **Desk Status (Beta)** – die umgekehrte Richtung: dein Computer meldet sich in Home Assistant als Gerät an (über die Mobile-App-Schnittstelle wie die Companion-App – ohne YAML, ohne Zusatzprogramm): Status aktiv/gesperrt/aus, Gesperrt, Lautstärke, Stumm, CPU-Auslastung, Arbeitsspeicher. Dazu einfache **Schnellregeln** wie „wenn ich entsperre → Schreibtischlicht an mit 60 %, nur wenn die Helligkeit unter 10 lx liegt“
+- **Vorlagen** – mit einem Klick ein fertiges Aussehen: Klassisch, Glas, Cockpit, Bento, Minimal hell/dunkel (ohne Hintergrund, nur Werte), Kompakt, Groß. Eine Vorlage stellt nur die Form ein; Kacheln und Farben bleiben, alles lässt sich danach anpassen, *Rückgängig* holt die vorigen Werte zurück
+- **Kachelformen** – flach, Milchglas, Cockpit (feste Zeichenbreite, leuchtender Statusstreifen), Bento (farbige Icon-Chips) oder Minimal; jede Form passt zu jeder Farbquelle: Plasma, Home-Assistant-Theme oder die Paletten Nord, Hell und OLED
 - **Rechtsklick auf eine Kachel**: bearbeiten, Breite ändern, in Home Assistant öffnen, entfernen
 - **Nur anzeigen** – für alle oder einzelne Kacheln: Klick und Mausrad schalten nichts
 - **Einheitlicher Aufbau** – Status- und Schalter-Kacheln können den Zustand oben und den Namen darunter zeigen, wie die Einfach-Kachel, damit gemischte Spalten gleich aussehen
