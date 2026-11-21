@@ -7,6 +7,7 @@ import org.kde.kcmutils as KCM
 import org.kde.kquickcontrols as KQControls
 
 import "../code/i18n.mjs" as I18n
+import "../code/presets.mjs" as Presets
 
 import "."
 import "components"
@@ -21,7 +22,7 @@ KCM.SimpleKCM {
     property alias cfg_tileOpacity: tileOpacity.value
     property alias cfg_tileCustomColor: tileCustomColor.checked
     property alias cfg_tileColor: tileColor.color
-    property alias cfg_glass: glass.checked
+    property string cfg_tileStyle
     property alias cfg_tileRadius: tileRadius.value
     property alias cfg_tileBorder: tileBorder.checked
     property alias cfg_levelBorder: levelBorder.checked
@@ -32,7 +33,57 @@ KCM.SimpleKCM {
     signal configurationChanged
     function tr(key, ...args) { return I18n.tr(plasmoid.configuration.language, key, ...args) }
 
+    // Templates write straight into the configuration (they also touch settings of the
+    // "Values" page) and refresh the fields of this page; undo restores the values from before.
+    property var undoValues: null
+    function writeLook(values) {
+        for (const key of Presets.PRESET_KEYS) {
+            if (!(key in values)) continue
+            plasmoid.configuration[key] = values[key]
+            if (this["cfg_" + key] !== undefined) this["cfg_" + key] = values[key]
+        }
+        tileStyleBox.currentIndex = Math.max(0, tileStyleBox.indexOfValue(cfg_tileStyle || "flat"))
+    }
+    function applyPreset(id) {
+        const values = Presets.presetValues(id)
+        if (!values) return
+        const before = {}
+        for (const key of Presets.PRESET_KEYS) before[key] = plasmoid.configuration[key]
+        undoValues = before
+        writeLook(values)
+    }
+    function undoPreset() {
+        if (!undoValues) return
+        writeLook(undoValues)
+        undoValues = null
+    }
+
     Kirigami.FormLayout {
+        HelpRow {
+            Kirigami.FormData.label: tr("look.preset")
+            help: tr("help.preset")
+            RowLayout {
+                ComboBox {
+                    id: presetBox
+                    model: Presets.PRESETS.map(p => ({ value: p.id, text: tr(`preset.${p.id}`) }))
+                    textRole: "text"
+                    valueRole: "value"
+                    displayText: tr("look.presetChoose")
+                    currentIndex: -1
+                    onActivated: {
+                        applyPreset(currentValue)
+                        currentIndex = -1
+                    }
+                }
+                Button {
+                    text: tr("look.presetUndo")
+                    icon.name: "edit-undo"
+                    enabled: !!undoValues
+                    onClicked: undoPreset()
+                }
+            }
+        }
+
         HelpRow {
             Kirigami.FormData.label: tr("look.frame")
             help: tr("look.bgHint")
@@ -76,10 +127,16 @@ KCM.SimpleKCM {
 
         HelpRow {
             enabled: flat.checked
-            help: tr("help.glass")
-            CheckBox {
-                id: glass
-                text: tr("look.glass")
+            Kirigami.FormData.label: tr("look.tileStyle")
+            help: tr("help.tileStyle")
+            ComboBox {
+                id: tileStyleBox
+                model: ["flat", "glass", "cockpit", "bento", "minimal", "minimalDark"]
+                    .map(s => ({ value: s, text: tr(`style.${s}`) }))
+                textRole: "text"
+                valueRole: "value"
+                Component.onCompleted: currentIndex = Math.max(0, indexOfValue(cfg_tileStyle || "flat"))
+                onActivated: cfg_tileStyle = currentValue
             }
         }
 

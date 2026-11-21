@@ -13,14 +13,20 @@ QtObject {
 
     readonly property bool useHaTheme: look.colorSource === "ha"
     readonly property bool dark: Kirigami.Theme.backgroundColor.hslLightness < 0.5
-    readonly property var ha: useHaTheme && haThemes ? Themes.themePalette(haThemes, look.haTheme, dark) : ({})
+    readonly property var ha: useHaTheme ? (haThemes ? Themes.themePalette(haThemes, look.haTheme, dark) : ({}))
+        : (Themes.PALETTES[look.colorSource] || ({}))
 
-    // glass look: white text with a shadow and light graph colors, as on frosted glass
-    readonly property bool glass: !!look.flat && !!look.glass
+    // Tile styles that sit on the wallpaper set the text color themselves: glass and
+    // "minimal" white text with a dark shadow, "minimal dark" dark text with a light halo
+    readonly property string tileStyle: look.flat ? (look.tileStyle || "flat") : "flat"
+    readonly property bool lightText: tileStyle === "glass" || tileStyle === "minimal"
+    readonly property bool darkText: tileStyle === "minimalDark"
     function glassLight(c) { return Qt.hsla(c.hslHue, Math.min(0.85, c.hslSaturation), Math.max(0.72, c.hslLightness), 1) }
+    function deep(c) { return Qt.hsla(c.hslHue, Math.max(0.6, c.hslSaturation), Math.min(0.38, c.hslLightness), 1) }
+    function forStyle(c) { return lightText ? glassLight(c) : darkText ? deep(c) : c }
     readonly property color accent: ha.accent || Kirigami.Theme.highlightColor
-    readonly property color text: glass ? "#ffffff" : (ha.text || Kirigami.Theme.textColor)
-    readonly property color muted: glass ? Qt.rgba(1, 1, 1, 0.6) : (ha.muted || Kirigami.Theme.disabledTextColor)
+    readonly property color text: lightText ? "#ffffff" : darkText ? "#14181e" : (ha.text || Kirigami.Theme.textColor)
+    readonly property color muted: lightText ? Qt.rgba(1, 1, 1, 0.6) : darkText ? Qt.rgba(0, 0, 0, 0.5) : (ha.muted || Kirigami.Theme.disabledTextColor)
     readonly property color background: look.tileCustomColor ? look.tileColor : (ha.background || Kirigami.Theme.backgroundColor)
     // own status colors (Appearance → Colors) win over the theme
     readonly property bool customLevels: !!look.levelCustomColors
@@ -28,13 +34,13 @@ QtObject {
     readonly property color warn: customLevels ? look.customWarnColor : (ha.warn || Kirigami.Theme.neutralTextColor)
     readonly property color crit: customLevels ? look.customCritColor : (ha.crit || Kirigami.Theme.negativeTextColor)
     readonly property color value: look.valueCustomColor ? look.valueColor : text
-    readonly property color label: look.labelCustomColor ? look.labelColor : glass ? text : (ha.label || text)
+    readonly property color label: look.labelCustomColor ? look.labelColor : lightText || darkText ? text : (ha.label || text)
     // the default label color is the text color, dimmed; a chosen one is shown as it is
-    readonly property real labelOpacity: look.labelCustomColor || glass ? 1 : ha.label ? 1 : 0.8
-    readonly property color graph: look.graphCustomColor ? look.graphColor : glass ? glassLight(accent) : accent
+    readonly property real labelOpacity: look.labelCustomColor || lightText || darkText || ha.label ? 1 : 0.8
+    readonly property color graph: look.graphCustomColor ? look.graphColor : forStyle(accent)
     // second value of combo tiles: by default the accent turned a quarter back on the color wheel
     readonly property color second: look.secondCustomColor ? look.secondColor
-        : glass ? glassLight(Qt.hsla((accent.hslHue + 0.75) % 1, Math.max(0.45, accent.hslSaturation), 0.6, 1))
+        : lightText || darkText ? forStyle(Qt.hsla((accent.hslHue + 0.75) % 1, Math.max(0.45, accent.hslSaturation), 0.6, 1))
         : Qt.hsla((accent.hslHue + 0.75) % 1, Math.max(0.45, accent.hslSaturation),
                   Math.min(0.65, Math.max(0.5, accent.hslLightness)), 1)
     // font weight of the large values (400 normal, 600 semi-bold, 700 bold)

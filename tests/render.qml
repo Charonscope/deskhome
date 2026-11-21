@@ -1,5 +1,5 @@
 // Renders the widget's tile view outside Plasma with fake data and saves a PNG.
-// Usage: QT_QPA_PLATFORM=offscreen qml tests/render.qml -- <out.png> [ok|lost|theme|big|glass] [dump]
+// Usage: QT_QPA_PLATFORM=offscreen qml tests/render.qml -- <out.png> [ok|lost|theme|big|glass|cockpit|bento|minimal|minimalDark] [dump]
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Effects
@@ -15,6 +15,7 @@ ApplicationWindow {
     color: "#5a6470"
 
     readonly property var args: Qt.application.arguments.slice(Qt.application.arguments.indexOf("--") + 1)
+    readonly property string styleArg: ["glass", "cockpit", "bento", "minimal", "minimalDark"].includes(args[1]) ? args[1] : "flat"
 
     QtObject {
         id: plasmoid
@@ -22,7 +23,7 @@ ApplicationWindow {
         property bool configurationRequired: false
         property int formFactor: 0
         property var configuration: ({
-            url: "http://ha.test:8123", language: "en", flat: true, glass: window.args[1] === "glass",
+            url: "http://ha.test:8123", language: "en", flat: true, tileStyle: window.styleArg,
             tileOpacity: 78, tileCustomColor: false, tileColor: "#2e3440", tileRadius: 8, tileBorder: true,
             levelBorder: true, activeFrame: true, tileScale: 100, tileSpacing: 6, labelScale: 100, valueScale: window.args[1] === "big" ? 150 : 100,
             showMinMax: true, showTrend: true, graphHeight: 42, graphLineWidth: 1.5, graphFill: true,
@@ -89,16 +90,18 @@ ApplicationWindow {
         property real defaultPt: 10
         property real smallPt: 8
         property bool tileBackgrounds: true
-        property bool glass: window.args[1] === "glass"
-        // the shadow is a shader effect; with software rendering it would hide the content
-        readonly property bool glassShadowOn: glass && GraphicsInfo.api !== GraphicsInfo.Software
-        readonly property Component glassShadow: Component {
+        property string tileStyle: window.styleArg
+        readonly property bool minimalStyle: tileStyle === "minimal" || tileStyle === "minimalDark"
+        readonly property string iconPlate: tileStyle === "glass" ? "round" : tileStyle === "bento" ? "chip" : ""
+        readonly property string tileFont: tileStyle === "cockpit" ? "monospace" : ""
+        readonly property bool contentEffectOn: (tileStyle === "glass" || minimalStyle) && GraphicsInfo.api !== GraphicsInfo.Software
+        readonly property Component contentEffect: Component {
             MultiEffect {
                 shadowEnabled: true
-                shadowColor: "black"
-                shadowOpacity: 0.9
-                shadowBlur: 0.12
-                shadowVerticalOffset: 1
+                shadowColor: root.tileStyle === "minimalDark" ? "white" : "black"
+                shadowOpacity: root.minimalStyle ? 1 : 0.9
+                shadowBlur: root.minimalStyle ? 0.5 : 0.12
+                shadowVerticalOffset: root.minimalStyle ? 0 : 1
             }
         }
         property bool connectionLost: !ha.ready
@@ -240,6 +243,8 @@ ApplicationWindow {
             let ownBackground = false
             const walkBg = item => {
                 if (item.radius !== undefined && item.border !== undefined && String(item.color) === "#123456") ownBackground = true
+                // glass and minimal take a tile's own color as the tint of their frame
+                if (item.tint !== undefined && String(item.tint) === "#123456") ownBackground = true
                 for (let i = 0; i < item.children.length; i++) walkBg(item.children[i])
             }
             walkBg(view)

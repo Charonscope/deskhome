@@ -49,33 +49,17 @@ MouseArea {
                 height: control.height
                 width: control.width
 
-                GlassFrame {
+                TileFrame {
                     readonly property bool levelFrame: root.look.levelBorder && (model.level ?? 0) > 0 && !control.quiet
-                    readonly property bool activeFrame: !!root.look.activeFrame && !!model.active
-                    visible: root.glass
+                    // with own tile backgrounds "active" is drawn here, matching the tile radius
+                    readonly property bool activeFrame: root.tileBackgrounds && !!root.look.activeFrame && !!model.active
                     anchors.fill: parent
                     fill: root.tileFill(model)
                     tint: model.bg_color || "#192332"
                     borderWidth: levelFrame || activeFrame ? 1.5 : 0
                     borderColor: levelFrame ? root.levelColor(model.level) : root.accentColor
-                }
-
-                Rectangle {
-                    visible: !root.glass
-                    readonly property bool levelFrame: root.look.levelBorder && (model.level ?? 0) > 0 && !control.quiet
-                    // with own tile backgrounds "active" is drawn here, matching the tile radius
-                    readonly property bool activeFrame: root.tileBackgrounds && !!root.look.activeFrame && !!model.active
-                    anchors.fill: parent
-                    radius: root.look.tileRadius
-                    color: root.tileFill(model)
-                    border.width: levelFrame || activeFrame ? 1.5 : (root.look.tileBorder && root.tileBackgrounds ? 1 : 0)
-                    border.color: levelFrame ? root.levelColor(model.level)
-                        : activeFrame ? root.accentColor
-                        : Qt.rgba(root.textColor.r, root.textColor.g, root.textColor.b, 0.08)
-                    Behavior on border.color {
-                        enabled: root.animationDuration > 0
-                        ColorAnimation { duration: root.animationDuration }
-                    }
+                    level: levelFrame ? model.level : 0
+                    levelColor: root.levelColor(model.level)
                 }
 
                 // A critical tile pulses slowly at its border, so it is noticed from the corner of the eye

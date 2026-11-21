@@ -27,6 +27,13 @@ const KEYS = Object.freeze({
     crit: ["error-color"]
 })
 
+// Built-in palettes for the color source (same keys as themePalette)
+export const PALETTES = Object.freeze({
+    nord: { accent: "#88c0d0", text: "#eceff4", label: "#d8dee9", muted: "#4c566a", background: "#2e3440", ok: "#a3be8c", warn: "#ebcb8b", crit: "#bf616a" },
+    light: { accent: "#0a7bd6", text: "#1d232b", label: "#5b6470", muted: "#9aa1ad", background: "#ffffff", ok: "#2f9e44", warn: "#b7791f", crit: "#d6334a" },
+    oled: { accent: "#4dd0ff", text: "#ffffff", label: "#8a8f98", muted: "#4a4f57", background: "#000000", ok: "#3ddc84", warn: "#ffd000", crit: "#ff3355" }
+})
+
 export function themeNames(result) {
     const names = Object.keys(result?.themes || {})
     names.sort((a, b) => a.localeCompare(b))

@@ -1,11 +1,13 @@
 import QtQuick
 
 import org.kde.plasma.components as PlasmaComponents3
+import org.kde.kirigami as Kirigami
 
 // Label for a formatted value ("21,5 °C"): when the number changes it counts to the new
 // one, keeping decimals, decimal separator and unit. Other texts change at once.
 PlasmaComponents3.Label {
     id: label
+    font.family: root.tileFont || Kirigami.Theme.defaultFont.family
     property string value
     property int duration: root.animationDuration * 2
     property real shown: NaN

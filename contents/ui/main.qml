@@ -94,17 +94,23 @@ PlasmoidItem {
     // Own tile style (default): DeskHome draws the tiles itself, so opacity, color, radius
     // and borders apply. Otherwise Plasma's button frames are used (fixed corners).
     readonly property bool tileBackgrounds: look.flat
-    // Glass look (own tiles only): GlassFrame backgrounds, icon plates, a shadow under the content
-    readonly property bool glass: tileBackgrounds && !!look.glass
-    // the shadow is a shader effect; with software rendering it would hide the content
-    readonly property bool glassShadowOn: glass && GraphicsInfo.api !== GraphicsInfo.Software
-    readonly property Component glassShadow: Component {
+    // Tile style (own tiles only, Appearance → Tile style), drawn by TileFrame
+    readonly property string tileStyle: tileBackgrounds ? (look.tileStyle || "flat") : "flat"
+    readonly property bool minimalStyle: tileStyle === "minimal" || tileStyle === "minimalDark"
+    // round icon plates on glass, solid colored chips on bento
+    readonly property string iconPlate: tileStyle === "glass" ? "round" : tileStyle === "bento" ? "chip" : ""
+    // cockpit: fixed-width font for the tile content
+    readonly property string tileFont: tileStyle === "cockpit" ? Kirigami.Theme.fixedWidthFont.family : ""
+    // Shadow (glass) or halo (minimal) under the content. It is a shader effect; with software
+    // rendering it would hide the content, so it is left out there.
+    readonly property bool contentEffectOn: (tileStyle === "glass" || minimalStyle) && GraphicsInfo.api !== GraphicsInfo.Software
+    readonly property Component contentEffect: Component {
         MultiEffect {
             shadowEnabled: true
-            shadowColor: "black"
-            shadowOpacity: 0.9
-            shadowBlur: 0.12
-            shadowVerticalOffset: 1
+            shadowColor: root.tileStyle === "minimalDark" ? "white" : "black"
+            shadowOpacity: root.minimalStyle ? 1 : 0.9
+            shadowBlur: root.minimalStyle ? 0.5 : 0.12
+            shadowVerticalOffset: root.minimalStyle ? 0 : 1
             shadowHorizontalOffset: 0
         }
     }

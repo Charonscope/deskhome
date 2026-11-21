@@ -69,7 +69,7 @@ Item {
             DynamicIcon {
                 animationDuration: root.animationDuration
                 id: headerIcon
-                plate: root.glass
+                plate: root.iconPlate
                 Layout.leftMargin: platePad
                 Layout.rightMargin: platePad
                 name: model.icon
@@ -77,7 +77,7 @@ Item {
                 Layout.preferredWidth: Kirigami.Units.iconSizes.small * root.labelGrow
                 Layout.preferredHeight: Kirigami.Units.iconSizes.small * root.labelGrow
             }
-            PlasmaComponents3.Label {
+            TileLabel {
                 text: model.name
                 elide: Text.ElideRight
                 color: root.tileLabelColor(model)
@@ -85,7 +85,7 @@ Item {
                 font.pointSize: root.smallPt
                 Layout.fillWidth: true
             }
-            PlasmaComponents3.Label {
+            TileLabel {
                 text: tile.heating ? root.tr("thermo.heating") : model.value
                 color: tile.heating ? root.warnColor : root.tileLabelColor(model)
                 opacity: tile.heating ? 1 : root.tileLabelOpacity(model) * 0.75
@@ -105,7 +105,7 @@ Item {
                 font.pixelSize: Kirigami.Units.gridUnit * 1.3 * root.tileScale * root.look.valueScale / 100
                 font.weight: root.valueWeight
             }
-            PlasmaComponents3.Label {
+            TileLabel {
                 visible: !isNaN(model.current_humidity)
                 text: Number(model.current_humidity).toLocaleString(Qt.locale(), "f", 0) + " %"
                 color: root.tileLabelColor(model)
@@ -120,7 +120,7 @@ Item {
         Item { Layout.fillHeight: true }
 
         // target: highlighted while it is being changed with the wheel
-        PlasmaComponents3.Label {
+        TileLabel {
             visible: !isNaN(tile.target)
             text: root.tr("thermo.target", tile.format(tile.target, tile.targetDecimals))
             color: holdTimer.running ? root.accentColor : root.tileLabelColor(model)

@@ -127,8 +127,8 @@
     <entry name="animations" type="bool">
       <default>true</default>
     </entry>
-    <entry name="glass" type="bool">
-      <default>false</default>
+    <entry name="tileStyle" type="string">
+      <default>flat</default>
     </entry>
     <entry name="tileRadius" type="int">
       <default>8</default>

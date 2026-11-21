@@ -41,7 +41,7 @@ GridLayout {
         Layout.fillWidth: true
     }
 
-    PlasmaComponents3.Label {
+    TileLabel {
         text: name
         color: root.tileLabelColor(model)
         opacity: root.tileLabelOpacity(model)

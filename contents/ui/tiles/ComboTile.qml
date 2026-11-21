@@ -74,7 +74,7 @@ Item {
             DynamicIcon {
                 animationDuration: root.animationDuration
                 id: headerIcon
-                plate: root.glass
+                plate: root.iconPlate
                 Layout.leftMargin: platePad
                 Layout.rightMargin: platePad
                 name: model.icon
@@ -82,7 +82,7 @@ Item {
                 Layout.preferredWidth: Kirigami.Units.iconSizes.small * root.labelGrow
                 Layout.preferredHeight: Kirigami.Units.iconSizes.small * root.labelGrow
             }
-            PlasmaComponents3.Label {
+            TileLabel {
                 text: model.name
                 elide: Text.ElideRight
                 color: root.tileLabelColor(model)
@@ -90,14 +90,14 @@ Item {
                 font.pointSize: root.smallPt
                 Layout.fillWidth: true
             }
-            PlasmaComponents3.Label {
+            TileLabel {
                 text: tile.stats.trend
                 visible: !!text && showHistory && root.look.showTrend
                 color: root.tileLabelColor(model)
                 opacity: root.tileLabelOpacity(model)
                 font.pointSize: root.defaultPt
             }
-            PlasmaComponents3.Label {
+            TileLabel {
                 text: tile.stats2.trend
                 visible: !!text && showHistory && root.look.showTrend
                 color: tile.secondColor

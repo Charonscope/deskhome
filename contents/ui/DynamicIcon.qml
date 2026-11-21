@@ -17,8 +17,9 @@ Loader {
         ColorAnimation { duration: dynamicIcon.animationDuration }
     }
 
-    // round plate behind the icon (glass look); it reaches platePad beyond the icon
-    property bool plate: false
+    // plate behind the icon: "round" (glass: tinted circle) or "chip" (bento: solid rounded
+    // square, the icon turns white); it reaches platePad beyond the icon
+    property string plate: ""
     readonly property real platePad: plate ? 3 : 0
     Rectangle {
         z: -1
@@ -26,9 +27,11 @@ Loader {
         anchors.centerIn: parent
         width: Math.max(parent.width, parent.height) + 2 * dynamicIcon.platePad
         height: width
-        radius: width / 2
-        color: Qt.rgba(dynamicIcon.color.r, dynamicIcon.color.g, dynamicIcon.color.b, 0.22)
-        border.width: 1
+        radius: dynamicIcon.plate === "chip" ? width * 0.3 : width / 2
+        // a grey or white icon would vanish on its chip: such chips take the accent color
+        color: dynamicIcon.plate === "chip" ? (dynamicIcon.color.hslSaturation < 0.25 ? root.accentColor : dynamicIcon.color)
+            : Qt.rgba(dynamicIcon.color.r, dynamicIcon.color.g, dynamicIcon.color.b, 0.22)
+        border.width: dynamicIcon.plate === "chip" ? 0 : 1
         border.color: Qt.rgba(1, 1, 1, 0.18)
     }
 
@@ -48,7 +51,7 @@ Loader {
         id: mdi
         MdiIcon {
             name: id
-            color: dynamicIcon.color
+            color: dynamicIcon.plate === "chip" ? "white" : dynamicIcon.color
         }
     }
 

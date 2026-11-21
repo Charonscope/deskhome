@@ -63,7 +63,7 @@ Item {
             Layout.fillWidth: true
             SpinningIcon {
                 id: headerIcon
-                plate: root.glass
+                plate: root.iconPlate
                 Layout.leftMargin: platePad
                 Layout.rightMargin: platePad
                 // a speed in rpm turns the icon: about 3 s per turn at 1000 rpm
@@ -73,7 +73,7 @@ Item {
                 Layout.preferredWidth: Kirigami.Units.iconSizes.small * root.labelGrow
                 Layout.preferredHeight: Kirigami.Units.iconSizes.small * root.labelGrow
             }
-            PlasmaComponents3.Label {
+            TileLabel {
                 text: model.name
                 elide: Text.ElideRight
                 color: root.tileLabelColor(model)
@@ -81,14 +81,14 @@ Item {
                 font.pointSize: root.smallPt
                 Layout.fillWidth: true
             }
-            PlasmaComponents3.Label {
+            TileLabel {
                 visible: showHistory && root.look.showMinMax && isFinite(stats.min)
                 text: `↓${fmt(stats.min)}  ↑${fmt(stats.max)}`
                 font.pointSize: root.smallPt
                 color: root.tileLabelColor(model)
                 opacity: root.tileLabelOpacity(model) * 0.9
             }
-            PlasmaComponents3.Label {
+            TileLabel {
                 text: stats.trend
                 visible: !!text && showHistory && root.look.showTrend
                 font.pointSize: root.defaultPt
@@ -113,7 +113,7 @@ Item {
                 elide: Text.ElideRight
                 Layout.fillWidth: true
             }
-            PlasmaComponents3.Label {
+            TileLabel {
                 text: root.ago(model.last_changed)
                 visible: !!text
                 font.pointSize: root.smallPt

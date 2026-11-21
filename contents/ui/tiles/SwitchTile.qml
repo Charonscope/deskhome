@@ -50,7 +50,7 @@ Item {
             Layout.alignment: Qt.AlignVCenter
             // If the name does not fit on one line it wraps to two; the state
             // is then shown by the icon (grey = off, colored = on). Errors stay visible as text.
-            PlasmaComponents3.Label {
+            TileLabel {
                 id: nameLabel
                 text: model.name
                 elide: Text.ElideRight
@@ -63,7 +63,7 @@ Item {
                 Layout.fillWidth: true
                 Layout.row: tile.stateFirst ? 1 : 0
             }
-            PlasmaComponents3.Label {
+            TileLabel {
                 // the on/off text can be hidden (Appearance); errors always stay visible;
                 // with the state on top it is the tile's value and always shown
                 visible: (nameLabel.lineCount < 2 && root.look.showSwitchState !== false) || model.level === 2 || tile.stateFirst

@@ -1,7 +1,7 @@
 // Full backup of the tiles and the appearance; the access token is never part of it
 export const LOOK_KEYS = Object.freeze([
     "flat", "activeFrame", "compactEntity", "compactScaleIconsToFit", "compactIconSpacing", "itemDisplayDefault",
-    "glass", "tileOpacity", "tileCustomColor", "tileColor", "tileRadius", "tileBorder", "levelBorder",
+    "tileStyle", "tileOpacity", "tileCustomColor", "tileColor", "tileRadius", "tileBorder", "levelBorder",
     "tileScale", "tileSpacing", "labelScale", "valueScale", "showMinMax", "showTrend",
     "graphHeight", "graphLineWidth", "graphFill", "graphCustomColor", "graphColor",
     "colorSource", "haTheme", "valueCustomColor", "valueColor", "labelCustomColor", "labelColor", "animations",

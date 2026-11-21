@@ -47,6 +47,10 @@ run render-disconnected timeout 30 "$QML" tests/render.qml -- "$OUT/disconnected
 run render-large-values timeout 30 "$QML" tests/render.qml -- "$OUT/large-values.png" big
 run render-ha-theme timeout 30 "$QML" tests/render.qml -- "$OUT/ha-theme.png" theme
 run render-glass timeout 30 "$QML" tests/render.qml -- "$OUT/glass.png" glass
+run render-cockpit timeout 30 "$QML" tests/render.qml -- "$OUT/cockpit.png" cockpit
+run render-bento timeout 30 "$QML" tests/render.qml -- "$OUT/bento.png" bento
+run render-minimal timeout 30 "$QML" tests/render.qml -- "$OUT/minimal.png" minimal
+run render-minimalDark timeout 30 "$QML" tests/render.qml -- "$OUT/minimalDark.png" minimalDark
 
 echo "Logs and renders: $OUT"
 exit $status

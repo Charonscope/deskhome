@@ -51,13 +51,13 @@ Item {
             name: model.icon
             color: tile.valueColor
             animationDuration: root.animationDuration
-            plate: root.glass
+            plate: root.iconPlate
             Layout.leftMargin: platePad
             Layout.rightMargin: platePad
             Layout.preferredWidth: Kirigami.Units.iconSizes.small * root.labelGrow
             Layout.preferredHeight: Kirigami.Units.iconSizes.small * root.labelGrow
         }
-        PlasmaComponents3.Label {
+        TileLabel {
             text: model.name
             elide: Text.ElideRight
             color: root.tileLabelColor(model)
@@ -135,7 +135,7 @@ Item {
         }
 
         // thermostats: the target temperature below the value
-        PlasmaComponents3.Label {
+        TileLabel {
             visible: tile.thermostat && !isNaN(model.target_temp)
             text: root.tr("thermo.target", Number(model.target_temp).toLocaleString(Qt.locale(), "f", model.temp_step < 1 ? 1 : 0) + "°")
             font.pointSize: root.smallPt
@@ -146,7 +146,7 @@ Item {
         }
 
         // scale ends below the ends of the arc
-        PlasmaComponents3.Label {
+        TileLabel {
             id: minLabel
             text: tile.fmt(tile.min)
             font.pointSize: root.smallPt * 0.9
@@ -155,7 +155,7 @@ Item {
             x: arc.cx + arc.radius * Math.cos(arc.start) - width / 2
             y: arc.cy + arc.radius * Math.sin(arc.start) + arc.thickness / 2
         }
-        PlasmaComponents3.Label {
+        TileLabel {
             text: tile.fmt(tile.max)
             font.pointSize: root.smallPt * 0.9
             color: root.tileLabelColor(model)

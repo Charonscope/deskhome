@@ -55,7 +55,10 @@ KCM.SimpleKCM {
                 id: colorSource
                 model: [
                     { value: "plasma", text: tr("look.source.plasma") },
-                    { value: "ha", text: tr("look.source.ha") }
+                    { value: "ha", text: tr("look.source.ha") },
+                    { value: "nord", text: tr("look.source.nord") },
+                    { value: "light", text: tr("look.source.light") },
+                    { value: "oled", text: tr("look.source.oled") }
                 ]
                 textRole: "text"
                 valueRole: "value"

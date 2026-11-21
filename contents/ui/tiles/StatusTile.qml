@@ -71,7 +71,7 @@ Item {
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignVCenter
             // Long name: two lines instead of cutting it off; the state is then shown by the dot color
-            PlasmaComponents3.Label {
+            TileLabel {
                 id: nameLabel
                 text: model.name
                 elide: Text.ElideRight
@@ -83,7 +83,7 @@ Item {
                 Layout.fillWidth: true
                 Layout.row: tile.stateFirst ? 1 : 0
             }
-            PlasmaComponents3.Label {
+            TileLabel {
                 visible: nameLabel.lineCount < 2 || model.level > 0 || tile.stateFirst
                 text: root.ago(model.last_changed) ? model.value + " · " + root.ago(model.last_changed) : model.value
                 elide: Text.ElideRight
