@@ -30,7 +30,7 @@ QtObject {
     readonly property color value: look.valueCustomColor ? look.valueColor : text
     readonly property color label: look.labelCustomColor ? look.labelColor : glass ? text : (ha.label || text)
     // the default label color is the text color, dimmed; a chosen one is shown as it is
-    readonly property real labelOpacity: look.labelCustomColor ? 1 : glass ? 0.88 : ha.label ? 1 : 0.8
+    readonly property real labelOpacity: look.labelCustomColor || glass ? 1 : ha.label ? 1 : 0.8
     readonly property color graph: look.graphCustomColor ? look.graphColor : glass ? glassLight(accent) : accent
     // second value of combo tiles: by default the accent turned a quarter back on the color wheel
     readonly property color second: look.secondCustomColor ? look.secondColor
